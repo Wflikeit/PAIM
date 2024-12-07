@@ -1,42 +1,82 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+  
+    color-scheme: light dark;
+    color: #ffffff;
+    background-color: #1b361c; /* Zielony, ciemny kolor */
+  
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  
+    --main-green: #4caf50; /* Główny zielony kolor */
+    --hover-green: #388e3c; /* Ciemniejszy zielony do hover */
+    --background-light: #e8f5e9; /* Jasne tło dla light mode */
   }
-  to {
-    transform: rotate(360deg);
+  
+  a {
+    font-weight: 500;
+    color: var(--main-green);
+    text-decoration: inherit;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  a:hover {
+    color: var(--hover-green);
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
+  
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--background-light);
+  }
+  
+  h1 {
+    font-size: 3.2em;
+    line-height: 1.1;
+    color: var(--main-green);
+    text-align: center;
+  }
+  
+  button {
+    border-radius: 8px;
+    border: 1px solid var(--main-green);
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: var(--main-green);
+    color: #ffffff;
+    cursor: pointer;
+    transition:
+      background-color 0.25s,
+      border-color 0.25s;
+  }
+  button:hover {
+    background-color: var(--hover-green);
+    border-color: var(--hover-green);
+  }
+  button:focus,
+  button:focus-visible {
+    outline: 4px auto var(--main-green);
+  }
+  
+  @media (prefers-color-scheme: light) {
+    :root {
+      color: #1b361c;
+      background-color: var(--background-light);
+    }
+    a:hover {
+      color: var(--hover-green);
+    }
+    button {
+      background-color: var(--main-green);
+      border-color: var(--main-green);
+    }
+  }
+  
