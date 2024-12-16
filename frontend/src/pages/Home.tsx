@@ -5,7 +5,7 @@ import { Box, Typography, List, ListItem, ListItemText } from "@mui/material";
 const ProductsList: React.FC = () => {
   const { products, loading, error } = useProducts();
 
-  const categories = ["Wszystko"];
+  const categories = ["Everything"];
 
   if (loading) return <div style={{ color: "black" }}>Ładowanie...</div>;
   if (error) return <div style={{ color: "black" }}>{error}</div>;
@@ -36,7 +36,7 @@ const ProductsList: React.FC = () => {
             paddingTop: "45px",
           }}
         >
-          Kategorie
+          Categories
         </Typography>
         <List>
           {categories.map((category) => (
@@ -73,8 +73,8 @@ const ProductsList: React.FC = () => {
               country_of_origin={product.country_of_origin}
               description={product.description}
               fruit_or_vegetable={product.fruit_or_vegetable}
-              imageId={product.imageId}
               expiry_date={product.expiry_date}
+              imageUrl={product.imageUrl}
               onAddToCart={() => console.log("Product added to cart")}
             />
           ))

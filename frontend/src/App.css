@@ -5,16 +5,16 @@
 
   color-scheme: light dark;
   color: #ffffff;
-  background-color: #1b361c; /* Zielony, ciemny kolor */
+  background-color: #1b361c; 
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --main-green: #4caf50; /* Główny zielony kolor */
-  --hover-green: #388e3c; /* Ciemniejszy zielony do hover */
-  --background-light: #e8f5e9; /* Jasne tło dla light mode */
+  --main-green: #4caf50;
+  --hover-green: #388e3c; 
+  --background-light: #e8f5e9;
 }
 
 a {
@@ -44,10 +44,11 @@ h1 {
 }
 
 button {
+  margin: 0;
   border-radius: 8px;
   border: 1px solid var(--main-green);
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  padding: 10px 20px;
+  font-size: 16px;
   font-weight: 500;
   font-family: inherit;
   background-color: var(--main-green);
@@ -57,13 +58,121 @@ button {
     background-color 0.25s,
     border-color 0.25s;
 }
+
 button:hover {
-  background-color: var(--hover-green);
-  border-color: var(--hover-green);
+  opacity: 0.8;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto var(--main-green);
+}
+
+
+button.add-to-cart {
+  background-color: #33c4ff;
+  border-color: #33c4ff;
+}
+
+button.login {
+  background-color: #ff5733;
+  border-color: #ff5733;
+}
+
+button.cart {
+  background-color: #ffb233;
+  border-color: #ffb233;
+}
+
+button.about {
+  background-color: #4caf50; 
+  border-color: #4caf50;
+}
+
+button.contact {
+  background-color: #f44336;
+  border-color: #f44336;
+}
+
+button.delete {
+  background-color: #f44336;
+  border-color: #f44336;
+  color: black;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+button.delete:hover {
+  background-color: red;
+  border-color: red;
+}
+
+button.continue-shopping {
+  background-color: #4caf50; 
+  border-color: #4caf50;
+  margin-right: 8px;
+}
+
+button.continue-shopping:hover {
+  background-color: #388e3c; 
+  border-color: #388e3c;
+}
+
+button.checkout {
+  background-color: #f44336; 
+  border-color: #f44336;
+}
+
+button.checkout:hover {
+  background-color: #d32f2f; 
+  border-color: #d32f2f;
+}
+
+button.login {
+  background-color: #4caf50;
+  border-color: #4caf50;
+}
+
+button.login:hover {
+  background-color: #388e3c;
+  border-color: #388e3c;
+}
+
+button.register {
+  background-color: transparent;
+  border-color: #f44336;
+  color: #f44336;
+  margin-top: 10px;
+}
+
+button.register:hover {
+  background-color: #f44336; 
+  color: white; 
+  border-color: #f44336;
+}
+
+button.register-button {
+  background-color: #4caf50; 
+  border-color: #4caf50; 
+  color: white; 
+  transition: background-color 0.3s, border-color 0.3s; 
+}
+
+button.register-button:hover {
+  background-color: #388e3c; 
+  border-color: #388e3c; 
+}
+
+button.register-button:focus {
+  outline: 4px solid #4caf50;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: space-between; 
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%; 
 }
 
 @media (prefers-color-scheme: light) {

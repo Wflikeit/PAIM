@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+
 interface Product {
   name: string;
-  price: number;
+  price: string;
   country_of_origin: string;
   description: string;
   fruit_or_vegetable: string;
-  imageId: string;
   expiry_date: string;
+  imageId: string;
+  imageUrl?: string;
 }
 
 interface ProductResponse {
@@ -16,10 +18,27 @@ interface ProductResponse {
 }
 
 const fetchProducts = async (): Promise<Product[]> => {
-  const response = await axios.get<ProductResponse>(
-    "http://localhost:8000/api/products/67537e67b1e1ea00565c6e43",
-  );
-  return response.data.product ? [response.data.product] : [];
+  try {
+    
+    const response = await axios.get<ProductResponse>(`http://localhost:8000/api/products/675dbc6fcea393dd5e2c6f83`);
+
+    const product = response.data.product;
+
+    if (product) {
+      const imageResponse = await axios.get<Blob>(
+        `http://localhost:8000/api/products/675dbc6fcea393dd5e2c6f83/image`,
+        { responseType: "blob" }
+      );
+      const imageUrl = URL.createObjectURL(imageResponse.data);
+      product.imageUrl = imageUrl;
+      return [product];
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
 };
 
 const useProducts = () => {

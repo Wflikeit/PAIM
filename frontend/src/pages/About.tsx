@@ -5,8 +5,8 @@ const About: React.FC = () => {
     <div>
       <h1>O nas</h1>
       <p style={{ color: "black" }}>
-        Witamy na naszej stronie! Jesteśmy firmą, która dąży do perfekcji w
-        każdym aspekcie.
+        Welcome to our website! We are a company that strives for perfection in
+        every aspect.
       </p>
     </div>
   );

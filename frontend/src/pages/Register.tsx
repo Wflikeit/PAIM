@@ -61,7 +61,7 @@ const RegisterForm = () => {
           style={{ color: "black", textAlign: "center" }}
           sx={{ paddingTop: "60px" }}
         >
-          Rejestracja
+          Create account
         </Typography>
 
         <TextField
@@ -128,8 +128,15 @@ const RegisterForm = () => {
           </Typography>
         )}
 
-        <Button type="submit" variant="contained" color="primary" fullWidth onChange={(e) => setOrders("zamowienie")}>
-          Zarejestruj się
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          className="register-button"
+          fullWidth
+          onChange={(e) => setOrders("zamowienie")}
+        >
+          Register
         </Button>
       </form>
     </Container>

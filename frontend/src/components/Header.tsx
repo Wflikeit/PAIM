@@ -24,20 +24,20 @@ const Header: React.FC = () => {
           }}
           onClick={() => handleNavigate("/")}
         >
-          Hurtownia Owoców
+          Wholesale Fruits
         </Typography>
         <Box sx={{ display: "flex", gap: 2 }}>
-          <Button color="inherit" onClick={() => handleNavigate("/cart")}>
-            Koszyk
+          <Button className="cart" color="inherit" onClick={() => handleNavigate("/cart")}>
+            Cart
           </Button>
-          <Button color="inherit" onClick={() => handleNavigate("/about")}>
-            O nas
+          <Button className="about" color="inherit" onClick={() => handleNavigate("/about")}>
+            About
           </Button>
-          <Button color="inherit" onClick={() => handleNavigate("/contact")}>
-            Kontakt
+          <Button className="contact" color="inherit" onClick={() => handleNavigate("/contact")}>
+            Contact
           </Button>
-          <Button color="inherit" onClick={() => handleNavigate("/login")}>
-            Zaloguj się
+          <Button className="login" color="inherit" onClick={() => handleNavigate("/login")}>
+            Login
           </Button>
         </Box>
       </Toolbar>

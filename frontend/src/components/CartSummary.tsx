@@ -15,24 +15,25 @@ const CartSummary: React.FC<CartSummaryProps> = ({
   return (
     <Box sx={{ marginTop: "16px" }}>
       <Typography variant="h6" style={{ color: "black" }}>
-        Całkowita cena: ${totalPrice.toFixed(2)}
+        In total: ${totalPrice.toFixed(2)}
       </Typography>
       <Box sx={{ marginTop: "16px" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ marginRight: "8px" }}
-          onClick={() => onContinueShopping()}
-        >
-          Kontynuuj zakupy
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={onProceedToCheckout}
-        >
-          Przejdź do kasy
-        </Button>
+      <Button
+        className="continue-shopping"
+        onClick={() => onContinueShopping()}
+        variant="contained"
+        color="primary"
+      >
+        Continue shopping
+      </Button>
+      <Button
+        className="checkout"
+        onClick={onProceedToCheckout}
+        variant="contained"
+        color="secondary"
+      >
+        Checkout
+      </Button>
       </Box>
     </Box>
   );

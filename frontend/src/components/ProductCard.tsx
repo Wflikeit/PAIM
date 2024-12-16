@@ -15,6 +15,7 @@ interface ProductCardProps {
   fruit_or_vegetable: string;
   imageId: string;
   expiry_date: string;
+  imageUrl?: string;
   onAddToCart: () => void;
 }
 
@@ -26,6 +27,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   fruit_or_vegetable,
   imageId,
   expiry_date,
+  imageUrl,
   onAddToCart,
 }) => {
   return (
@@ -33,7 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <CardMedia
         component="img"
         height="140"
-        image={`http://localhost:8000/api/images/${imageId}`}
+        image={imageUrl || "https://via.placeholder.com/150"}
         alt={name}
       />
       <CardContent>
@@ -55,7 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Typography variant="h6" color="text.primary">
           Cena: {price} zł
         </Typography>
-        <Button onClick={onAddToCart} variant="contained" color="primary">
+        <Button className="add-to-cart" onClick={onAddToCart} variant="contained" color="primary">
           Dodaj do koszyka
         </Button>
       </CardContent>

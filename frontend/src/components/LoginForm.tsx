@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Container, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginForm = () => {
   const [email, setEmail] = useState<string>("");
@@ -9,17 +10,32 @@ const LoginForm = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Walidacja
     if (!email || !password) {
-      setError("Proszę wypełnić wszystkie pola");
+      setError("Please fill in all fields");
       return;
     }
 
-    setError("");
-    console.log("Zalogowano:", { email, password });
+    try {
+      const response = await axios.post("http://localhost:8000/api/register", {
+        email,
+        password,
+      });
+
+      const { role } = response.data;
+
+      localStorage.setItem("user_role", role);
+
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      setError("Invalid email or password");
+    }
   };
 
   const handleRegisterRedirect = () => {
@@ -27,38 +43,40 @@ const LoginForm = () => {
   };
 
   return (
-    <Container>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Email"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <TextField
-          label="Hasło"
-          type="password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {error && (
-          <Typography variant="body2" color="error" gutterBottom>
-            {error}
-          </Typography>
-        )}
-        <Button type="submit" variant="contained" color="primary" fullWidth>
-          Zaloguj się
-        </Button>
-      </form>
-      <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: "16px" }} onClick={handleRegisterRedirect}>
-        Zarejestruj się
-      </Button> 
-    </Container>
+      <Container className="buttons-container">
+        <form onSubmit={handleSubmit}>
+          <TextField
+              label="Email"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+          />
+          {error && <Typography color="error">{error}</Typography>}
+          <Button type="submit" className="login" variant="contained" color="primary">
+            Login
+          </Button>
+          <Button
+            type="button"
+            className="register"
+            onClick={handleRegisterRedirect}
+            variant="contained"
+            color="secondary"
+          >
+            Register
+          </Button>
+        </form>
+      </Container>
   );
 };
 

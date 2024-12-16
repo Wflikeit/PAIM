@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, ListItem, ListItemText } from "@mui/material";
 
+// Define the interface for the cart item
 interface CartItemProps {
   id: string;
   name: string;
@@ -9,13 +10,7 @@ interface CartItemProps {
   removeFromCart: (id: string) => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({
-  id,
-  name,
-  price,
-  quantity,
-  removeFromCart,
-}) => {
+const CartItem: React.FC<CartItemProps> = (props) => {
   return (
     <ListItem
       sx={{
@@ -26,25 +21,16 @@ const CartItem: React.FC<CartItemProps> = ({
     >
       <ListItemText
         style={{ color: "black" }}
-        primary={`${name} x${quantity}`}
-        secondary={`Cena: $${price.toFixed(2)} x${quantity}`}
+        primary={`${props.name} x${props.quantity}`}
+        secondary={`Price: $${props.price.toFixed(2)} x${props.quantity}`}
       />
       <Button
-        variant="outlined"
+        className="delete"
+        onClick={() => props.removeFromCart(props.id)}
         color="secondary"
-        onClick={() => removeFromCart(id)}
         style={{ color: "black" }}
-        sx={{
-          border: "2px solid black",
-          "&:hover": {
-            backgroundColor: "red",
-            borderColor: "red",
-          },
-          color: "black",
-        }}
-        
       >
-        Usuń
+        Delete
       </Button>
     </ListItem>
   );
