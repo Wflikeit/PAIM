@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from typing import Optional
 from bson import ObjectId
 from fastapi import HTTPException
-from domain.client.model import Client
+from domain.client import Client
 from dotenv import load_dotenv
 import os
 

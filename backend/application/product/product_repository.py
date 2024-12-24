@@ -1,7 +1,6 @@
 import gridfs
 from pymongo import MongoClient
 from bson import ObjectId
-from domain.product.model import Product
 import os
 from dotenv import load_dotenv
 from typing import Optional

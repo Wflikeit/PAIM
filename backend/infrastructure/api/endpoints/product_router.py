@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, HTTPException, File, Form, status
-from domain.product.services import upload_product, get_product, get_image
-from domain.product.model import Product
+from application.product.product_service import upload_product, get_product, get_image
+from domain.product import Product
 
 router = APIRouter()
 

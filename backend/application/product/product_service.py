@@ -1,5 +1,5 @@
-from domain.product.model import Product
-from infrastructure.product.product_repository import upload_product_to_db, get_product_from_db, get_image_from_db
+from domain.product import Product
+from application.product.product_repository import upload_product_to_db, get_product_from_db, get_image_from_db
 from fastapi.responses import StreamingResponse
 from typing import Optional
 from fastapi import HTTPException, status

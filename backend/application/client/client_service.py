@@ -1,5 +1,5 @@
-from domain.client.model import Client
-from infrastructure.client.client_repository import register_client_db, get_client_db
+from domain.client import Client
+from application.client.client_repository import register_client_db, get_client_db
 from typing import Optional
 from fastapi import HTTPException, status
 

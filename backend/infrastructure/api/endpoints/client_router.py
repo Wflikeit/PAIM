@@ -1,7 +1,6 @@
-from fastapi import APIRouter, HTTPException, Request, status
-from pydantic import BaseModel
-from domain.client.model import Client
-from domain.client.services import register_client, get_client
+from fastapi import APIRouter, HTTPException
+from domain.client import Client
+from application.client.client_service import register_client, get_client
 
 router = APIRouter()
 

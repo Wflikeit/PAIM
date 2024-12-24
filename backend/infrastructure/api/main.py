@@ -1,7 +1,6 @@
-from fastapi import FastAPI
-from application.product_handler import router as product_router
-from application.client_handler import router as client_router
-from infrastructure.api.endpoints.admin import router as admin_router
+from infrastructure.api.endpoints.product_router import router as product_router
+from infrastructure.api.endpoints.client_router import router as client_router
+from infrastructure.api.endpoints.auth_router import router as admin_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Request, Depends
 
