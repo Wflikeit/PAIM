@@ -4,7 +4,7 @@ import axios from "axios";
 
 interface Product {
   name: string;
-  price: string;
+  price: number;
   country_of_origin: string;
   description: string;
   fruit_or_vegetable: string;

@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, {AxiosError} from 'axios';
 
 interface Client {
   email: string;

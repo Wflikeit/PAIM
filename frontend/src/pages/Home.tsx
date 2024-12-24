@@ -41,7 +41,6 @@ const ProductsList: React.FC = () => {
         <List>
           {categories.map((category) => (
             <ListItem
-              button
               key={category}
               sx={{
                 padding: "8px 0",
@@ -75,6 +74,7 @@ const ProductsList: React.FC = () => {
               fruit_or_vegetable={product.fruit_or_vegetable}
               expiry_date={product.expiry_date}
               imageUrl={product.imageUrl}
+              imageId={product.imageId}
               onAddToCart={() => console.log("Product added to cart")}
             />
           ))

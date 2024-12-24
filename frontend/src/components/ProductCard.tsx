@@ -25,7 +25,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   country_of_origin,
   description,
   fruit_or_vegetable,
-  imageId,
   expiry_date,
   imageUrl,
   onAddToCart,
