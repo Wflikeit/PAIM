@@ -1,11 +1,12 @@
+from application.client.client_repository import ClientRepositoryMongo
 from domain.client import Client
-from application.client.client_repository import register_client_db, get_client_db
 from typing import Optional
 from fastapi import HTTPException, status
 
+repo = ClientRepositoryMongo()
 def register_client(client_data: Client):
     
-    client_id = register_client_db(client_data)
+    client_id = repo.register_client_db(client_data)
     
     return {
             "info": f"Client '{client_data.email}' registered successfully",
@@ -13,7 +14,7 @@ def register_client(client_data: Client):
         }
 
 def get_client(client_id: str) -> Optional[dict]:
-    client = get_client_db(client_id)
+    client = repo.get_client_db(client_id)
     client_info = {}
 
     if client:
