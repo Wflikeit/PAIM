@@ -40,19 +40,12 @@ async def upload_product_endpoint(
 
 @router.get("/products/{product_id}")
 async def get_product_endpoint(product_id: str):
-    try:
-        response = product_service.get_product(product_id)
+    return product_service.get_product(product_id)
         
-        return response
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
 
 
 @router.get("/products/{product_id}/image")
 async def get_product_image_endpoint(product_id: str):
-    try:
-        image = product_service.get_image(product_id)
+    return product_service.get_image(product_id)
         
-        return image
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

@@ -43,15 +43,14 @@ class ProductRepositoryMongo(AbstractProductRepository):
 
         return str(product_id)
 
-    def get_product_from_db(self, product_id: str) -> Optional[dict]:
+    def get_product_by_id(self, product_id: str) -> Optional[dict]:
         product_collection = self.db["products"]
         product = product_collection.find_one({"_id": ObjectId(product_id)})
         return product
 
 
-    def get_image_from_db(self, image_id: str) -> Optional[gridfs.GridOut]:
+    def get_image_by_id(self, image_id: str) -> Optional[gridfs.GridOut]:
         try:
-            image_id = ObjectId(image_id)
-            return self.fs.get(image_id)
+            return self.fs.get(ObjectId(image_id))
         except Exception:
             return None

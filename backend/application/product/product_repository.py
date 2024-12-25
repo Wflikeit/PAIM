@@ -2,6 +2,8 @@ import abc
 from typing import Optional
 import gridfs
 
+from domain.product import Product
+
 
 class AbstractProductRepository(abc.ABC):
 
@@ -19,9 +21,9 @@ class AbstractProductRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_product_from_db(self, product_id: str) -> Optional[dict]:
+    def get_product_by_id(self, product_id: str) -> Product:
         pass
 
     @abc.abstractmethod
-    def get_image_from_db(self, image_id: str) -> Optional[gridfs.GridOut]:
+    def get_image_by_id(self, image_id: str) -> Optional[gridfs.GridOut]:
         pass

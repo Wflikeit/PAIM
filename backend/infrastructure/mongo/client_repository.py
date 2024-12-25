@@ -26,7 +26,7 @@ class ClientRepositoryMongo(AbstractClientRepository):
         client_id = client_collection.insert_one(client_dict).inserted_id
         return str(client_id)
 
-    def get_client_db(self, client_id: str) -> Optional[dict]:
+    def get_client_db(self, client_id: str) -> Client:
         try:
             client_collection = self.db["clients"]
             client = client_collection.find_one({"_id": ObjectId(client_id)})
