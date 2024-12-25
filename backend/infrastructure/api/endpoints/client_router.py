@@ -1,13 +1,15 @@
 from fastapi import APIRouter, HTTPException
 from domain.client import Client
-from application.client.client_service import register_client, get_client
+from application.client.client_service import ClientService
+from infrastructure.mongo.client_repository import ClientRepositoryMongo
 
 router = APIRouter()
-
+repo = ClientRepositoryMongo()
+clientService = ClientService(repo)
 @router.post("/register")
 async def upload_client_endpoint(client_data: Client):
     try:
-        response = register_client(client_data)
+        response = clientService.register_client(client_data)
         return response
 
     except Exception as e:
@@ -17,7 +19,7 @@ async def upload_client_endpoint(client_data: Client):
 @router.get("/clients/{client_id}")
 async def get_client_endpoint(client_id: str):
     try:
-        response = get_client(client_id)
+        response = clientService.get_client(client_id)
         
         if not response:
             raise HTTPException(status_code=404, detail="Product not found")

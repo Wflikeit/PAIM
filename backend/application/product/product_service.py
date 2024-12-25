@@ -1,9 +1,11 @@
 from domain.product import Product
-from application.product.product_repository import upload_product_to_db, get_product_from_db, get_image_from_db
 from fastapi.responses import StreamingResponse
 from typing import Optional
 from fastapi import HTTPException, status
 
+from infrastructure.mongo.product_repository import ProductRepositoryMongo
+
+repo = ProductRepositoryMongo()
 
 async def upload_product(product_data: Product) -> dict:
 
@@ -15,7 +17,7 @@ async def upload_product(product_data: Product) -> dict:
     if not image_data:
         raise HTTPException(status_code=400, detail="Image data is invalid or empty")
 
-    product_id = upload_product_to_db(
+    product_id = repo.upload_product_to_db(
         name=product_data.name,
         price=product_data.price,
         country_of_origin=product_data.country_of_origin,
@@ -29,7 +31,7 @@ async def upload_product(product_data: Product) -> dict:
 
 
 def get_product(product_id: str):
-    product = get_product_from_db(product_id)
+    product = repo.get_product_from_db(product_id)
     product_info = {}
 
     if product:
@@ -52,12 +54,12 @@ def get_product(product_id: str):
     return {"product": product_info}
 
 def get_image(product_id: str) -> Optional[StreamingResponse]:
-    product = get_product_from_db(product_id)
+    product = repo.get_product_from_db(product_id)
 
     image_response = None
 
     if product:
-        image_data = get_image_from_db(product["imageId"])
+        image_data = repo.get_image_from_db(product["imageId"])
 
         image_response = StreamingResponse(image_data, media_type="image/jpeg", headers={"Content-Disposition": f"attachment; filename={image_data.filename}"})
 

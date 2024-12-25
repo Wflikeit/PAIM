@@ -1,6 +1,5 @@
 import abc
 from typing import Optional
-
 import gridfs
 
 
