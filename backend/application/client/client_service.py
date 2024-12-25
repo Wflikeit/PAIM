@@ -1,4 +1,4 @@
-from application.client.client_repository import ClientRepositoryMongo
+from infrastructure.mongo.client_repository import ClientRepositoryMongo
 from domain.client import Client
 from typing import Optional
 from fastapi import HTTPException, status
