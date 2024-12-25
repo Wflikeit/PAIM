@@ -5,7 +5,7 @@ from fastapi import UploadFile
 
 class Product(BaseModel):
     name: str
-    price: str
+    price: float
     country_of_origin: str
     description: str
     fruit_or_vegetable: str

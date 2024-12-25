@@ -7,8 +7,8 @@ from domain.client import Client
 
 
 class ClientService:
-    def __init__(self, challenge_repo: AbstractClientRepository) -> None:
-        self._client_repo = challenge_repo
+    def __init__(self, client_repo: AbstractClientRepository) -> None:
+        self._client_repo = client_repo
 
     def register_client(self, client_data: Client):
 

@@ -6,6 +6,8 @@ from infrastructure.mongo.client_repository import ClientRepositoryMongo
 router = APIRouter()
 repo = ClientRepositoryMongo()
 clientService = ClientService(repo)
+
+
 @router.post("/register")
 async def upload_client_endpoint(client_data: Client):
     try:
@@ -20,12 +22,12 @@ async def upload_client_endpoint(client_data: Client):
 async def get_client_endpoint(client_id: str):
     try:
         response = clientService.get_client(client_id)
-        
+
         if not response:
             raise HTTPException(status_code=404, detail="Product not found")
-        
+
         return response
-    
+
     except HTTPException as http_err:
         raise http_err
     except Exception as e:

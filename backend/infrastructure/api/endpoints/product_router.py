@@ -1,13 +1,17 @@
 from fastapi import APIRouter, UploadFile, HTTPException, File, Form, status
-from application.product.product_service import upload_product, get_product, get_image
+
+from application.product.product_service import ProductService
 from domain.product import Product
+from infrastructure.mongo.product_repository import ProductRepositoryMongo
 
 router = APIRouter()
 
+repo = ProductRepositoryMongo()
+product_service = ProductService(repo)
 @router.post("/upload")
 async def upload_product_endpoint(
     name: str = Form(...),
-    price: str = Form(...),
+    price: float = Form(...),
     country_of_origin: str = Form(...),
     description: str = Form(...),
     fruit_or_vegetable: str = Form(...),
@@ -21,7 +25,7 @@ async def upload_product_endpoint(
 
         product_data = Product(
             name=name,
-            price=price,
+            price= price,
             country_of_origin=country_of_origin,
             description=description,
             fruit_or_vegetable=fruit_or_vegetable,
@@ -29,7 +33,7 @@ async def upload_product_endpoint(
             file=file,
         )
 
-        response = await upload_product(product_data)
+        response = await product_service.upload_product(product_data)
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -37,7 +41,7 @@ async def upload_product_endpoint(
 @router.get("/products/{product_id}")
 async def get_product_endpoint(product_id: str):
     try:
-        response = get_product(product_id)
+        response = product_service.get_product(product_id)
         
         return response
     except Exception as e:
@@ -47,7 +51,7 @@ async def get_product_endpoint(product_id: str):
 @router.get("/products/{product_id}/image")
 async def get_product_image_endpoint(product_id: str):
     try:
-        image = get_image(product_id)
+        image = product_service.get_image(product_id)
         
         return image
     except Exception as e:
