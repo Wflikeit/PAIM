@@ -7,12 +7,14 @@ from typing import Optional
 
 from application.product.product_repository import AbstractProductRepository
 
-load_dotenv()
-mongo_password = os.getenv("MONGO_PASSWORD")
-mongo_user = os.getenv("MONGO_USER")
+
 
 class ProductRepositoryMongo(AbstractProductRepository):
+
     def __init__(self):
+        load_dotenv()
+        mongo_password = os.getenv("MONGO_PASSWORD")
+        mongo_user = os.getenv("MONGO_USER")
         self.client = MongoClient(f"mongodb+srv://{mongo_user}:{mongo_password}@paim.yxyyk.mongodb.net/")
         self.db = self.client["client"]
         self.fs = gridfs.GridFS(self.db)

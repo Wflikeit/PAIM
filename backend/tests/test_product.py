@@ -4,7 +4,7 @@ from infrastructure.api.main import app
 from io import BytesIO
 from unittest.mock import patch
 from bson import ObjectId
-
+import os
 
 client = TestClient(app)
 
@@ -20,7 +20,8 @@ async def test_upload_product():
         "expiry_date": "10.12.2025"
     }
 
-    image_path = "tests/test_images/kartofel.jpeg"
+
+    image_path = os.path.join(os.path.dirname(__file__), "test_images", "kartofel.jpeg")
     with open(image_path, "rb") as image_file:
         file_data = image_file.read()
 

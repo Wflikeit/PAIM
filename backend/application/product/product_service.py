@@ -69,5 +69,5 @@ class ProductService:
             media_type="image/jpeg",
             headers={
                 "Content-Disposition": f"attachment; filename={image_data.filename}"
-            },
+            }
         )
