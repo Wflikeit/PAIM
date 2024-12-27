@@ -6,17 +6,13 @@ from dotenv import load_dotenv
 from typing import Optional
 
 from application.product.product_repository import AbstractProductRepository
-
+from infrastructure.mongo.mongo_client import MongoDBClient
 
 
 class ProductRepositoryMongo(AbstractProductRepository):
 
     def __init__(self):
-        load_dotenv()
-        mongo_password = os.getenv("MONGO_PASSWORD")
-        mongo_user = os.getenv("MONGO_USER")
-        self.client = MongoClient(f"mongodb+srv://{mongo_user}:{mongo_password}@paim.yxyyk.mongodb.net/")
-        self.db = self.client["client"]
+        self.db = MongoDBClient.get_database("product")
         self.fs = gridfs.GridFS(self.db)
 
     def upload_product_to_db(self,
@@ -52,7 +48,5 @@ class ProductRepositoryMongo(AbstractProductRepository):
 
 
     def get_image_by_id(self, image_id: str) -> Optional[gridfs.GridOut]:
-        try:
-            return self.fs.get(ObjectId(image_id))
-        except Exception:
-            return None
+        return self.fs.get(ObjectId(image_id))
+
