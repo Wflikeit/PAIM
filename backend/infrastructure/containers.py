@@ -1,85 +1,33 @@
-# """Containers module."""
-#
-# from dependency_injector import containers
-#
-#
-# from dependency_injector import containers, providers
-#
-#
-#
-# class Container(containers.DeclarativeContainer):
-#     wiring_config = containers.WiringConfiguration(
-#         modules=[
-#             "PAIM.infrastructure.api.endpoints.auth_router",
-#             "PAIM.infrastructure.api.endpoints.client_router",
-#             "PAIM.infrastructure.api.endpoints.product_router",
-#
-#         ]
-#     )
-#
-#     db_session = providers.Factory(create_db_session)
-#
-#     unit_of_work = providers.Factory(
-#         ProductService,
-#         db_session,
-#     )
-#
-#     module_service = providers.Factory(
-#         ModuleService,
-#         unit_of_work,
-#     )
-#
-#     progress_service = providers.Factory(
-#         ProgressService,
-#         unit_of_work,
-#     )
-#
-#     user_service = providers.Factory(
-#         UserService,
-#         unit_of_work,
-#     )
-#
-#     push_client = providers.Factory(ExpoPushClient)
-#
-#     push_sender = providers.Factory(
-#         PushNotificationSender,
-#         unit_of_work,
-#         push_client,
-#     )
-#
-#     purchase_service = providers.Factory(
-#         PurchaseService,
-#         unit_of_work,
-#     )
-#
-#     authenticator = providers.Factory(Authenticator)
-#
-#     ranking_retriever = providers.Factory(
-#         RankingRetrieverMongo,
-#         db_session,
-#     )
-#
-#     ranking_evaluator = providers.Factory(
-#         RankingEvaluator,
-#         ranking_retriever,
-#     )
-#
-#     heart_renewal_service = providers.Factory(
-#         HeartRenewalService,
-#         unit_of_work,
-#     )
-#
-#     challenge_repo = providers.Factory(
-#         ChallengeRepositoryMongo,
-#         db_session,
-#     )
-#
-#     challenge_service = providers.Factory(
-#         ChallengeService,
-#         challenge_repo,
-#     )
-#
-#     modules_loader = providers.Factory(
-#         FileSystemModulesLoader,
-#         unit_of_work,
-#     )
+from dependency_injector import containers, providers
+
+from application.client.client_service import ClientService
+from application.product.product_service import ProductService
+from infrastructure.mongo.client_repository import ClientRepositoryMongo
+from infrastructure.mongo.product_repository import ProductRepositoryMongo
+
+class Container(containers.DeclarativeContainer):
+    """Dependency Injection Container."""
+
+    wiring_config = containers.WiringConfiguration(
+        modules=[
+            "infrastructure.api.endpoints.product_router",
+            "infrastructure.api.endpoints.client_router",
+
+        ]
+    )
+
+    # Repository Provider
+    product_repository = providers.Factory(ProductRepositoryMongo)
+    client_repository = providers.Factory(ClientRepositoryMongo)
+
+
+    # Service Provider
+    product_service = providers.Factory(
+        ProductService,
+        product_repo=product_repository,
+    )
+
+    client_service = providers.Factory(
+        ClientService,
+        client_repo=client_repository,
+    )

@@ -1,24 +1,36 @@
-import pytest
-from fastapi.testclient import TestClient
-from infrastructure.api.main import app
 from io import BytesIO
 from unittest.mock import patch
-import os
+
+import pytest
+from starlette.testclient import TestClient
+
+from infrastructure.api.main import app
+from infrastructure.containers import Container
+from application.product.product_service import ProductService
+from infrastructure.mongo.product_repository import ProductRepositoryMongo
 
 
-@pytest.fixture
-def client():
-    """Fixture creating a test client for FastAPI."""
+@pytest.fixture(scope="module")
+def test_container():
+    """Set up a test container with a test database."""
+    container = Container()
+
+    product_repository = ProductRepositoryMongo()
+    container.product_service.override(
+        ProductService(product_repo=product_repository)
+    )
+
+    return container
+
+
+@pytest.fixture(scope="module")
+def test_client(test_container):
+    """Fixture to create a test client with the container injected."""
+    app.container = test_container
     return TestClient(app)
 
 
-@pytest.fixture
-def test_image_path():
-    """Fixture returning the path to the test image file."""
-    return os.path.join(os.path.dirname(__file__), "test_images", "kartofel.jpeg")
-
-
-@pytest.fixture
+@pytest.fixture(scope="module")
 def product_data():
     """Fixture returning data for a test product."""
     return {
@@ -31,63 +43,40 @@ def product_data():
     }
 
 
-@pytest.fixture
-def mock_product_data():
-    """Fixture returning mock product data from the database."""
-    return {
-        "_id": "mocked_id",
-        "name": "Kartofelek",
-        "price": 100.0,
-        "country_of_origin": "Poland",
-        "description": "Ziemniaczek",
-        "fruit_or_vegetable": "Warzywo",
-        "expiry_date": "10.12.2025",
-        "imageId": "mocked_image_id"
-    }
-
-
 @pytest.mark.asyncio
-async def test_upload_product(client, test_image_path, product_data):
-    """Test uploading a product with an image."""
-    with open(test_image_path, "rb") as image_file:
-        file_data = image_file.read()
-
-    file = ("kartofel.jpeg", BytesIO(file_data), "image/jpeg")
-
-    response = client.post(
+async def test_upload_product_success(test_client, product_data, test_container):
+    """Test the full integration of the upload_product endpoint."""
+    response = test_client.post(
         "/api/upload",
         data=product_data,
-        files={"file": file}
+        files={"file": ("kartofel.jpeg", BytesIO(b"dummy image data"), "image/jpeg")}
     )
-
     assert response.status_code == 200
     response_json = response.json()
+    assert response_json["info"] == f"Product '{product_data['name']}' uploaded successfully"
 
-    assert "info" in response_json
-    assert "product_id" in response_json
-    assert response_json["info"] == "Product 'Kartofelek' uploaded successfully"
-
-    return response_json["product_id"]
-
+    product_repository = test_container.product_service()._product_repo
+    product = product_repository.get_product_by_id(response_json["product_id"])
+    assert product["name"] == product_data["name"]
+    assert product["price"] == product_data["price"]
 
 @pytest.mark.asyncio
-async def test_get_product(client, mock_product_data):
-    """Test retrieving product details."""
-    product_id = mock_product_data["_id"]
+async def test_get_product_not_found(test_client):
+    """Test retrieving a product that does not exist."""
+    non_existent_product_id = "non_existent_id"
 
-    # Mock the product repository
-    with patch("infrastructure.product.product_repository.get_product_from_db", return_value=mock_product_data):
-        response = client.get(f"/api/products/{product_id}")
+    with patch("infrastructure.mongo.product_repository.ProductRepositoryMongo.get_product_by_id", return_value=None):
+        response = test_client.get(f"/api/products/{non_existent_product_id}")
 
-        assert response.status_code == 200
+        assert response.status_code == 404
+        assert response.json()["detail"] == f"Product with ID {non_existent_product_id} not found"
 
-        data = response.json()
 
-        assert "product" in data
-        product = data["product"]
-        assert product["name"] == mock_product_data["name"]
-        assert float(product["price"]) == mock_product_data["price"]
-        assert product["country_of_origin"] == mock_product_data["country_of_origin"]
-        assert product["description"] == mock_product_data["description"]
-        assert product["fruit_or_vegetable"] == mock_product_data["fruit_or_vegetable"]
-        assert product["expiry_date"] == mock_product_data["expiry_date"]
+# @pytest.mark.asyncio
+# async def test_get_product_invalid_id(client):
+#     """Test retrieving a product with an invalid ID."""
+#     invalid_product_id = ObjectId("invalid_id")
+#
+#     response = client.get(f"/api/products/{invalid_product_id}")
+#
+#     assert response.status_code == 422
