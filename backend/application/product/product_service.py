@@ -20,7 +20,9 @@ class ProductService:
         image_data = await product_data.file.read()
 
         if not image_data:
-            raise HTTPException(status_code=400, detail="Image data is invalid or empty")
+            raise HTTPException(
+                status_code=400, detail="Image data is invalid or empty"
+            )
 
         product_id = self._product_repo.upload_product_to_db(
             name=product_data.name,
@@ -32,12 +34,16 @@ class ProductService:
             image_data=image_data,
         )
 
-        return {"info": f"Product '{product_data.name}' uploaded successfully", "product_id": product_id}
+        return {
+            "info": f"Product '{product_data.name}' uploaded successfully",
+            "product_id": product_id,
+        }
 
     def get_product(self, product_id: str):
         product = self._product_repo.get_product_by_id(product_id)
 
-        if not product: raise ProductNotFoundError(product_id)
+        if not product:
+            raise ProductNotFoundError(product_id)
 
         product_info = {
             "name": product["name"],
@@ -54,20 +60,24 @@ class ProductService:
     def get_image(self, product_id: str) -> Optional[StreamingResponse]:
         product = self._product_repo.get_product_by_id(product_id)
 
-        if not product: raise ProductNotFoundError(product_id)
+        if not product:
+            raise ProductNotFoundError(product_id)
 
         image_response = self.fetch_image_for_product(product, product_id)
         return image_response
 
-    def fetch_image_for_product(self, product: Product, product_id) -> StreamingResponse:
+    def fetch_image_for_product(
+        self, product: Product, product_id
+    ) -> StreamingResponse:
 
         image_data = self._product_repo.get_image_by_id(product["imageId"])
-        if not image_data: raise ProductImageNotFoundError(product_id)
+        if not image_data:
+            raise ProductImageNotFoundError(product_id)
 
         return StreamingResponse(
             image_data,
             media_type="image/jpeg",
             headers={
                 "Content-Disposition": f"attachment; filename={image_data.filename}"
-            }
+            },
         )

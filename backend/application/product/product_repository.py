@@ -9,14 +9,14 @@ class AbstractProductRepository(abc.ABC):
 
     @abc.abstractmethod
     def upload_product_to_db(
-            self,
-            name: str,
-            price: float,
-            country_of_origin: str,
-            description: str,
-            fruit_or_vegetable: str,
-            expiry_date: str,
-            image_data: bytes,
+        self,
+        name: str,
+        price: float,
+        country_of_origin: str,
+        description: str,
+        fruit_or_vegetable: str,
+        expiry_date: str,
+        image_data: bytes,
     ) -> str:
         pass
 

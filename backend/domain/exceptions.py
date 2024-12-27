@@ -20,6 +20,3 @@ class ProductNotFoundError(RepositoryError):
 class ProductImageNotFoundError(RepositoryError):
     def __init__(self, product_ID: str):
         super().__init__(f"Image for product with ID {product_ID} not found")
-
-
-

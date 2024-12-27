@@ -10,16 +10,17 @@ router = APIRouter()
 
 @router.post("/register")
 @inject
-async def upload_client(client_data: Client,
-                        client_service: ClientService = Depends(Provide[Container.client_service])
-                        ):
+async def upload_client(
+    client_data: Client,
+    client_service: ClientService = Depends(Provide[Container.client_service]),
+):
     return client_service.register_client(client_data)
 
 
 @router.get("/clients/{client_id}")
 @inject
 async def get_client(
-        client_id: str,
-        client_service: ClientService = Depends(Provide[Container.client_service])
+    client_id: str,
+    client_service: ClientService = Depends(Provide[Container.client_service]),
 ):
     return client_service.get_client(client_id)

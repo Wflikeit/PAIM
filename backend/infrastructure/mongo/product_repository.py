@@ -1,9 +1,7 @@
-import gridfs
-from pymongo import MongoClient
-from bson import ObjectId
-import os
-from dotenv import load_dotenv
 from typing import Optional
+
+import gridfs
+from bson import ObjectId
 
 from application.product.product_repository import AbstractProductRepository
 from infrastructure.mongo.mongo_client import MongoDBClient
@@ -15,7 +13,8 @@ class ProductRepositoryMongo(AbstractProductRepository):
         self.db = MongoDBClient.get_database("product")
         self.fs = gridfs.GridFS(self.db)
 
-    def upload_product_to_db(self,
+    def upload_product_to_db(
+        self,
         name: str,
         price: float,
         country_of_origin: str,
@@ -33,7 +32,7 @@ class ProductRepositoryMongo(AbstractProductRepository):
             "description": description,
             "fruit_or_vegetable": fruit_or_vegetable,
             "imageId": str(file_id),
-            "expiry_date": expiry_date
+            "expiry_date": expiry_date,
         }
 
         product_collection = self.db["products"]
@@ -46,7 +45,5 @@ class ProductRepositoryMongo(AbstractProductRepository):
         product = product_collection.find_one({"_id": ObjectId(product_id)})
         return product
 
-
     def get_image_by_id(self, image_id: str) -> Optional[gridfs.GridOut]:
         return self.fs.get(ObjectId(image_id))
-

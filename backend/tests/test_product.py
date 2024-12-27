@@ -17,9 +17,7 @@ def test_container():
     container = Container()
 
     product_repository = ProductRepositoryMongo()
-    container.product_service.override(
-        ProductService(product_repo=product_repository)
-    )
+    container.product_service.override(ProductService(product_repo=product_repository))
 
     return container
 
@@ -40,7 +38,7 @@ def product_data():
         "country_of_origin": "Poland",
         "description": "Ziemniaczek",
         "fruit_or_vegetable": "Warzywo",
-        "expiry_date": "10.12.2025"
+        "expiry_date": "10.12.2025",
     }
 
 
@@ -55,8 +53,9 @@ def mock_product_data():
         "description": "Ziemniaczek",
         "fruit_or_vegetable": "Warzywo",
         "expiry_date": "10.12.2025",
-        "imageId": "mocked_image_id"
+        "imageId": "mocked_image_id",
     }
+
 
 @pytest.fixture
 def mocked_product_repository():
@@ -70,17 +69,21 @@ def mocked_product_repository():
 # │   Client  │ → │   API    │ → │   Service  │ → │ Repository│
 # └───────────┘   └──────────┘   └────────────┘   └───────────┘
 
+
 @pytest.mark.asyncio
 async def test_upload_product_success(test_client, product_data, test_container):
     """Test the full integration of the upload_product endpoint."""
     response = test_client.post(
         "/api/upload",
         data=product_data,
-        files={"file": ("kartofel.jpeg", BytesIO(b"dummy image data"), "image/jpeg")}
+        files={"file": ("kartofel.jpeg", BytesIO(b"dummy image data"), "image/jpeg")},
     )
     assert response.status_code == 200
     response_json = response.json()
-    assert response_json["info"] == f"Product '{product_data['name']}' uploaded successfully"
+    assert (
+        response_json["info"]
+        == f"Product '{product_data['name']}' uploaded successfully"
+    )
 
     product_repository = test_container.product_service()._product_repo
     product = product_repository.get_product_by_id(response_json["product_id"])
@@ -94,16 +97,23 @@ async def test_upload_product_success(test_client, product_data, test_container)
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
 
+
 @pytest.mark.asyncio
 async def test_get_product_not_found(test_client):
     """Test retrieving a product that does not exist."""
     non_existent_product_id = "non_existent_id"
 
-    with patch("infrastructure.mongo.product_repository.ProductRepositoryMongo.get_product_by_id", return_value=None):
+    with patch(
+        "infrastructure.mongo.product_repository.ProductRepositoryMongo.get_product_by_id",
+        return_value=None,
+    ):
         response = test_client.get(f"/api/products/{non_existent_product_id}")
 
         assert response.status_code == 404
-        assert response.json()["error"] == f"Product with ID {non_existent_product_id} not found"
+        assert (
+            response.json()["error"]
+            == f"Product with ID {non_existent_product_id} not found"
+        )
 
 
 # @pytest.mark.asyncio
@@ -119,7 +129,6 @@ async def test_get_product_not_found(test_client):
 #
 #     assert response.status_code == 404
 #     assert response.json()["detail"] == f"Image for product {product_id} not found"
-
 
 
 # 🧩 Unit Test

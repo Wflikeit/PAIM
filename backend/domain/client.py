@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class Client(BaseModel):
     email: str
     payment_address: str

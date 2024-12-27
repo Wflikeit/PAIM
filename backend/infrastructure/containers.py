@@ -5,6 +5,7 @@ from application.product.product_service import ProductService
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
 
+
 class Container(containers.DeclarativeContainer):
     """Dependency Injection Container."""
 
@@ -12,14 +13,12 @@ class Container(containers.DeclarativeContainer):
         modules=[
             "infrastructure.api.endpoints.product_router",
             "infrastructure.api.endpoints.client_router",
-
         ]
     )
 
     # Repository Provider
     product_repository = providers.Factory(ProductRepositoryMongo)
     client_repository = providers.Factory(ClientRepositoryMongo)
-
 
     # Service Provider
     product_service = providers.Factory(

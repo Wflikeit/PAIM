@@ -3,6 +3,7 @@ import threading
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
+
 class MongoDBClient:
     _instance = None
     _lock = threading.Lock()

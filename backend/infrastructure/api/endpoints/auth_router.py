@@ -11,7 +11,7 @@ def get_current_user(request: Request):
     if not user_email or user_email not in fake_users_db:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: unauthorized user"
+            detail="Access forbidden: unauthorized user",
         )
     return fake_users_db[user_email]
 
@@ -20,7 +20,7 @@ def is_admin(user: dict = Depends(get_current_user)):
     if user.get("role") != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: user is not an admin"
+            detail="Access forbidden: user is not an admin",
         )
     return user
 

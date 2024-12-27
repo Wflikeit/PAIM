@@ -1,26 +1,29 @@
-from domain.exceptions import ProductNotFoundError, RepositoryError
-from infrastructure.api.endpoints.product_router import router as product_router
-from infrastructure.api.endpoints.client_router import router as client_router
-from infrastructure.api.endpoints.auth_router import router as admin_router
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, HTTPException, Request, Depends
+from flask import Request
 
+from domain.exceptions import RepositoryError
+from infrastructure.api.endpoints.auth_router import router as admin_router
+from infrastructure.api.endpoints.client_router import router as client_router
+from infrastructure.api.endpoints.product_router import router as product_router
 from infrastructure.api.exception_handler import repository_exception_handler
 from infrastructure.containers import Container
 
-#
-# def check_json_content_type(request: Request):
-#     if request.method in ["POST", "PUT", "PATCH"]:
-#         content_type = request.headers.get("Content-Type", "")
-#
-#         if "multipart/form-data" in content_type:
-#             return
-#
-#         if content_type != "application/json":
-#             raise HTTPException(status_code=400, detail="Content-Type must be application/json")
-#
-# app = FastAPI(dependencies=[Depends(check_json_content_type)])
-app = FastAPI()
+
+def check_json_content_type(request: Request):
+    if request.method in ["POST", "PUT", "PATCH"]:
+        content_type = request.headers.get("Content-Type", "")
+
+        if "multipart/form-data" in content_type:
+            return
+
+        if content_type != "application/json":
+            raise HTTPException(
+                status_code=400, detail="Content-Type must be application/json"
+            )
+
+
+app = FastAPI(dependencies=[Depends(check_json_content_type)])
 
 container = Container()
 
