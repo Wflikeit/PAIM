@@ -1,3 +1,5 @@
+import os
+
 import jwt
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer
