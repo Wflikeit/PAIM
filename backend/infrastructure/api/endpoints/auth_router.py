@@ -1,19 +1,43 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi import Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from jwt import decode, InvalidTokenError
+from path.to.MongoDBClient import MongoDBClient
 
 router = APIRouter()
 
-fake_users_db = {"admin@gmail.com": {"email": "admin@gmail.com", "role": "admin"}}
+SECRET_KEY = "your-secret-key"
+ALGORITHM = "HS256"
 
+# Get MongoDB database and users collection
+db = MongoDBClient.get_database("your_database_name")
+users_collection = db["users"]
 
 def get_current_user(request: Request):
-    user_email = request.headers.get("X-User-Email")
-    if not user_email or user_email not in fake_users_db:
+    token = request.headers.get("Authorization")
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: unauthorized user",
+            detail="Access forbidden: missing token",
         )
-    return fake_users_db[user_email]
+    try:
+        payload = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access forbidden: invalid token",
+            )
+        user = users_collection.find_one({"email": email})
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access forbidden: user not found",
+            )
+        return user
+    except InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden: invalid token",
+        )
 
 
 def is_admin(user: dict = Depends(get_current_user)):
@@ -27,10 +51,13 @@ def is_admin(user: dict = Depends(get_current_user)):
 
 @router.get("/")
 async def admin_home(user: dict = Depends(is_admin)):
-    return {"message": "Welcome to the Admin Page"}
+    return {"message": f"Welcome, {user['email']}! You are viewing the Admin Page."}
 
 
 @router.get("/stats")
 async def admin_stats(user: dict = Depends(is_admin)):
-    stats = {"users": 100, "products": 50}
+    stats = {
+        "users": users_collection.count_documents({}),
+        "products": db["products"].count_documents({}),
+    }
     return stats

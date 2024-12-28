@@ -1,6 +1,5 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from flask import Request
 
 from domain.exceptions import RepositoryError
 from infrastructure.api.endpoints.auth_router import router as admin_router
