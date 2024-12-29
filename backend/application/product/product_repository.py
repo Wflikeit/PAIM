@@ -1,29 +1,23 @@
 import abc
 from typing import Optional
-import gridfs
 
+from application.requests import ProductResponse
 from domain.product import Product
 
 
 class AbstractProductRepository(abc.ABC):
 
     @abc.abstractmethod
-    def upload_product_to_db(
+    async def upload_product_to_db(
         self,
-        name: str,
-        price: float,
-        country_of_origin: str,
-        description: str,
-        fruit_or_vegetable: str,
-        expiry_date: str,
-        image_data: bytes,
-    ) -> str:
+        product: Product,
+    ) -> ProductResponse:
         pass
 
-    @abc.abstractmethod
-    def get_product_by_id(self, product_id: str) -> Product:
-        pass
+    # @abc.abstractmethod
+    # def get_product_by_id(self, product_id: str) -> ProductResponse:
+    #     pass
 
-    @abc.abstractmethod
-    def get_image_by_id(self, image_id: str) -> Optional[gridfs.GridOut]:
-        pass
+    # @abc.abstractmethod
+    # def get_image_by_id(self, image_id: str) -> Optional[gridfs.GridOut]:
+    #     pass

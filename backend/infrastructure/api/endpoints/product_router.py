@@ -4,18 +4,19 @@ from starlette.datastructures import FormData
 from starlette.requests import Request
 
 from application.product.product_service import ProductService
+from application.requests import ProductResponse
 from infrastructure.containers import Container
 from domain.product import Product
 
 router = APIRouter()
 
 
-@router.post("/upload")
+@router.post("/upload", response_model=ProductResponse)
 @inject
 async def upload_product_endpoint(
         request: Request,
         product_service: ProductService = Depends(Provide[Container.product_service]),
-):
+) -> ProductResponse:
     data = await request.form()
     file = data["file"]
 
@@ -23,8 +24,7 @@ async def upload_product_endpoint(
         raise HTTPException(status_code=400, detail="Only JPEG files are allowed")
 
     product = Product(**data)
-    response = await product_service.upload_product(product)
-    return response
+    return await product_service.upload_product(product)
 
 
 @router.get("/products/{product_id}")
