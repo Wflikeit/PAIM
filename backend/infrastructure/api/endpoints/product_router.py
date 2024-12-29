@@ -33,8 +33,7 @@ async def upload_product_endpoint(
         file=file,
     )
 
-    response = await product_service.upload_product(product_data)
-    return response
+    return await product_service.upload_product(product_data)
 
 
 @router.get("/products/{product_id}")

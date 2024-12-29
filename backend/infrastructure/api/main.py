@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from flask import Request
 
 from domain.exceptions import RepositoryError
 from infrastructure.api.endpoints.auth_router import router as admin_router
@@ -10,7 +9,7 @@ from infrastructure.api.exception_handler import repository_exception_handler
 from infrastructure.containers import Container
 
 
-def check_json_content_type(request: Request):
+def check_json_content_type(request):
     if request.method in ["POST", "PUT", "PATCH"]:
         content_type = request.headers.get("Content-Type", "")
 
@@ -47,3 +46,8 @@ app.include_router(client_router, prefix="/api", tags=["clients"])
 app.include_router(admin_router, prefix="/admin", tags=["admin"])
 
 app.add_exception_handler(RepositoryError, repository_exception_handler)
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=8002)

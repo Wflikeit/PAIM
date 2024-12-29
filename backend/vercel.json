@@ -1,9 +1,0 @@
-{
-  "version": 2,
-  "builds": [
-    { "src": "pyproject.toml", "use": "@vercel/python" }
-  ],
-  "routes": [
-    { "src": "/(.*)", "dest": "application/main.py" }
-  ]
-}
