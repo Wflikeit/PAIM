@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 
 from application.product.product_service import ProductService
 from application.requests import ProductResponse
+from domain.exceptions import ProductNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
@@ -170,11 +171,8 @@ async def test_upload_product_success(
 def test_get_product_not_found(test_client, mocked_product_repository, test_container):
     """Test retrieving a product that does not exist."""
     non_existent_product_id = str(ObjectId())
-    # currently works only with MongoDB
-    # TODO: fix rasing ProductNotFoundError with mocked repository
-    test_container.product_service.override(
-        ProductService(product_repo=ProductRepositoryMongo())
-    )
+
+    mocked_product_repository.get_product_by_id.side_effect = ProductNotFoundError(non_existent_product_id)
 
     response = test_client.get(f"/api/products/{non_existent_product_id}")
 

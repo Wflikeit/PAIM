@@ -6,6 +6,7 @@ from starlette.testclient import TestClient
 
 from application.client.client_service import ClientService
 from application.requests import ClientResponse
+from domain.exceptions import ClientNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
@@ -95,11 +96,7 @@ async def test_get_client_success():
 async def test_get_product_not_found():
     """Test retrieving a client that does not exist."""
     non_existent_client_id = str(ObjectId())
-    # currently works only with MongoDB
-    # TODO: fix rasing ClientNotFoundError with mocked repository
-    container.client_service.override(
-        ClientService(client_repo=ClientRepositoryMongo())
-    )
+    mocked_client_repository.get_client_db.side_effect = ClientNotFoundError(non_existent_client_id)
 
     response = test_client.get(f"/api/clients/{non_existent_client_id}")
 
