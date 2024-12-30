@@ -13,69 +13,36 @@ from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
 
+# Initialize application container and override dependencies with mocked repository
+container = Container()
+mocked_product_repository = AsyncMock(ProductRepositoryMongo)
+container.product_service.override(
+    ProductService(product_repo=mocked_product_repository)
+)
+app.container = container
+test_client = TestClient(app)
 
-# TODO: rewrite pytest.fixtures to global variables so it runs faster
-@pytest.fixture(scope="module")
-def test_container(mocked_product_repository):
-    """Set up a test container with a test database."""
-    container = Container()
-
-    container.product_service.override(
-        ProductService(product_repo=mocked_product_repository)
-    )
-
-    return container
-
-
-@pytest.fixture(scope="module")
-def test_client(test_container):
-    """Fixture to create a test client with the container injected."""
-    app.container = test_container
-    return TestClient(app)
-
-
-@pytest.fixture(scope="module")
-def product_data():
-    """Fixture returning data for a test product."""
-    return {
-        "name": "Kartofelek",
-        "price": 100.0,
-        "country_of_origin": "Poland",
-        "description": "Ziemniaczek",
-        "fruit_or_vegetable": "Warzywo",
-        "expiry_date": "10.12.2025",
-    }
-
-
-@pytest.fixture(scope="module")
-def binary_file_data():
-    """Fixture returning sample binary data."""
-    return b"\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00"
-
-
-@pytest.fixture(scope="module")
-def mocked_product_data(binary_file_data):
-    """Fixture returning mock product data from the database."""
-    base64_file_data = base64.b64encode(binary_file_data).decode(
-        "utf-8"
-    )  # Convert to Base64
-
-    return {
-        "id": str(ObjectId()),
-        "name": "Kartofelek",
-        "price": 100.0,
-        "country_of_origin": "Poland",
-        "description": "Ziemniaczek",
-        "fruit_or_vegetable": "Warzywo",
-        "expiry_date": "10.12.2025",
-        "file": base64_file_data,
-    }
-
-
-@pytest.fixture(scope="module")
-def mocked_product_repository():
-    """Fixture returning a mocked ProductRepositoryMongo."""
-    return AsyncMock(ProductRepositoryMongo)
+# Define mocked product data for testing
+product_data = {
+    "name": "Kartofelek",
+    "price": 100.0,
+    "country_of_origin": "Poland",
+    "description": "Ziemniaczek",
+    "fruit_or_vegetable": "Warzywo",
+    "expiry_date": "10.12.2025",
+}
+binary_file_data = b"\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00"
+base64_file_data = base64.b64encode(binary_file_data).decode("utf-8")
+mocked_product_data = {
+    "id": str(ObjectId()),
+    "name": "Kartofelek",
+    "price": 100.0,
+    "country_of_origin": "Poland",
+    "description": "Ziemniaczek",
+    "fruit_or_vegetable": "Warzywo",
+    "expiry_date": "10.12.2025",
+    "file": base64_file_data,
+}
 
 
 # 🔗 Integration Test
@@ -84,13 +51,7 @@ def mocked_product_repository():
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
-async def test_get_product_successful(
-    test_client,
-    mocked_product_data,
-    mocked_product_repository,
-    binary_file_data,
-    test_container,
-):
+async def test_get_product_successful():
     """Test the integration of the /products/{product_id} endpoint."""
     product_id = mocked_product_data["id"]
     mocked_product_response = ProductResponse(**mocked_product_data)
@@ -122,14 +83,7 @@ async def test_get_product_successful(
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
-async def test_upload_product_success(
-    test_container,
-    test_client,
-    product_data,
-    mocked_product_repository,
-    mocked_product_data,
-    binary_file_data,
-):
+async def test_upload_product_success():
     """Test the full integration of the /upload endpoint."""
 
     # Uncomment to use real MongoDB
@@ -142,7 +96,6 @@ async def test_upload_product_success(
         mocked_product_response_data
     )
 
-    base64_file_data = mocked_product_data["file"]
     file_data = BytesIO(base64.b64decode(base64_file_data))
 
     response = test_client.post(
@@ -168,11 +121,13 @@ async def test_upload_product_success(
 # ┌───────────┐   ┌──────────┐   ┌────────────┐
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
-def test_get_product_not_found(test_client, mocked_product_repository, test_container):
+def test_get_product_not_found():
     """Test retrieving a product that does not exist."""
     non_existent_product_id = str(ObjectId())
 
-    mocked_product_repository.get_product_by_id.side_effect = ProductNotFoundError(non_existent_product_id)
+    mocked_product_repository.get_product_by_id.side_effect = ProductNotFoundError(
+        non_existent_product_id
+    )
 
     response = test_client.get(f"/api/products/{non_existent_product_id}")
 

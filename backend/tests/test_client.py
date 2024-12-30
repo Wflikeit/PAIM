@@ -96,7 +96,9 @@ async def test_get_client_success():
 async def test_get_product_not_found():
     """Test retrieving a client that does not exist."""
     non_existent_client_id = str(ObjectId())
-    mocked_client_repository.get_client_db.side_effect = ClientNotFoundError(non_existent_client_id)
+    mocked_client_repository.get_client_db.side_effect = ClientNotFoundError(
+        non_existent_client_id
+    )
 
     response = test_client.get(f"/api/clients/{non_existent_client_id}")
 
