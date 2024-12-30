@@ -1,4 +1,3 @@
-import gridfs
 from bson import ObjectId
 
 from application.client.client_repository import AbstractClientRepository
@@ -9,7 +8,6 @@ from infrastructure.mongo.mongo_client import MongoDBClient
 class ClientRepositoryMongo(AbstractClientRepository):
     def __init__(self):
         self.db = MongoDBClient.get_database("client")
-        self.fs = gridfs.GridFS(self.db)
 
     def register_client_db(self, client: Client) -> str:
         client_dict = client.model_dump(by_alias=True)

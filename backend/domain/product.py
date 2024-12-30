@@ -12,5 +12,3 @@ class Product(BaseModel):
     fruit_or_vegetable: str
     expiry_date: str
     file: Optional[UploadFile] = None
-
-

@@ -9,4 +9,4 @@ class ProductResponse(BaseModel):
     description: str
     fruit_or_vegetable: str
     expiry_date: str
-    file: bytes | None
+    file: str
