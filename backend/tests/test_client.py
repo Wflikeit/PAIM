@@ -48,6 +48,7 @@ async def test_register_client_success():
     mocked_client_repository.register_client_db.return_value = mock_client_data["_id"]
 
     response = test_client.post("/api/register", data=client_data)
+
     assert response.status_code == 200
     response_json = response.json()
     assert (

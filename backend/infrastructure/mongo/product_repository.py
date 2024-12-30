@@ -10,7 +10,7 @@ from infrastructure.mongo.mongo_client import MongoDBClient
 class ProductRepositoryMongo(AbstractProductRepository):
 
     def __init__(self):
-        self.db = MongoDBClient.get_database("product")
+        self.db = MongoDBClient.get_database("shop_db")
 
     async def upload_product_to_db(self, product: Product) -> ProductResponse:
         product_collection = self.db["products"]
