@@ -5,6 +5,7 @@ from bson import ObjectId
 from starlette.testclient import TestClient
 
 from application.client.client_service import ClientService
+from application.requests import ClientResponse
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
@@ -26,7 +27,7 @@ client_data = {
 }
 
 mock_client_data = {
-    "_id": str(ObjectId()),
+    "id": str(ObjectId()),
     "email": "test@mail.com",
     "payment_address": "mock_payment_address",
     "delivery_address": "mock_delivery_address",
@@ -35,6 +36,8 @@ mock_client_data = {
     "password": "mock_password",
     "company_name": "mock_company_name",
 }
+
+mock_client_response = ClientResponse(**mock_client_data)
 
 
 # 🔗 Integration Test
@@ -45,16 +48,18 @@ mock_client_data = {
 @pytest.mark.asyncio
 async def test_register_client_success():
     """Test the integration of the /register endpoint."""
-    mocked_client_repository.register_client_db.return_value = mock_client_data["_id"]
+    mocked_client_repository.register_client_db.return_value = mock_client_response
 
     response = test_client.post("/api/register", data=client_data)
 
     assert response.status_code == 200
     response_json = response.json()
-    assert (
-        response_json["info"]
-        == f"Client '{client_data["email"]}' registered successfully"
-    )
+    assert response_json["email"] == mock_client_data["email"]
+    assert response_json["payment_address"] == mock_client_data["payment_address"]
+    assert response_json["delivery_address"] == mock_client_data["delivery_address"]
+    assert response_json["nip"] == mock_client_data["nip"]
+    assert response_json["orders"] == mock_client_data["orders"]
+    assert response_json["company_name"] == mock_client_data["company_name"]
 
 
 # 🔗 Integration Test
@@ -65,17 +70,20 @@ async def test_register_client_success():
 @pytest.mark.asyncio
 async def test_get_client_success():
     """Test the integration of the /clients/{client_id} endpoint."""
-    client_id = mock_client_data["_id"]
-    mocked_client_repository.get_client_db.return_value = mock_client_data
+    client_id = mock_client_data["id"]
+    mocked_client_repository.get_client_db.return_value = mock_client_response
 
     response = test_client.get(f"/api/clients/{client_id}")
 
     assert response.status_code == 200
-    data = response.json()
-    assert "client" in data
-    client = data["client"]
-    assert client["email"] == client_data["email"]
-    assert client["payment_address"] == client_data["payment_address"]
+    response_json = response.json()
+    assert response_json["id"] == client_id
+    assert response_json["email"] == mock_client_data["email"]
+    assert response_json["payment_address"] == mock_client_data["payment_address"]
+    assert response_json["delivery_address"] == mock_client_data["delivery_address"]
+    assert response_json["nip"] == mock_client_data["nip"]
+    assert response_json["orders"] == mock_client_data["orders"]
+    assert response_json["company_name"] == mock_client_data["company_name"]
 
 
 # 🔗 Integration Test

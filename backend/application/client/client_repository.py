@@ -1,14 +1,14 @@
 import abc
-from typing import Optional
 
+from application.requests import ClientResponse
 from domain.client import Client
 
 
 class AbstractClientRepository(abc.ABC):
     @abc.abstractmethod
-    def register_client_db(self, client: Client) -> str:
+    def register_client_db(self, client: Client) -> ClientResponse:
         pass
 
     @abc.abstractmethod
-    def get_client_db(self, client_id: str) -> Optional[dict]:
+    def get_client_db(self, client_id: str) -> ClientResponse:
         pass

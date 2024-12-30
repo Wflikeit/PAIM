@@ -84,18 +84,23 @@ def mocked_product_repository():
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
 async def test_get_product_successful(
-    test_client, mocked_product_data, mocked_product_repository
+    test_client,
+    mocked_product_data,
+    mocked_product_repository,
+    binary_file_data,
+    test_container,
 ):
     """Test the integration of the /products/{product_id} endpoint."""
-    product_id = ObjectId(mocked_product_data["id"])
-    mocked_product_repository.get_product_by_id.return_value = ProductResponse(
-        **mocked_product_data
-    )
+    product_id = mocked_product_data["id"]
+    mocked_product_response = ProductResponse(**mocked_product_data)
+    mocked_product_response.file = str(binary_file_data)
+    mocked_product_repository.get_product_by_id.return_value = mocked_product_response
 
     response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
     response_json = response.json()
+    assert response_json["id"] == product_id
     assert response_json["name"] == mocked_product_data["name"]
     assert float(response_json["price"]) == mocked_product_data["price"]
     assert (
@@ -106,7 +111,8 @@ async def test_get_product_successful(
         response_json["fruit_or_vegetable"] == mocked_product_data["fruit_or_vegetable"]
     )
     assert response_json["expiry_date"] == mocked_product_data["expiry_date"]
-    assert response_json["file"] == mocked_product_data["file"]
+    response_file_base64 = base64.b64encode(eval(response_json["file"])).decode("utf-8")
+    assert response_file_base64 == mocked_product_data["file"]
 
 
 # 🔗 Integration Test

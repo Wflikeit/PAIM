@@ -10,3 +10,13 @@ class ProductResponse(BaseModel):
     fruit_or_vegetable: str
     expiry_date: str
     file: str
+
+
+class ClientResponse(BaseModel):
+    id: str
+    email: str
+    payment_address: str
+    delivery_address: str
+    nip: str
+    orders: str
+    company_name: str
