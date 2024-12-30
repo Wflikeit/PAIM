@@ -8,12 +8,12 @@ from starlette.testclient import TestClient
 
 from application.product.product_service import ProductService
 from application.requests import ProductResponse
-from domain.exceptions import ProductNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
 
 
+# TODO: rewrite pytest.fixtures to global variables so it runs faster
 @pytest.fixture(scope="module")
 def test_container(mocked_product_repository):
     """Set up a test container with a test database."""
@@ -44,6 +44,7 @@ def product_data():
         "fruit_or_vegetable": "Warzywo",
         "expiry_date": "10.12.2025",
     }
+
 
 @pytest.fixture(scope="module")
 def binary_file_data():
@@ -83,11 +84,13 @@ def mocked_product_repository():
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
 async def test_get_product_successful(
-        test_client, mocked_product_data, mocked_product_repository
+    test_client, mocked_product_data, mocked_product_repository
 ):
     """Test the integration of the /products/{product_id} endpoint."""
     product_id = ObjectId(mocked_product_data["id"])
-    mocked_product_repository.get_product_by_id.return_value = ProductResponse(**mocked_product_data)
+    mocked_product_repository.get_product_by_id.return_value = ProductResponse(
+        **mocked_product_data
+    )
 
     response = test_client.get(f"/api/products/{product_id}")
 
@@ -95,9 +98,13 @@ async def test_get_product_successful(
     response_json = response.json()
     assert response_json["name"] == mocked_product_data["name"]
     assert float(response_json["price"]) == mocked_product_data["price"]
-    assert response_json["country_of_origin"] == mocked_product_data["country_of_origin"]
+    assert (
+        response_json["country_of_origin"] == mocked_product_data["country_of_origin"]
+    )
     assert response_json["description"] == mocked_product_data["description"]
-    assert response_json["fruit_or_vegetable"] == mocked_product_data["fruit_or_vegetable"]
+    assert (
+        response_json["fruit_or_vegetable"] == mocked_product_data["fruit_or_vegetable"]
+    )
     assert response_json["expiry_date"] == mocked_product_data["expiry_date"]
     assert response_json["file"] == mocked_product_data["file"]
 
@@ -109,12 +116,12 @@ async def test_get_product_successful(
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
 async def test_upload_product_success(
-        test_container,
-        test_client,
-        product_data,
-        mocked_product_repository,
-        mocked_product_data,
-        binary_file_data
+    test_container,
+    test_client,
+    product_data,
+    mocked_product_repository,
+    mocked_product_data,
+    binary_file_data,
 ):
     """Test the full integration of the /upload endpoint."""
 
@@ -124,7 +131,9 @@ async def test_upload_product_success(
     # )
     mocked_product_response_data = ProductResponse(**mocked_product_data)
     mocked_product_response_data.file = str(binary_file_data)
-    mocked_product_repository.upload_product_to_db.return_value = mocked_product_response_data
+    mocked_product_repository.upload_product_to_db.return_value = (
+        mocked_product_response_data
+    )
 
     base64_file_data = mocked_product_data["file"]
     file_data = BytesIO(base64.b64decode(base64_file_data))
@@ -157,9 +166,14 @@ def test_get_product_not_found(test_client, mocked_product_repository, test_cont
     non_existent_product_id = str(ObjectId())
     # currently works only with MongoDB
     # TODO: fix rasing ProductNotFoundError with mocked repository
-    test_container.product_service.override(ProductService(product_repo=ProductRepositoryMongo()))
+    test_container.product_service.override(
+        ProductService(product_repo=ProductRepositoryMongo())
+    )
 
     response = test_client.get(f"/api/products/{non_existent_product_id}")
 
     assert response.status_code == 404
-    assert response.json()["error"] == f"Product with ID {non_existent_product_id} not found"
+    assert (
+        response.json()["error"]
+        == f"Product with ID {non_existent_product_id} not found"
+    )
