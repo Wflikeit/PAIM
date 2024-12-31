@@ -93,7 +93,7 @@ async def test_get_client_success():
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
-async def test_get_product_not_found():
+async def test_get_client_not_found(mocked_client_repository, test_client):
     """Test retrieving a client that does not exist."""
     non_existent_client_id = str(ObjectId())
     mocked_client_repository.get_client_db.side_effect = ClientNotFoundError(
