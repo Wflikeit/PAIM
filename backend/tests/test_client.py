@@ -11,34 +11,63 @@ from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
 
-container = Container()
-mocked_client_repository = AsyncMock(ClientRepositoryMongo)
-container.client_service.override(ClientService(client_repo=mocked_client_repository))
-app.container = container
-test_client = TestClient(app)
 
-client_data = {
-    "email": "test@mail.com",
-    "payment_address": "mock_payment_address",
-    "delivery_address": "mock_delivery_address",
-    "nip": "0123456789",
-    "orders": "mock_orders",
-    "password": "mock_password",
-    "company_name": "mock_company_name",
-}
+@pytest.fixture(scope="module")
+def test_container(mocked_client_repository):
+    """Set up a test container with a test database."""
+    container = Container()
+    container.client_service.override(
+        ClientService(client_repo=mocked_client_repository)
+    )
+    return container
 
-mock_client_data = {
-    "id": str(ObjectId()),
-    "email": "test@mail.com",
-    "payment_address": "mock_payment_address",
-    "delivery_address": "mock_delivery_address",
-    "nip": "0123456789",
-    "orders": "mock_orders",
-    "password": "mock_password",
-    "company_name": "mock_company_name",
-}
 
-mock_client_response = ClientResponse(**mock_client_data)
+@pytest.fixture(scope="module")
+def test_client(test_container):
+    """Fixture to create a test client with the container injected."""
+    app.container = test_container
+    return TestClient(app)
+
+
+@pytest.fixture(scope="module")
+def mocked_client_repository():
+    """Fixture returning a mocked ClientRepositoryMongo."""
+    return AsyncMock(ClientRepositoryMongo)
+
+
+@pytest.fixture(scope="module")
+def client_data():
+    """Fixture returning data for a test client."""
+    return {
+        "email": "test@mail.com",
+        "payment_address": "mock_payment_address",
+        "delivery_address": "mock_delivery_address",
+        "nip": "0123456789",
+        "orders": "mock_orders",
+        "password": "mock_password",
+        "company_name": "mock_company_name",
+    }
+
+
+@pytest.fixture(scope="module")
+def mock_client_data():
+    """Fixture returning mock client data from the database."""
+    return {
+        "id": str(ObjectId()),
+        "email": "test@mail.com",
+        "payment_address": "mock_payment_address",
+        "delivery_address": "mock_delivery_address",
+        "nip": "0123456789",
+        "orders": "mock_orders",
+        "password": "mock_password",
+        "company_name": "mock_company_name",
+    }
+
+
+@pytest.fixture(scope="module")
+def mock_client_response(mock_client_data):
+    """Fixture returning a mock client response."""
+    return ClientResponse(**mock_client_data)
 
 
 # 🔗 Integration Test
@@ -47,14 +76,18 @@ mock_client_response = ClientResponse(**mock_client_data)
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
-async def test_register_client_success():
-    """Test the integration of the /register endpoint."""
-    mocked_client_repository.register_client_db.return_value = mock_client_response
+async def test_get_client_success(
+    mock_client_data, mocked_client_repository, test_client, mock_client_response
+):
+    """Test the integration of the /clients/{client_id} endpoint."""
+    client_id = mock_client_data["id"]
+    mocked_client_repository.get_client_db.return_value = mock_client_response
 
-    response = test_client.post("/api/register", data=client_data)
+    response = test_client.get(f"/api/clients/{client_id}")
 
     assert response.status_code == 200
     response_json = response.json()
+    assert response_json["id"] == client_id
     assert response_json["email"] == mock_client_data["email"]
     assert response_json["payment_address"] == mock_client_data["payment_address"]
     assert response_json["delivery_address"] == mock_client_data["delivery_address"]
@@ -69,16 +102,20 @@ async def test_register_client_success():
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
-async def test_get_client_success():
-    """Test the integration of the /clients/{client_id} endpoint."""
-    client_id = mock_client_data["id"]
-    mocked_client_repository.get_client_db.return_value = mock_client_response
+async def test_register_client_success(
+    mocked_client_repository,
+    test_client,
+    client_data,
+    mock_client_response,
+    mock_client_data,
+):
+    """Test the integration of the /register endpoint."""
+    mocked_client_repository.register_client_db.return_value = mock_client_response
 
-    response = test_client.get(f"/api/clients/{client_id}")
+    response = test_client.post("/api/register", data=client_data)
 
     assert response.status_code == 200
     response_json = response.json()
-    assert response_json["id"] == client_id
     assert response_json["email"] == mock_client_data["email"]
     assert response_json["payment_address"] == mock_client_data["payment_address"]
     assert response_json["delivery_address"] == mock_client_data["delivery_address"]
