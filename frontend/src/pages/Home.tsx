@@ -26,6 +26,7 @@ const ProductsList: React.FC = () => {
           height: "100vh",
           backgroundColor: "white",
           marginTop: "16px",
+          minWidth: "fit-content",
         }}
       >
         <Typography
