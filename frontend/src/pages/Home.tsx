@@ -1,6 +1,6 @@
 import useProducts from "../hooks/useProducts";
 import ProductCard from "../components/ProductCard";
-import { Box, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 
 const ProductsList: React.FC = () => {
   const { products, loading, error } = useProducts();
@@ -12,56 +12,56 @@ const ProductsList: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <Box
-        sx={{
-          width: "10%",
-          borderRight: "1px solid #ddd",
-          padding: "16px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          height: "100vh",
-          backgroundColor: "white",
-          marginTop: "16px",
-          minWidth: "fit-content",
-        }}
-      >
-        <Typography
-          variant="h4"
-          sx={{
-            color: "black",
-            marginBottom: "8px",
-            paddingTop: "45px",
-          }}
-        >
-          Categories
-        </Typography>
-        <List>
-          {categories.map((category) => (
-            <ListItem
-              key={category}
-              sx={{
-                padding: "8px 0",
-                backgroundColor: "transparent",
-                "&:hover": {
-                  backgroundColor: "#e0e0e0",
-                },
-              }}
-            >
-              <ListItemText
-                primary={category}
-                sx={{
-                  color: "black",
-                  textAlign: "center",
-                }}
-              />
-            </ListItem>
-          ))}
-        </List>
-      </Box>
+      {/*<Box*/}
+      {/*  sx={{*/}
+      {/*    width: "10%",*/}
+      {/*    borderRight: "1px solid #ddd",*/}
+      {/*    padding: "16px",*/}
+      {/*    display: "flex",*/}
+      {/*    flexDirection: "column",*/}
+      {/*    justifyContent: "flex-start",*/}
+      {/*    position: "fixed",*/}
+      {/*    top: 0,*/}
+      {/*    left: 0,*/}
+      {/*    height: "100vh",*/}
+      {/*    backgroundColor: "white",*/}
+      {/*    marginTop: "16px",*/}
+      {/*    minWidth: "fit-content",*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <Typography*/}
+      {/*    variant="h4"*/}
+      {/*    sx={{*/}
+      {/*      color: "black",*/}
+      {/*      marginBottom: "8px",*/}
+      {/*      paddingTop: "45px",*/}
+      {/*    }}*/}
+      {/*  >*/}
+      {/*    Categories*/}
+      {/*  </Typography>*/}
+      {/*  <List>*/}
+      {/*    {categories.map((category) => (*/}
+      {/*      <ListItem*/}
+      {/*        key={category}*/}
+      {/*        sx={{*/}
+      {/*          padding: "8px 0",*/}
+      {/*          backgroundColor: "transparent",*/}
+      {/*          "&:hover": {*/}
+      {/*            backgroundColor: "#e0e0e0",*/}
+      {/*          },*/}
+      {/*        }}*/}
+      {/*      >*/}
+      {/*        <ListItemText*/}
+      {/*          primary={category}*/}
+      {/*          sx={{*/}
+      {/*            color: "black",*/}
+      {/*            textAlign: "center",*/}
+      {/*          }}*/}
+      {/*        />*/}
+      {/*      </ListItem>*/}
+      {/*    ))}*/}
+      {/*  </List>*/}
+      {/*</Box>*/}
 
       <Box sx={{ width: "100%", padding: "16px" }}>
         {products.length > 0 ? (

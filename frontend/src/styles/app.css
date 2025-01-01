@@ -1,195 +1,291 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
 
-  color-scheme: light dark;
-  color: #ffffff;
-  background-color: #1b361c;
+    color-scheme: light dark;
+    color: #ffffff;
+    background-color: #ffffff;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 
-  --main-green: #4caf50;
-  --hover-green: #388e3c;
-  --background-light: #e8f5e9;
+    --main-green: #4caf50;
+    --hover-green: #388e3c;
+    --background-light: #e8f5e9;
 }
 
 a {
-  font-weight: 500;
-  color: var(--main-green);
-  text-decoration: inherit;
+    font-weight: 500;
+    color: var(--main-green);
+    text-decoration: inherit;
 }
+
 a:hover {
-  color: var(--hover-green);
+    color: var(--hover-green);
 }
 
 body {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: var(--background-light);
+    font-size: 14px;
+    margin: 0; /* Remove the margin in all browsers. */
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-  color: var(--main-green);
-  text-align: center;
+    font-size: 3.2em;
+    line-height: 1.1;
+    color: var(--main-green);
+    text-align: center;
 }
 
 button {
-  margin: 0;
-  border-radius: 8px;
-  border: 1px solid var(--main-green);
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: var(--main-green);
-  color: #ffffff;
-  cursor: pointer;
-  transition:
-    background-color 0.25s,
+    margin: 0;
+    border-radius: 8px;
+    border: 1px solid var(--main-green);
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: var(--main-green);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.25s,
     border-color 0.25s;
 }
 
 button:hover {
-  opacity: 0.8;
-  transition:
-    background-color 0.25s ease,
+    opacity: 0.8;
+    transition: background-color 0.25s ease,
     border-color 0.25s ease;
 }
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto var(--main-green);
+    outline: 4px auto var(--main-green);
 }
 
 button.add-to-cart {
-  background-color: #33c4ff;
-  border-color: #33c4ff;
+    background-color: #33c4ff;
+    border-color: #33c4ff;
 }
 
 button.login {
-  background-color: #ff5733;
-  border-color: #ff5733;
+    background-color: #ff5733;
+    border-color: #ff5733;
 }
 
 button.cart {
-  background-color: #ffb233;
-  border-color: #ffb233;
+    background-color: #ffb233;
+    border-color: #ffb233;
 }
 
 button.about {
-  background-color: #4caf50;
-  border-color: #4caf50;
+    background-color: #4caf50;
+    border-color: #4caf50;
 }
 
 button.contact {
-  background-color: #f44336;
-  border-color: #f44336;
+    background-color: #f44336;
+    border-color: #f44336;
 }
 
 button.delete {
-  background-color: #f44336;
-  border-color: #f44336;
-  color: black;
-  transition:
-    background-color 0.3s,
+    background-color: #f44336;
+    border-color: #f44336;
+    color: black;
+    transition: background-color 0.3s,
     border-color 0.3s;
 }
 
 button.delete:hover {
-  background-color: red;
-  border-color: red;
+    background-color: red;
+    border-color: red;
 }
 
 button.continue-shopping {
-  background-color: #4caf50;
-  border-color: #4caf50;
-  margin-right: 8px;
+    background-color: #4caf50;
+    border-color: #4caf50;
+    margin-right: 8px;
 }
 
 button.continue-shopping:hover {
-  background-color: #388e3c;
-  border-color: #388e3c;
+    background-color: #388e3c;
+    border-color: #388e3c;
 }
 
 button.checkout {
-  background-color: #f44336;
-  border-color: #f44336;
+    background-color: #f44336;
+    border-color: #f44336;
 }
 
 button.checkout:hover {
-  background-color: #d32f2f;
-  border-color: #d32f2f;
+    background-color: #d32f2f;
+    border-color: #d32f2f;
 }
 
 button.login {
-  background-color: #4caf50;
-  border-color: #4caf50;
+    background-color: #4caf50;
+    border-color: #4caf50;
 }
 
 button.login:hover {
-  background-color: #388e3c;
-  border-color: #388e3c;
+    background-color: #388e3c;
+    border-color: #388e3c;
 }
 
 button.register {
-  background-color: transparent;
-  border-color: #f44336;
-  color: #f44336;
-  margin-top: 10px;
+    background-color: transparent;
+    border-color: #f44336;
+    color: #f44336;
+    margin-top: 10px;
 }
 
 button.register:hover {
-  background-color: #f44336;
-  color: white;
-  border-color: #f44336;
+    background-color: #f44336;
+    color: white;
+    border-color: #f44336;
 }
 
 button.register-button {
-  background-color: #4caf50;
-  border-color: #4caf50;
-  color: white;
-  transition:
-    background-color 0.3s,
+    background-color: #4caf50;
+    border-color: #4caf50;
+    color: white;
+    transition: background-color 0.3s,
     border-color 0.3s;
 }
 
 button.register-button:hover {
-  background-color: #388e3c;
-  border-color: #388e3c;
+    background-color: #388e3c;
+    border-color: #388e3c;
 }
 
 button.register-button:focus {
-  outline: 4px solid #4caf50;
+    outline: 4px solid #4caf50;
 }
 
 .buttons-container {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 20px;
-  width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
 }
 
 @media (prefers-color-scheme: light) {
-  :root {
-    color: #1b361c;
-    background-color: var(--background-light);
-  }
-  a:hover {
-    color: var(--hover-green);
-  }
-  button {
-    background-color: var(--main-green);
-    border-color: var(--main-green);
-  }
+    :root {
+        color: #1b361c;
+        background-color: var(--background-light);
+    }
+
+    a:hover {
+        color: var(--hover-green);
+    }
+
+    button {
+        background-color: var(--main-green);
+        border-color: var(--main-green);
+    }
+}
+
+
+footer {
+    border-top: 1px solid #ddd;
+    color: #999;
+    display: flex;
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+    height: 100%;
+    justify-content: space-between;
+    padding: 2rem 3rem;
+}
+
+main {
+    grid-column: 2/3;
+    grid-row: 2/3;
+    height: 100%;
+}
+
+.sidebar {
+    background: #fff;
+    border-right: 1px solid #ddd;
+    grid-column: 1 / 2;
+    grid-row: 2/-1;
+    position: sticky;
+    z-index: 3;
+}
+
+.layout__header {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    grid-column: 1/3;
+    grid-row: 1/2;
+    padding: 1.2rem;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+
+    .icon__wrapper {
+        display: grid;
+        place-content: center;
+
+        .photo__wrapper {
+            border: none;
+            border-radius: 5rem;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+            height: 40px;
+            width: 40px;
+
+            &:hover {
+                background-color: #bdbdbd;
+            }
+        }
+    }
+}
+
+.link {
+    display: grid;
+    place-content: center;
+    place-items: center;
+
+    .avatar {
+        background: none;
+    }
+
+    .icon {
+        color: black;
+    }
+
+    & __active,
+    &:hover {
+        .avatar {
+            background-color: rgba(0, 63, 225, 10%) !important;
+            border-radius: 1.5rem !important;
+        }
+
+        .typography,
+        .icon {
+            color: rgb(0, 63, 225);
+        }
+    }
+
+    .typography {
+        font-weight: 550;
+    }
+}
+
+.sign__out__button {
+    background: white;
+    border: none;
+    cursor: pointer;
+    font-weight: normal;
+    height: 4.5rem;
+    padding: 1rem 7rem 1rem 1rem;
+
+    &:hover {
+        background-color: #dadada;
+    }
 }
