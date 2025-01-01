@@ -17,7 +17,14 @@ const RegisterForm = () => {
     event.preventDefault();
 
     // Walidacja
-    if (!email || !password || !company_name || !nip || !payment_address || !delivery_address) {
+    if (
+      !email ||
+      !password ||
+      !company_name ||
+      !nip ||
+      !payment_address ||
+      !delivery_address
+    ) {
       setError("Proszę wypełnić wszystkie pola");
       return;
     }

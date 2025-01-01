@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: #ffffff;
-  background-color: #1b361c; 
+  background-color: #1b361c;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,7 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   --main-green: #4caf50;
-  --hover-green: #388e3c; 
+  --hover-green: #388e3c;
   --background-light: #e8f5e9;
 }
 
@@ -61,14 +61,15 @@ button {
 
 button:hover {
   opacity: 0.8;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
 }
 
 button:focus,
 button:focus-visible {
   outline: 4px auto var(--main-green);
 }
-
 
 button.add-to-cart {
   background-color: #33c4ff;
@@ -86,7 +87,7 @@ button.cart {
 }
 
 button.about {
-  background-color: #4caf50; 
+  background-color: #4caf50;
   border-color: #4caf50;
 }
 
@@ -99,7 +100,9 @@ button.delete {
   background-color: #f44336;
   border-color: #f44336;
   color: black;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
 }
 
 button.delete:hover {
@@ -108,23 +111,23 @@ button.delete:hover {
 }
 
 button.continue-shopping {
-  background-color: #4caf50; 
+  background-color: #4caf50;
   border-color: #4caf50;
   margin-right: 8px;
 }
 
 button.continue-shopping:hover {
-  background-color: #388e3c; 
+  background-color: #388e3c;
   border-color: #388e3c;
 }
 
 button.checkout {
-  background-color: #f44336; 
+  background-color: #f44336;
   border-color: #f44336;
 }
 
 button.checkout:hover {
-  background-color: #d32f2f; 
+  background-color: #d32f2f;
   border-color: #d32f2f;
 }
 
@@ -146,21 +149,23 @@ button.register {
 }
 
 button.register:hover {
-  background-color: #f44336; 
-  color: white; 
+  background-color: #f44336;
+  color: white;
   border-color: #f44336;
 }
 
 button.register-button {
-  background-color: #4caf50; 
-  border-color: #4caf50; 
-  color: white; 
-  transition: background-color 0.3s, border-color 0.3s; 
+  background-color: #4caf50;
+  border-color: #4caf50;
+  color: white;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
 }
 
 button.register-button:hover {
-  background-color: #388e3c; 
-  border-color: #388e3c; 
+  background-color: #388e3c;
+  border-color: #388e3c;
 }
 
 button.register-button:focus {
@@ -169,10 +174,10 @@ button.register-button:focus {
 
 .buttons-container {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   gap: 10px;
   margin-top: 20px;
-  width: 100%; 
+  width: 100%;
 }
 
 @media (prefers-color-scheme: light) {

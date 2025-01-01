@@ -18,22 +18,22 @@ const CartSummary: React.FC<CartSummaryProps> = ({
         In total: ${totalPrice.toFixed(2)}
       </Typography>
       <Box sx={{ marginTop: "16px" }}>
-      <Button
-        className="continue-shopping"
-        onClick={() => onContinueShopping()}
-        variant="contained"
-        color="primary"
-      >
-        Continue shopping
-      </Button>
-      <Button
-        className="checkout"
-        onClick={onProceedToCheckout}
-        variant="contained"
-        color="secondary"
-      >
-        Checkout
-      </Button>
+        <Button
+          className="continue-shopping"
+          onClick={() => onContinueShopping()}
+          variant="contained"
+          color="primary"
+        >
+          Continue shopping
+        </Button>
+        <Button
+          className="checkout"
+          onClick={onProceedToCheckout}
+          variant="contained"
+          color="secondary"
+        >
+          Checkout
+        </Button>
       </Box>
     </Box>
   );

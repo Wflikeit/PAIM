@@ -27,16 +27,32 @@ const Header: React.FC = () => {
           Wholesale Fruits
         </Typography>
         <Box sx={{ display: "flex", gap: 2 }}>
-          <Button className="cart" color="inherit" onClick={() => handleNavigate("/cart")}>
+          <Button
+            className="cart"
+            color="inherit"
+            onClick={() => handleNavigate("/cart")}
+          >
             Cart
           </Button>
-          <Button className="about" color="inherit" onClick={() => handleNavigate("/about")}>
+          <Button
+            className="about"
+            color="inherit"
+            onClick={() => handleNavigate("/about")}
+          >
             About
           </Button>
-          <Button className="contact" color="inherit" onClick={() => handleNavigate("/contact")}>
+          <Button
+            className="contact"
+            color="inherit"
+            onClick={() => handleNavigate("/contact")}
+          >
             Contact
           </Button>
-          <Button className="login" color="inherit" onClick={() => handleNavigate("/login")}>
+          <Button
+            className="login"
+            color="inherit"
+            onClick={() => handleNavigate("/login")}
+          >
             Login
           </Button>
         </Box>

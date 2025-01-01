@@ -1,4 +1,4 @@
-import axios, {AxiosError} from 'axios';
+import axios, { AxiosError } from "axios";
 
 interface Client {
   email: string;
@@ -16,13 +16,17 @@ const registerClients = () => {
 
     const clientdata = JSON.stringify(clientData);
     console.log("Client data (JSON):", clientdata);
-    
+
     try {
-      const response = await axios.post("http://localhost:8000/api/register", clientdata, {
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        "http://localhost:8000/api/register",
+        clientdata,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
       console.log("Client registered successfully:", response.data);
     } catch (error) {
       if (error instanceof AxiosError) {

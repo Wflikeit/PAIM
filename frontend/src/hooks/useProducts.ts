@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-
 interface Product {
   name: string;
   price: number;
@@ -19,15 +18,16 @@ interface ProductResponse {
 
 const fetchProducts = async (): Promise<Product[]> => {
   try {
-    
-    const response = await axios.get<ProductResponse>(`http://localhost:8000/api/products/675dbc6fcea393dd5e2c6f83`);
+    const response = await axios.get<ProductResponse>(
+      `http://localhost:8000/api/products/675dbc6fcea393dd5e2c6f83`,
+    );
 
     const product = response.data.product;
 
     if (product) {
       const imageResponse = await axios.get<Blob>(
         `http://localhost:8000/api/products/675dbc6fcea393dd5e2c6f83/image`,
-        { responseType: "blob" }
+        { responseType: "blob" },
       );
       const imageUrl = URL.createObjectURL(imageResponse.data);
       product.imageUrl = imageUrl;

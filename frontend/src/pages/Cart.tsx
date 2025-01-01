@@ -40,7 +40,7 @@ const CartPage: React.FC = () => {
     <Box sx={{ padding: "16px" }} style={{ color: "black" }}>
       <Typography variant="h4" gutterBottom>
         Cart
-      </Typography> 
+      </Typography>
       {cart.length === 0 ? (
         <Typography>Twój koszyk jest pusty</Typography>
       ) : (

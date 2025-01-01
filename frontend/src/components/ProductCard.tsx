@@ -56,7 +56,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Typography variant="h6" color="text.primary">
           Cena: {price} zł
         </Typography>
-        <Button className="add-to-cart" onClick={onAddToCart} variant="contained" color="primary">
+        <Button
+          className="add-to-cart"
+          onClick={onAddToCart}
+          variant="contained"
+          color="primary"
+        >
           Dodaj do koszyka
         </Button>
       </CardContent>
