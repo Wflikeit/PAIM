@@ -1,5 +1,5 @@
 from application.client.client_repository import AbstractClientRepository
-from application.requests import ClientResponse
+from application.responses import ClientResponse
 from domain.client import Client
 
 

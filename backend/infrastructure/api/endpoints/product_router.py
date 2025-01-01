@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from starlette.requests import Request
 
 from application.product.product_service import ProductService
-from application.requests import ProductResponse
+from application.responses import ProductResponse
 from domain.product import Product
 from infrastructure.containers import Container
 

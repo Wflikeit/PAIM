@@ -1,5 +1,5 @@
 from application.product.product_repository import AbstractProductRepository
-from application.requests import ProductResponse
+from application.responses import ProductResponse
 from domain.exceptions import ProductNotFoundError
 from domain.product import Product
 

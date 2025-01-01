@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from starlette.requests import Request
 
 from application.client.client_service import ClientService
-from application.requests import ClientResponse
+from application.responses import ClientResponse
 from domain.client import Client
 from infrastructure.containers import Container
 

@@ -17,9 +17,11 @@ class MongoDBClient:
                     mongo_password = os.getenv("MONGO_PASSWORD")
                     mongo_uri = f"mongodb+srv://{mongo_user}:{mongo_password}@paim.yxyyk.mongodb.net/"
                     try:
-                        cls._instance = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+                        cls._instance = MongoClient(
+                            mongo_uri, serverSelectionTimeoutMS=5000
+                        )
                         # Test connection
-                        cls._instance.admin.command('ping')
+                        cls._instance.admin.command("ping")
                     except ConnectionError as e:
                         raise RuntimeError("Could not connect to MongoDB") from e
         return cls._instance

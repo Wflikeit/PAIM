@@ -5,7 +5,7 @@ from bson import ObjectId
 from starlette.testclient import TestClient
 
 from application.client.client_service import ClientService
-from application.requests import ClientResponse
+from application.responses import ClientResponse
 from domain.exceptions import ClientNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
@@ -133,6 +133,7 @@ async def test_get_client_not_found(mocked_client_repository, test_client):
     assert (
         response.json()["error"] == f"Client with ID {non_existent_client_id} not found"
     )
+
 
 async def assert_client_response(mock_client_data, response_json):
     assert response_json["email"] == mock_client_data["email"]

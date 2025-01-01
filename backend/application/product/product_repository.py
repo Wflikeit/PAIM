@@ -1,6 +1,6 @@
 import abc
 
-from application.requests import ProductResponse
+from application.responses import ProductResponse
 from domain.product import Product
 
 

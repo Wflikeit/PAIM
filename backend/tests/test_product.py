@@ -7,7 +7,7 @@ from bson import ObjectId
 from starlette.testclient import TestClient
 
 from application.product.product_service import ProductService
-from application.requests import ProductResponse
+from application.responses import ProductResponse
 from domain.exceptions import ProductNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
