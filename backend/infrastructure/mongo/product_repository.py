@@ -1,3 +1,5 @@
+import base64
+
 from bson import ObjectId
 
 from application.product.product_repository import AbstractProductRepository
@@ -25,6 +27,16 @@ class ProductRepositoryMongo(AbstractProductRepository):
     def get_product_by_id(self, product_id: str) -> ProductResponse:
         product = self.product_collection.find_one({"_id": ObjectId(product_id)})
 
-        if not product:
-            raise ProductNotFoundError(product_id)
+        # if not product:
+        #     print("nie ma produktu")
+        #     print(  list(
+        #     map(lambda module: Product(**module), self.product_collection.find())
+        # ))
+        #     raise ProductNotFoundError(product_id)
+
+        product["id"] = str(product["_id"])
+        product["file"] =  f"data:image/jpeg;base64,{base64.b64encode(product["file"]).decode('utf-8')}"
+
+
+
         return ProductResponse(**product)

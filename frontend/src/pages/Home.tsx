@@ -1,6 +1,6 @@
 import useProducts from "../hooks/useProducts";
 import ProductCard from "../components/ProductCard";
-import { Box, Typography, List, ListItem, ListItemText } from "@mui/material";
+import { Box, List, ListItem, ListItemText, Typography } from "@mui/material";
 
 const ProductsList: React.FC = () => {
   const { products, loading, error } = useProducts();
@@ -73,7 +73,7 @@ const ProductsList: React.FC = () => {
               description={product.description}
               fruit_or_vegetable={product.fruit_or_vegetable}
               expiry_date={product.expiry_date}
-              imageUrl={product.imageUrl}
+              imageUrl={product.file}
               imageId={product.imageId}
               onAddToCart={() => console.log("Product added to cart")}
             />

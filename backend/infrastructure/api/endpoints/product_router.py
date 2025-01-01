@@ -26,10 +26,10 @@ async def upload_product_endpoint(
     return await product_service.upload_product(product)
 
 
-@router.get("/products/{product_id}", response_model=ProductResponse)
+@router.get("/products/{product_id}")
 @inject
 async def get_product(
     product_id: str,
     product_service: ProductService = Depends(Provide[Container.product_service]),
-) -> ProductResponse:
-    return product_service.get_product(product_id)
+):
+    return {"products": product_service.get_product(product_id)}

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import header from "../components/Header.tsx";
+import {config} from "typescript-eslint";
 
 interface Product {
   name: string;
@@ -9,7 +11,7 @@ interface Product {
   fruit_or_vegetable: string;
   expiry_date: string;
   imageId: string;
-  imageUrl?: string;
+  file?: string;
 }
 
 interface ProductResponse {
@@ -19,22 +21,28 @@ interface ProductResponse {
 const fetchProducts = async (): Promise<Product[]> => {
   try {
     const response = await axios.get<ProductResponse>(
-      `http://localhost:8000/api/products/675dbc6fcea393dd5e2c6f83`,
+      `http://localhost:8002/api/products/6775934ed79a82364c118356`,
+        // {headers: {Access-Control-Allow-Origin: "*"}}
+
+
     );
+    console.log(response.data);
+    console.log(response.data.product);
+    return   [response.data.product]
 
-    const product = response.data.product;
+    // return ;
 
-    if (product) {
-      const imageResponse = await axios.get<Blob>(
-        `http://localhost:8000/api/products/675dbc6fcea393dd5e2c6f83/image`,
-        { responseType: "blob" },
-      );
-      const imageUrl = URL.createObjectURL(imageResponse.data);
-      product.imageUrl = imageUrl;
-      return [product];
-    } else {
-      return [];
-    }
+    // if (product) {
+    //   const imageResponse = await axios.get<Blob>(
+    //     `http://localhost:8000/api/products/6772091ea203351edda37ccf/image`,
+    //     { responseType: "blob" },
+    //   );
+    //   const imageUrl = URL.createObjectURL(imageResponse.data);
+    //   product.imageUrl = imageUrl;
+    //   return [product];
+    // } else {
+    //   return [];
+    // }
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
@@ -50,6 +58,7 @@ const useProducts = () => {
     const getProducts = async () => {
       try {
         const data = await fetchProducts();
+        console.log(data);
         setProducts(data);
       } catch (error) {
         setError("Failed to fetch products: " + error);
