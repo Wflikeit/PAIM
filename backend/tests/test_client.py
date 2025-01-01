@@ -88,12 +88,7 @@ async def test_get_client_success(
     assert response.status_code == 200
     response_json = response.json()
     assert response_json["id"] == client_id
-    assert response_json["email"] == mock_client_data["email"]
-    assert response_json["payment_address"] == mock_client_data["payment_address"]
-    assert response_json["delivery_address"] == mock_client_data["delivery_address"]
-    assert response_json["nip"] == mock_client_data["nip"]
-    assert response_json["orders"] == mock_client_data["orders"]
-    assert response_json["company_name"] == mock_client_data["company_name"]
+    await assert_client_response(mock_client_data, response_json)
 
 
 # 🔗 Integration Test
@@ -116,12 +111,7 @@ async def test_register_client_success(
 
     assert response.status_code == 200
     response_json = response.json()
-    assert response_json["email"] == mock_client_data["email"]
-    assert response_json["payment_address"] == mock_client_data["payment_address"]
-    assert response_json["delivery_address"] == mock_client_data["delivery_address"]
-    assert response_json["nip"] == mock_client_data["nip"]
-    assert response_json["orders"] == mock_client_data["orders"]
-    assert response_json["company_name"] == mock_client_data["company_name"]
+    await assert_client_response(mock_client_data, response_json)
 
 
 # 🔗 Integration Test
@@ -143,3 +133,11 @@ async def test_get_client_not_found(mocked_client_repository, test_client):
     assert (
         response.json()["error"] == f"Client with ID {non_existent_client_id} not found"
     )
+
+async def assert_client_response(mock_client_data, response_json):
+    assert response_json["email"] == mock_client_data["email"]
+    assert response_json["payment_address"] == mock_client_data["payment_address"]
+    assert response_json["delivery_address"] == mock_client_data["delivery_address"]
+    assert response_json["nip"] == mock_client_data["nip"]
+    assert response_json["orders"] == mock_client_data["orders"]
+    assert response_json["company_name"] == mock_client_data["company_name"]
