@@ -97,12 +97,12 @@ async def assert_product_response(mocked_product_data, response_json):
 async def test_get_product_successful(
     mocked_product_data, binary_file_data, mocked_product_repository, test_client
 ):
-    """Test the integration of the /products?id={product_id} endpoint."""
+    """Test the integration of the /products/{product_id} endpoint."""
     product_id = mocked_product_data["id"]
     mocked_product_response = ProductResponse(**mocked_product_data)
     mocked_product_repository.get_product_by_id.return_value = mocked_product_response
 
-    response = test_client.get(f"/api/products?id={product_id}")
+    response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
     product = response.json()["products"]
@@ -156,7 +156,7 @@ def test_get_product_not_found(mocked_product_repository, test_client):
         non_existent_product_id
     )
 
-    response = test_client.get(f"/api/products?id={non_existent_product_id}")
+    response = test_client.get(f"/api/products/{non_existent_product_id}")
 
     assert response.status_code == 404
     assert (
@@ -174,13 +174,13 @@ async def test_get_product_success(
     product_data,
     test_container,
 ):
-    """End-to-end test of the /products?id={product_id} endpoint."""
+    """End-to-end test of the /products/{product_id} endpoint."""
     product_id = "67731032d17a79360ad4cf69"
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())
     )
 
-    response = test_client.get(f"/api/products?id={product_id}")
+    response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
     product = response.json()["products"]
