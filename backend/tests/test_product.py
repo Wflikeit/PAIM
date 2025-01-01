@@ -71,8 +71,21 @@ def mocked_product_data(binary_file_data):
         "description": "Ziemniaczek",
         "fruit_or_vegetable": "Warzywo",
         "expiry_date": "10.12.2025",
-        "file": base64_file_data,
+        "file": f"data:image/jpeg;base64,{base64_file_data}",
     }
+
+
+async def assert_product_response(mocked_product_data, response_json):
+    assert response_json["name"] == mocked_product_data["name"]
+    assert response_json["price"] == mocked_product_data["price"]
+    assert (
+        response_json["country_of_origin"] == mocked_product_data["country_of_origin"]
+    )
+    assert response_json["description"] == mocked_product_data["description"]
+    assert (
+        response_json["fruit_or_vegetable"] == mocked_product_data["fruit_or_vegetable"]
+    )
+    assert response_json["expiry_date"] == mocked_product_data["expiry_date"]
 
 
 # 🔗 Integration Test
@@ -87,26 +100,14 @@ async def test_get_product_successful(
     """Test the integration of the /products/{product_id} endpoint."""
     product_id = mocked_product_data["id"]
     mocked_product_response = ProductResponse(**mocked_product_data)
-    mocked_product_response.file = str(binary_file_data)
     mocked_product_repository.get_product_by_id.return_value = mocked_product_response
 
     response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
-    response_json = response.json()
-    assert response_json["id"] == product_id
-    assert response_json["name"] == mocked_product_data["name"]
-    assert float(response_json["price"]) == mocked_product_data["price"]
-    assert (
-        response_json["country_of_origin"] == mocked_product_data["country_of_origin"]
-    )
-    assert response_json["description"] == mocked_product_data["description"]
-    assert (
-        response_json["fruit_or_vegetable"] == mocked_product_data["fruit_or_vegetable"]
-    )
-    assert response_json["expiry_date"] == mocked_product_data["expiry_date"]
-    response_file_base64 = base64.b64encode(eval(response_json["file"])).decode("utf-8")
-    assert response_file_base64 == mocked_product_data["file"]
+    product = response.json()["products"]
+    await assert_product_response(mocked_product_data, product)
+    assert product["file"] == mocked_product_data["file"]
 
 
 # 🔗 Integration Test
@@ -123,13 +124,7 @@ async def test_upload_product_success(
     product_data,
 ):
     """Test the full integration of the /upload endpoint."""
-
-    # Uncomment to use real MongoDB
-    # test_container.product_service.override(
-    #     ProductService(product_repo=ProductRepositoryMongo())
-    # )
     mocked_product_response_data = ProductResponse(**mocked_product_data)
-    mocked_product_response_data.file = str(binary_file_data)
     mocked_product_repository.upload_product_to_db.return_value = (
         mocked_product_response_data
     )
@@ -144,14 +139,8 @@ async def test_upload_product_success(
 
     assert response.status_code == 200
     response_json = response.json()
-    assert response_json["name"] == product_data["name"]
-    assert response_json["price"] == product_data["price"]
-    assert response_json["country_of_origin"] == product_data["country_of_origin"]
-    assert response_json["description"] == product_data["description"]
-    assert response_json["fruit_or_vegetable"] == product_data["fruit_or_vegetable"]
-    assert response_json["expiry_date"] == product_data["expiry_date"]
-    response_file_base64 = base64.b64encode(eval(response_json["file"])).decode("utf-8")
-    assert response_file_base64 == base64_file_data
+    await assert_product_response(product_data, response_json)
+    assert response_json["file"] == mocked_product_data["file"]
 
 
 # 🔗 Integration Test
@@ -174,3 +163,73 @@ def test_get_product_not_found(mocked_product_repository, test_client):
         response.json()["error"]
         == f"Product with ID {non_existent_product_id} not found"
     )
+
+
+@pytest.mark.asyncio
+async def test_get_product_success(
+    mocked_product_data,
+    binary_file_data,
+    mocked_product_repository,
+    test_client,
+    product_data,
+    test_container,
+):
+    """End-to-end test of the /products/{product_id} endpoint."""
+    product_id = "67731032d17a79360ad4cf69"
+    test_container.product_service.override(
+        ProductService(product_repo=ProductRepositoryMongo())
+    )
+
+    response = test_client.get(f"/api/products/{product_id}")
+
+    assert response.status_code == 200
+    product = response.json()["products"]
+    await assert_product_response(product_data, product)
+    assert product["file"] == mocked_product_data["file"]
+
+
+@pytest.mark.asyncio
+async def test_get_all_products_success(
+    mocked_product_data,
+    mocked_product_repository,
+    test_client,
+    product_data,
+    test_container,
+):
+    """End-to-end test of the /products endpoint."""
+    mocked_product_data["id"] = "67731032d17a79360ad4cf69"
+    test_container.product_service.override(
+        ProductService(product_repo=ProductRepositoryMongo())
+    )
+
+    response = test_client.get("/api/products")
+
+    assert response.status_code == 200
+    response_json = response.json()
+    assert mocked_product_data in response_json["products"]
+
+
+@pytest.mark.asyncio
+async def test_upload_product_end_to_end(
+    test_container, test_client, product_data, mocked_product_repository
+):
+    """End-to-end test of the /upload endpoint."""
+    test_container.product_service.override(
+        ProductService(product_repo=ProductRepositoryMongo())
+    )
+    with open("test_images/kartofel.jpeg", "rb") as image_file:
+        response = test_client.post(
+            "/api/upload",
+            data=product_data,
+            files={"file": ("xxx.jpeg", image_file, "image/jpeg")},
+        )
+
+    assert response.status_code == 200
+    response_json = response.json()
+
+    response_get = test_client.get(f"/api/products/{response_json['id']}")
+    assert response_get.status_code == 200
+    product = response_get.json()["products"]
+
+    await assert_product_response(product, response_json)
+    assert response_json["file"] == product["file"]

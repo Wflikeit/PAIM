@@ -1,5 +1,8 @@
+from typing import Optional
+
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.params import Query
 from starlette.requests import Request
 
 from application.product.product_service import ProductService
@@ -26,10 +29,18 @@ async def upload_product_endpoint(
     return await product_service.upload_product(product)
 
 
-@router.get("/products/{product_id}")
+@router.get("/products/{product_id}", response_model=dict)
 @inject
 async def get_product(
     product_id: str,
     product_service: ProductService = Depends(Provide[Container.product_service]),
-):
+) -> dict:
     return {"products": product_service.get_product(product_id)}
+
+
+@router.get("/products", response_model=dict)
+@inject
+async def get_products(
+    product_service: ProductService = Depends(Provide[Container.product_service]),
+) -> dict:
+    return {"products": product_service.get_all_products()}
