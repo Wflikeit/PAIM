@@ -1,8 +1,5 @@
-from typing import Optional
-
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.params import Query
 from starlette.requests import Request
 
 from application.product.product_service import ProductService

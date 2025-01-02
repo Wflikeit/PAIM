@@ -233,3 +233,20 @@ async def test_upload_product_end_to_end(
 
     await assert_product_response(product, response_json)
     assert response_json["file"] == product["file"]
+
+
+@pytest.mark.asyncio
+async def test_get_product_invalid_id(test_client, test_container):
+    """Test retrieving a client with invalid ID."""
+    invalid_product_id = "not_a_valid_id"
+    test_container.product_service.override(
+        ProductService(product_repo=ProductRepositoryMongo())
+    )
+
+    response = test_client.get(f"/api/products/{invalid_product_id}")
+
+    assert response.status_code == 404
+    assert (
+        response.json()["error"]
+        == f"ID: {invalid_product_id} is invalid: '{invalid_product_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    )

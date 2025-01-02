@@ -4,7 +4,7 @@ from bson import ObjectId
 
 from application.product.product_repository import AbstractProductRepository
 from application.responses import ProductResponse
-from domain.exceptions import ProductNotFoundError
+from domain.exceptions import ProductNotFoundError, InvalidIdError
 from domain.product import Product
 from infrastructure.mongo.mongo_client import MongoDBClient
 
@@ -27,7 +27,11 @@ class ProductRepositoryMongo(AbstractProductRepository):
         return ProductResponse(**product_data)
 
     def get_product_by_id(self, product_id: str) -> ProductResponse:
-        product = self.product_collection.find_one({"_id": ObjectId(product_id)})
+        try:
+            object_id = ObjectId(product_id)
+        except Exception as err:
+            raise InvalidIdError(product_id, str(err))
+        product = self.product_collection.find_one({"_id": object_id})
 
         if not product:
             raise ProductNotFoundError(product_id)

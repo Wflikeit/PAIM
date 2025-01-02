@@ -3,7 +3,7 @@ from bson import ObjectId
 from application.client.client_repository import AbstractClientRepository
 from application.responses import ClientResponse
 from domain.client import Client
-from domain.exceptions import ClientNotFoundError
+from domain.exceptions import ClientNotFoundError, InvalidIdError
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 
@@ -19,7 +19,11 @@ class ClientRepositoryMongo(AbstractClientRepository):
         return ClientResponse(**client_data)
 
     def get_client_db(self, client_id: str) -> ClientResponse:
-        client_data = self.client_collection.find_one({"_id": ObjectId(client_id)})
+        try:
+            object_id = ObjectId(client_id)
+        except Exception as err:
+            raise InvalidIdError(client_id, str(err))
+        client_data = self.client_collection.find_one({"_id": object_id})
 
         if not client_data:
             raise ClientNotFoundError(client_id)

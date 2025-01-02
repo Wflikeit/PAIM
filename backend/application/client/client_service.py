@@ -12,12 +12,3 @@ class ClientService:
 
     def get_client(self, client_id: str) -> ClientResponse:
         return self._client_repo.get_client_db(client_id)
-
-    # Is this needed?
-    # def _fetch_client_data(self, client_id: str) -> Client:
-    #     """Retrieve raw client data from the repository."""
-    #     client = self._client_repo.get_client_db(client_id)
-    #     if not client:
-    #         raise ClientNotFoundError(client_id)
-    #
-    #     return client

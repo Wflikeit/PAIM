@@ -70,6 +70,15 @@ def mock_client_response(mock_client_data):
     return ClientResponse(**mock_client_data)
 
 
+async def assert_client_response(mock_client_data, response_json):
+    assert response_json["email"] == mock_client_data["email"]
+    assert response_json["payment_address"] == mock_client_data["payment_address"]
+    assert response_json["delivery_address"] == mock_client_data["delivery_address"]
+    assert response_json["nip"] == mock_client_data["nip"]
+    assert response_json["orders"] == mock_client_data["orders"]
+    assert response_json["company_name"] == mock_client_data["company_name"]
+
+
 # 🔗 Integration Test
 # This test ensures API and service layers work together
 # ┌───────────┐   ┌──────────┐   ┌────────────┐
@@ -135,10 +144,20 @@ async def test_get_client_not_found(mocked_client_repository, test_client):
     )
 
 
-async def assert_client_response(mock_client_data, response_json):
-    assert response_json["email"] == mock_client_data["email"]
-    assert response_json["payment_address"] == mock_client_data["payment_address"]
-    assert response_json["delivery_address"] == mock_client_data["delivery_address"]
-    assert response_json["nip"] == mock_client_data["nip"]
-    assert response_json["orders"] == mock_client_data["orders"]
-    assert response_json["company_name"] == mock_client_data["company_name"]
+@pytest.mark.asyncio
+async def test_get_client_invalid_id(
+    mocked_client_repository, test_client, test_container
+):
+    """Test retrieving a client with invalid ID."""
+    invalid_client_id = "not_a_valid_id"
+    test_container.client_service.override(
+        ClientService(client_repo=ClientRepositoryMongo())
+    )
+
+    response = test_client.get(f"/api/clients/{invalid_client_id}")
+
+    assert response.status_code == 404
+    assert (
+        response.json()["error"]
+        == f"ID: {invalid_client_id} is invalid: '{invalid_client_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    )
