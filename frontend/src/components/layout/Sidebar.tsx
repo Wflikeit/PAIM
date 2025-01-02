@@ -8,7 +8,6 @@ import CheckBoxGroup from "./CheckBoxGroup.tsx";
 const Sidebar = () => {
   const [value, setValue] = React.useState(30);
 
-
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setValue(newValue as number);
   };

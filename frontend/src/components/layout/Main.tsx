@@ -1,12 +1,12 @@
-import {Outlet} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import React from "react";
 
 const Main = () => {
-    return (
-        <main>
-            <Outlet />
-        </main>
-    );
+  return (
+    <main>
+      <Outlet />
+    </main>
+  );
 };
 
 export default Main;

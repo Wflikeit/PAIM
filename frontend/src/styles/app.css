@@ -208,7 +208,8 @@ main {
     overflow-y: scroll;
     max-height: 85dvh;
 }
-::-webkit-scrollbar{
+
+::-webkit-scrollbar {
 
     -webkit-appearance: none;
     width: 7px;
@@ -218,8 +219,8 @@ main {
 ::-webkit-scrollbar-thumb {
 
     border-radius: 4px;
-    background-color: rgba(0,0,0,.5);
-    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+    background-color: rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }
 
 ::-webkit-scrollbar {
@@ -246,7 +247,7 @@ main {
     grid-row: 2/-1;
     position: sticky;
     z-index: 3;
-    align-content:center ;
+    align-content: center;
 }
 
 .layout__header {
