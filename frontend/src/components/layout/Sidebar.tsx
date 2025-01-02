@@ -3,16 +3,17 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import { Box, Input, Slider, Stack } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import CheckboxGroup from "./checkBoxGroup.tsx";
+import CheckBoxGroup from "./CheckBoxGroup.tsx";
 
 const Sidebar = () => {
   const [value, setValue] = React.useState(30);
 
-  const handleSliderChange = (event, newValue) => {
-    setValue(newValue);
+
+  const handleSliderChange = (event: Event, newValue: number | number[]) => {
+    setValue(newValue as number);
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value === "" ? 0 : Number(event.target.value));
   };
 
@@ -37,10 +38,10 @@ const Sidebar = () => {
 
   return (
     <nav className="sidebar">
-      <List style={{ position: "sticky", top: "150px" }}>
+      <List style={{ position: "sticky", marginBottom: "200px" }}>
         <Box sx={{ mt: 1, color: blue[500] }}>
           {categories.map((category, index) => (
-            <CheckboxGroup
+            <CheckBoxGroup
               key={index}
               title={category.title}
               options={category.options}
