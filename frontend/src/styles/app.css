@@ -30,6 +30,8 @@ a:hover {
 body {
     font-size: 14px;
     margin: 0; /* Remove the margin in all browsers. */
+    overflow: hidden; /* Prevent scrollbars on the body */
+
 }
 
 h1 {
@@ -197,14 +199,45 @@ footer {
     grid-row: 3 / 4;
     height: 100%;
     justify-content: space-between;
-    padding: 2rem 3rem;
 }
 
 main {
     grid-column: 2/3;
     grid-row: 2/3;
     height: 100%;
+    overflow-y: scroll;
+    max-height: 85dvh;
 }
+::-webkit-scrollbar{
+
+    -webkit-appearance: none;
+    width: 7px;
+
+}
+
+::-webkit-scrollbar-thumb {
+
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #707070;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #355cc9;
+}
+
 
 .sidebar {
     background: #fff;
@@ -213,6 +246,7 @@ main {
     grid-row: 2/-1;
     position: sticky;
     z-index: 3;
+    align-content:center ;
 }
 
 .layout__header {

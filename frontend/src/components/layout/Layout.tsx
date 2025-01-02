@@ -9,7 +9,7 @@ const Layout = (): React.JSX.Element => {
   return (
     <Box
       gridTemplateRows={"auto 1fr auto"}
-      gridTemplateColumns={"1fr 6fr"}
+      gridTemplateColumns={"220px auto"}
       display={"grid"}
       style={{ minHeight: "100vh" }}
     >

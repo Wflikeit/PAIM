@@ -1,34 +1,31 @@
 import React from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import {
-  Box,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Grid,
-  Input,
-  Slider,
-} from "@mui/material";
+import { Box, Input, Slider, Stack } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import { Money } from "@mui/icons-material";
+import CheckboxGroup from "./checkBoxGroup.tsx";
 
 const Sidebar = () => {
-  const resolveLinkClass = ({ isActive }: { isActive: boolean }): string => {
-    return isActive ? "link link__active" : "link";
-  };
-
   const [value, setValue] = React.useState(30);
 
-  const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setValue(newValue as number);
+  const handleSliderChange = (event, newValue) => {
+    setValue(newValue);
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event) => {
     setValue(event.target.value === "" ? 0 : Number(event.target.value));
   };
+
+  const categories = [
+    {
+      title: "Category",
+      options: ["Warzywa", "Owoce"],
+    },
+    {
+      title: "Kraj pochodzenia",
+      options: ["Polska", "Hiszpania"],
+    },
+  ];
 
   const handleBlur = () => {
     if (value < 0) {
@@ -40,65 +37,26 @@ const Sidebar = () => {
 
   return (
     <nav className="sidebar">
-      <List style={{ position: "sticky", top: "45px" }}>
-        <Box sx={{ mt: 1 }}>
-          <ListItem sx={{ display: "grid", placeContent: "center" }}>
-            <Box style={{ color: blue[500] }}>
-              <FormControl
-                sx={{ m: 3 }}
-                component="fieldset"
-                variant="standard"
-              >
-                <FormLabel>Category</FormLabel>
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Checkbox></Checkbox>}
-                    label="Warzywa"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox></Checkbox>}
-                    label="Owoce"
-                  />
-                </FormGroup>
-              </FormControl>
-            </Box>
-          </ListItem>
-
-          <ListItem sx={{ display: "grid", placeContent: "center" }}>
-            <Box style={{ color: blue[500] }}>
-              <FormControl
-                sx={{ m: 3 }}
-                component="fieldset"
-                variant="standard"
-              >
-                <FormLabel>Kraj pochodzenia</FormLabel>
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Checkbox></Checkbox>}
-                    label="Polska"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox></Checkbox>}
-                    label="Hiszpania"
-                  />
-                </FormGroup>
-              </FormControl>
-            </Box>
-          </ListItem>
+      <List style={{ position: "sticky", top: "150px" }}>
+        <Box sx={{ mt: 1, color: blue[500] }}>
+          {categories.map((category, index) => (
+            <CheckboxGroup
+              key={index}
+              title={category.title}
+              options={category.options}
+            />
+          ))}
           <ListItem>
-            <Box style={{ color: blue[500] }}>
-              <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                <Grid item>
-                  <Money />
-                </Grid>
-                <Grid item xs>
-                  <Slider
-                    value={typeof value === "number" ? value : 0}
-                    onChange={handleSliderChange}
-                    aria-labelledby="input-slider"
-                  />
-                </Grid>
-                <Grid item>
+            <Box style={{ color: blue[500], width: "100%" }}>
+              <h3>Max Price</h3>
+              <Stack direction="column" spacing={2} alignItems="center">
+                <Slider
+                  value={typeof value === "number" ? value : 0}
+                  onChange={handleSliderChange}
+                  aria-labelledby="input-slider"
+                  sx={{ flex: 1 }}
+                />
+                <div>
                   <Input
                     value={value}
                     size="small"
@@ -111,9 +69,11 @@ const Sidebar = () => {
                       type: "number",
                       "aria-labelledby": "input-slider",
                     }}
+                    sx={{ width: "50%" }}
                   />
-                </Grid>
-              </Grid>
+                  <span style={{ marginLeft: "10px" }}>Zł</span>
+                </div>
+              </Stack>
             </Box>
           </ListItem>
         </Box>
