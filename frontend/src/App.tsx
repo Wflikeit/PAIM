@@ -16,13 +16,13 @@ const App: React.FC = () => {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/register" element={<RegisterForm />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<RegisterForm />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

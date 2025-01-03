@@ -27,6 +27,11 @@ a:hover {
     color: var(--hover-green);
 }
 
+#root {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
 body {
     font-size: 14px;
     margin: 0; /* Remove the margin in all browsers. */
@@ -294,7 +299,7 @@ main {
         color: black;
     }
 
-    & __active,
+    &__active,
     &:hover {
         .avatar {
             background-color: rgba(0, 63, 225, 10%) !important;
