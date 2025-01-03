@@ -4,7 +4,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-// import Header from "./components/Header";
 import Admin from "./pages/Admin";
 import CartPage from "./pages/Cart";
 import RegisterForm from "./pages/Register";
@@ -16,43 +15,11 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route element={<Layout />}>
-          <Route
-            path="/"
-            element={
-              <>
-                {/*<Header />*/}
-                <Home />
-              </>
-            }
-          />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route
-            path="/about"
-            element={
-              <>
-                {/*<Header />*/}
-                <About />
-              </>
-            }
-          />
-          <Route
-            path="/contact"
-            element={
-              <>
-                {/*<Header />*/}
-                <Contact />
-              </>
-            }
-          />
-          <Route
-            path="/cart"
-            element={
-              <>
-                {/*<Header />*/}
-                <CartPage />
-              </>
-            }
-          />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
