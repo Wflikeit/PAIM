@@ -22,19 +22,18 @@ const BACKEND_URL = "http://localhost:8002";
 export const fetchProducts = async (): Promise<Product[]> => {
   try {
     const response = await axios.get<ProductResponse>(
-      `${BACKEND_URL}/api/products/6775934ed79a82364c118356`,
+      `${BACKEND_URL}/api/products`,
     );
 
-    const product = response.data.product;
+    const products = response.data.products;
 
-    if (!product) {
+    if (!products) {
       new Error("Product not found in the response");
     }
 
-    console.log(product);
+    console.log(products);
 
-    // Return an array of the product repeated multiple times
-    return Array(36).fill(product);
+    return products
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
