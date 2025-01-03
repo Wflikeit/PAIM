@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, TextField, Typography } from "@mui/material";
+import {Box, Button, TextField, Typography} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -62,23 +62,27 @@ const LoginForm = () => {
         onChange={(e) => setPassword(e.target.value)}
       />
       {error && <Typography color="error">{error}</Typography>}
-      <Button
-        type="submit"
-        className="login"
-        variant="contained"
-        color="primary"
-      >
-        Login
-      </Button>
-      <Button
-        type="button"
-        className="register"
-        onClick={handleRegisterRedirect}
-        variant="contained"
-        color="secondary"
-      >
-        Register
-      </Button>
+      <Box>
+        <Button
+          type="submit"
+          className="login"
+          variant="contained"
+          color="primary"
+          fullWidth
+        >
+          Login
+        </Button>
+        <Button
+          type="button"
+          className="register"
+          onClick={handleRegisterRedirect}
+          variant="contained"
+          color="secondary"
+          fullWidth
+        >
+          Register
+        </Button>
+      </Box>
     </form>
   );
 };

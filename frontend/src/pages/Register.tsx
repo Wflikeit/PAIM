@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import registerClients from "../hooks/registerClients";
 
 const RegisterForm = () => {
@@ -60,8 +60,16 @@ const RegisterForm = () => {
   };
 
   return (
-    <Box sx={{ margin: "auto", maxWidth: " 36rem", minHeight: "100dvh" }}>
-      <Container sx={{ marginY: "8rem" }}>
+    <Box
+      sx={{
+        margin: "auto",
+        maxWidth: " 36rem",
+        minHeight: "100dvh",
+        display: "grid",
+        placeItems: "center",
+      }}
+    >
+      <Box>
         <form onSubmit={handleSubmit}>
           <Typography
             variant="h3"
@@ -154,7 +162,7 @@ const RegisterForm = () => {
             Register
           </Button>
         </form>
-      </Container>
+      </Box>
     </Box>
   );
 };
