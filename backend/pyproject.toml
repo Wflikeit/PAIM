@@ -22,6 +22,7 @@ dependency-injector = "^4.44.0"
 argon2-cffi = "^23.1.0"
 python-jose = "^3.3.0"
 bcrypt = "^4.2.1"
+passlib = "^1.7.4"
 
 
 [tool.poetry.group.dev.dependencies]
