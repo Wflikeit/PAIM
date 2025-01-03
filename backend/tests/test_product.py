@@ -55,7 +55,8 @@ def product_data():
 @pytest.fixture(scope="module")
 def binary_file_data():
     """Fixture returning sample binary data."""
-    return b"\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00"
+    with open("test_images/kartofel.jpeg", "rb") as file:
+        return file.read()
 
 
 @pytest.fixture(scope="module")
@@ -175,7 +176,7 @@ async def test_get_product_success(
     test_container,
 ):
     """End-to-end test of the /products/{product_id} endpoint."""
-    product_id = "67731032d17a79360ad4cf69"
+    product_id = "6775934ed79a82364c118356"
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())
     )
@@ -197,7 +198,7 @@ async def test_get_all_products_success(
     test_container,
 ):
     """End-to-end test of the /products endpoint."""
-    mocked_product_data["id"] = "67731032d17a79360ad4cf69"
+    mocked_product_data["id"] = "6775934ed79a82364c118356"
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())
     )
