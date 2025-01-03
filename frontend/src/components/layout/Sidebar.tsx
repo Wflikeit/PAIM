@@ -4,8 +4,11 @@ import ListItem from "@mui/material/ListItem";
 import { Box, Input, Slider, Stack } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import CheckBoxGroup from "./CheckBoxGroup.tsx";
+import { useLocation } from "react-router-dom";
+
 
 const Sidebar = () => {
+  const location = useLocation();
   const [value, setValue] = React.useState(30);
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
@@ -34,6 +37,11 @@ const Sidebar = () => {
       setValue(100);
     }
   };
+
+  if (location.pathname !== "/") {
+    return null;
+  }
+
 
   return (
     <nav className="sidebar">
