@@ -55,8 +55,8 @@ const App: React.FC = () => {
           />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="*" element={<NotFound />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
