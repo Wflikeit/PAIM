@@ -17,7 +17,7 @@ interface ProductResponse {
   product?: Product;
 }
 
-const BACKEND_URL = "http://localhost:8002";
+const BACKEND_URL = "http://localhost:8000";
 
 export const fetchProducts = async (): Promise<Product[]> => {
   try {

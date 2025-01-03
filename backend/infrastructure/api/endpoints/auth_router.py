@@ -1,34 +1,24 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi import Request
+from application.auth.auth import authenticate_user, create_access_token, is_admin
 
 router = APIRouter()
 
-fake_users_db = {"admin@gmail.com": {"email": "admin@gmail.com", "role": "admin"}}
-
-
-def get_current_user(request: Request):
-    user_email = request.headers.get("X-User-Email")
-    if not user_email or user_email not in fake_users_db:
+# Route to get a token (login endpoint)
+@router.post("/token")
+async def login_for_access_token(email: str, password: str):
+    user = authenticate_user(email, password)
+    if not user:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: unauthorized user",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
         )
-    return fake_users_db[user_email]
+    access_token = create_access_token(data={"sub": email, "role": user["role"]})
+    return {"access_token": access_token, "token_type": "bearer"}
 
-
-def is_admin(user: dict = Depends(get_current_user)):
-    if user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: user is not an admin",
-        )
-    return user
-
-
+# Admin routes
 @router.get("/")
 async def admin_home(user: dict = Depends(is_admin)):
     return {"message": "Welcome to the Admin Page"}
-
 
 @router.get("/stats")
 async def admin_stats(user: dict = Depends(is_admin)):

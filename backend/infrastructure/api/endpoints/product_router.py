@@ -32,7 +32,7 @@ async def get_product(
     product_id: str,
     product_service: ProductService = Depends(Provide[Container.product_service]),
 ) -> dict:
-    return {"products": product_service.get_product(product_id)}
+    return {"product": product_service.get_product(product_id)}
 
 
 @router.get("/products", response_model=dict)
