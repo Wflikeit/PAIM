@@ -5,19 +5,20 @@ from bson import ObjectId
 from starlette.testclient import TestClient
 
 from application.client.client_service import ClientService
-from application.responses import ClientResponse
+from application.responses import ClientResponse, AddressResponse
 from domain.exceptions import ClientNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
+from infrastructure.mongo.address_repository import AddressRepositoryMongo
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
 
 
 @pytest.fixture(scope="module")
-def test_container(mocked_client_repository):
+def test_container(mocked_client_repository, mocked_address_repository):
     """Set up a test container with a test database."""
     container = Container()
     container.client_service.override(
-        ClientService(client_repo=mocked_client_repository)
+        ClientService(client_repo=mocked_client_repository, address_repo=mocked_address_repository)
     )
     return container
 
@@ -33,6 +34,12 @@ def test_client(test_container):
 def mocked_client_repository():
     """Fixture returning a mocked ClientRepositoryMongo."""
     return AsyncMock(ClientRepositoryMongo)
+
+
+@pytest.fixture(scope="module")
+def mocked_address_repository():
+    """Fixture returning a mocked AddressRepositoryMongo."""
+    return AsyncMock(AddressRepositoryMongo)
 
 
 @pytest.fixture(scope="module")
@@ -72,6 +79,13 @@ def mock_client_data():
         "password": "mock_password",
         "company_name": "mock_company_name",
     }
+
+
+@pytest.fixture(scope="module")
+def mocked_address_response(client_data,mock_client_data):
+    """Fixture returning a mock address response."""
+    client_data["payment_address"]["id"] = mock_client_data["payment_address"]
+    return AddressResponse(**client_data["payment_address"])
 
 
 @pytest.fixture(scope="module")
@@ -122,9 +136,12 @@ async def test_register_client_success(
     client_data,
     mock_client_response,
     mock_client_data,
+    mocked_address_repository,
+    mocked_address_response
 ):
     """Test the integration of the /register endpoint."""
     mocked_client_repository.register_client_db.return_value = mock_client_response
+    mocked_address_repository.add_address.return_value = mocked_address_response
 
     response = test_client.post("/api/register", json=client_data)
 
@@ -161,7 +178,7 @@ async def test_get_client_invalid_id(
     """Test retrieving a client with invalid ID."""
     invalid_client_id = "not_a_valid_id"
     test_container.client_service.override(
-        ClientService(client_repo=ClientRepositoryMongo())
+        ClientService(client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo())
     )
 
     response = test_client.get(f"/api/clients/{invalid_client_id}")
@@ -183,7 +200,7 @@ async def test_register_client_e2e_success(
 ):
     """End-to-end test for registering client."""
     test_container.client_service.override(
-        ClientService(client_repo=ClientRepositoryMongo())
+        ClientService(client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo()),
     )
 
     response = test_client.post("/api/register", json=client_data)
