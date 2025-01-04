@@ -1,44 +1,45 @@
-from fastapi import Depends, HTTPException, status
+from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from passlib.context import CryptContext
+from pymongo import MongoClient
+from fastapi import HTTPException, status
 
-# Secret key and algorithm for JWT
+from infrastructure.mongo.mongo_client import MongoDBClient
+
+
 SECRET_KEY = "your_secret_key"  # Replace with a secure key
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# Password hashing
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
-# Fake database
-fake_users_db = {
-    "bdmin@gmail.com": {
-        "email": "bdmin@gmail.com",
-        "role": "client",
-        "hashed_password": pwd_context.hash("admin123"),
-    }
-}
 
-# Function to verify password
-def verify_password(plain_password, hashed_password):
+admin_collection = MongoDBClient.get_collection("admins")
+client_collection = MongoDBClient.get_collection("clients")
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-# Function to authenticate user
-def authenticate_user(email: str, password: str):
-    user = fake_users_db.get(email)
-    if not user or not verify_password(password, user["hashed_password"]):
-        return None
-    return user
-
-# Function to create access token
-def create_access_token(data: dict, expires_delta: timedelta = None):
+def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# Dependency to get the current user
+
+def authenticate_user(email: str, password: str):
+    # Check in Admin collection
+    admin_user = admin_collection.find_one({"email": email})
+    if admin_user and verify_password(password, admin_user["password"]):
+        return {"email": admin_user["email"], "role": "admin"}
+
+
+    client_user = client_collection.find_one({"email": email})
+    if client_user and verify_password(password, client_user["password"]):
+        return {"email": client_user["email"], "role": "client"}
+
+    return None
+
 def get_current_user(token: str):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -48,18 +49,15 @@ def get_current_user(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
-        if email is None:
+        role: str = payload.get("role")
+        if email is None or role is None:
             raise credentials_exception
-        user = fake_users_db.get(email)
-        if user is None:
-            raise credentials_exception
-        return user
+        return {"email": email, "role": role}
     except JWTError:
         raise credentials_exception
 
-# Dependency to check if the user is an admin
-def is_admin(user: dict = Depends(get_current_user)):
-    if user.get("role") != "admin":
+def is_admin(user: dict):
+    if user["role"] != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access forbidden: user is not an admin",

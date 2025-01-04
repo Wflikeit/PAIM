@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 from application.auth.auth import authenticate_user, create_access_token, is_admin
+from fastapi import APIRouter, HTTPException, status, Depends
+
 
 router = APIRouter()
 
-# Route to get a token (login endpoint)
 @router.post("/token")
 async def login_for_access_token(email: str, password: str):
     user = authenticate_user(email, password)
@@ -12,8 +12,11 @@ async def login_for_access_token(email: str, password: str):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
-    access_token = create_access_token(data={"sub": email, "role": user["role"]})
+    access_token = create_access_token(
+        data={"sub": user["email"], "role": user["role"]}
+    )
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 # Admin routes
 @router.get("/")
