@@ -1,6 +1,5 @@
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
-from starlette.requests import Request
 
 from application.client.client_service import ClientService
 from application.responses import ClientResponse
@@ -13,11 +12,9 @@ router = APIRouter()
 @router.post("/register", response_model=ClientResponse)
 @inject
 async def upload_client(
-    request: Request,
+    client: Client,
     client_service: ClientService = Depends(Provide[Container.client_service]),
 ) -> ClientResponse:
-    data = await request.form()
-    client = Client(**data)
     return client_service.register_client(client)
 
 

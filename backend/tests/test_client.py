@@ -39,11 +39,21 @@ def mocked_client_repository():
 def client_data():
     """Fixture returning data for a test client."""
     return {
-        "email": "test@mail.com",
-        "payment_address": "mock_payment_address",
-        "delivery_address": "mock_delivery_address",
+        "email": "test2@mail.com",
+        "payment_address": {
+            "street": "mock_street",
+            "house_number": 1,
+            "postal_code": "12-345",
+            "city": "mock_city",
+        },
+        "delivery_address": {
+            "street": "mock_street",
+            "house_number": 1,
+            "postal_code": "12-345",
+            "city": "mock_city",
+        },
         "nip": "0123456789",
-        "orders": "mock_orders",
+        "orders": [],
         "password": "mock_password",
         "company_name": "mock_company_name",
     }
@@ -54,11 +64,11 @@ def mock_client_data():
     """Fixture returning mock client data from the database."""
     return {
         "id": str(ObjectId()),
-        "email": "test@mail.com",
-        "payment_address": "mock_payment_address",
-        "delivery_address": "mock_delivery_address",
+        "email": "test2@mail.com",
+        "payment_address": "677893fed7120e3a071a7950",
+        "delivery_address": "677893fed7120e3a071a7950",
         "nip": "0123456789",
-        "orders": "mock_orders",
+        "orders": [],
         "password": "mock_password",
         "company_name": "mock_company_name",
     }
@@ -116,7 +126,7 @@ async def test_register_client_success(
     """Test the integration of the /register endpoint."""
     mocked_client_repository.register_client_db.return_value = mock_client_response
 
-    response = test_client.post("/api/register", data=client_data)
+    response = test_client.post("/api/register", json=client_data)
 
     assert response.status_code == 200
     response_json = response.json()
@@ -161,3 +171,23 @@ async def test_get_client_invalid_id(
         response.json()["error"]
         == f"ID: {invalid_client_id} is invalid: '{invalid_client_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     )
+
+
+@pytest.mark.asyncio
+async def test_register_client_e2e_success(
+    test_container,
+    test_client,
+    client_data,
+    mock_client_response,
+    mock_client_data,
+):
+    """End-to-end test for registering client."""
+    test_container.client_service.override(
+        ClientService(client_repo=ClientRepositoryMongo())
+    )
+
+    response = test_client.post("/api/register", json=client_data)
+    assert response.status_code == 200
+    response_json = response.json()
+
+    await assert_client_response(mock_client_data, response_json)
