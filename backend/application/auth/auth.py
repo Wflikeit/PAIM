@@ -20,11 +20,17 @@ client_collection = MongoDBClient.get_collection("clients")
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
+def create_access_token(data: dict, role: str = None, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
+
+    # Include role in the token payload if provided
+    if role:
+        to_encode.update({"role": role})
+
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 
 def authenticate_user(email: str, password: str):
@@ -33,12 +39,18 @@ def authenticate_user(email: str, password: str):
     if admin_user and verify_password(password, admin_user["password"]):
         return {"email": admin_user["email"], "role": "admin"}
 
-
+    # Check in Client collection
     client_user = client_collection.find_one({"email": email})
     if client_user and verify_password(password, client_user["password"]):
-        return {"email": client_user["email"], "role": "client"}
+        return {"email": client_user["email"]}
 
+    # If not found in either collection
     return None
+
+def generate_token_for_user(user: dict) -> str:
+    # Generate a token with role information for admins
+    return create_access_token(data={"sub": user["email"]}, role=user.get("role"))
+
 
 def get_current_user(token: str):
     credentials_exception = HTTPException(
