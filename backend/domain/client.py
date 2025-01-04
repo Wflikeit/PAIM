@@ -8,8 +8,8 @@ from domain.address import Address
 
 class Client(BaseModel):
     email: str
-    payment_address: Address
-    delivery_address: Address
+    payment_address: Address|str
+    delivery_address: Address|str
     nip: str
     orders: List[str] = Field(default_factory=list)
     password: str

@@ -8,7 +8,7 @@ from domain.product_order import ProductOrder
 
 
 class Order(BaseModel):
-    date: date = Field(default_factory=date.today)
+    order_date: date = Field(default_factory=date.today)
     amount: float
     products: List[ProductOrder] = Field(default_factory=list)
     address: str

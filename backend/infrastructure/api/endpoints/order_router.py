@@ -9,7 +9,7 @@ from infrastructure.containers import Container
 router = APIRouter()
 
 
-@router.post("/order", response_model=OrderResponse)
+@router.post("/purchase", response_model=OrderResponse)
 @inject
 async def add_order_endpoint(
     order: Order,

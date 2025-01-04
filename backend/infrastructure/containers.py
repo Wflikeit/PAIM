@@ -3,6 +3,7 @@ from dependency_injector import containers, providers
 from application.client.client_service import ClientService
 from application.order.order_service import OrderService
 from application.product.product_service import ProductService
+from infrastructure.mongo.address_repository import AddressRepositoryMongo
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
 from infrastructure.mongo.order_repository import OrderRepositoryMongo
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
@@ -23,6 +24,7 @@ class Container(containers.DeclarativeContainer):
     product_repository = providers.Factory(ProductRepositoryMongo)
     client_repository = providers.Factory(ClientRepositoryMongo)
     order_repository = providers.Factory(OrderRepositoryMongo)
+    address_repository = providers.Factory(AddressRepositoryMongo)
 
     # Service Provider
     product_service = providers.Factory(
@@ -33,6 +35,7 @@ class Container(containers.DeclarativeContainer):
     client_service = providers.Factory(
         ClientService,
         client_repo=client_repository,
+        address_repo=address_repository,
     )
 
     order_service = providers.Factory(

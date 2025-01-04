@@ -39,3 +39,11 @@ class OrderResponse(BaseModel):
     trucks: Optional[List[str]]
     warehouses: Optional[List[str]]
     route_length: float
+
+
+class AddressResponse(BaseModel):
+    id: str
+    street: str
+    city: str
+    postal_code: str
+    house_number: int

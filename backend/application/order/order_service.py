@@ -28,6 +28,7 @@ class OrderService:
 
     def add_order(self, order_data: Order) -> OrderResponse:
         self.check_warehouses(order_data)
+        calculate_total_weight(order_data.products)
         self.assign_trucks(order_data)
 
         order = self._order_repo.add_order(order_data)
