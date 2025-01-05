@@ -1,6 +1,8 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import Popover from "@mui/material/Popover";
 import {red} from "@mui/material/colors";
+import {Box, Button} from "@mui/material";
+import {useNavigate} from "react-router-dom";
 //
 // import { getInitialsFromEmail } from '../reservation/ReservationUtils';
 //
@@ -18,6 +20,11 @@ export default function ProfilePhotoWrapper({ user }: { user?: LoggedInUser }) {
     HTMLButtonElement | null | undefined
   >(null);
   // const { navigateToLoginPage } = useCustomNavigation();
+  const navigate = useNavigate();
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -39,37 +46,63 @@ export default function ProfilePhotoWrapper({ user }: { user?: LoggedInUser }) {
 
   return (
     <div className="icon__wrapper">
-      <button
-        className="photo__wrapper"
-        style={{ backgroundColor: `${red}` }}
-        onClick={handleClick}
-      >
-        {user ? "WF" : null}
-      </button>
+      {/*<NavWrapper></NavWrapper>*/}
 
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        sx={{
-          marginTop: "1.3rem",
-          borderRadius: "1rem !important",
-        }}
-      >
-        {/*<button className="sign__out__button" onClick={handleLogoutClick}>*/}
-        {/*    Sign out*/}
-        {/*</button>*/}
-        <button className="sign__out__button">Sign out</button>
-      </Popover>
+      <Box sx={{ display: "flex", gap: 2, height: "3rem" }}>
+        <Button
+          className="cart"
+          color="inherit"
+          onClick={() => handleNavigate("/cart")}
+        >
+          Cart
+        </Button>
+
+        <Button
+          className="login"
+          color="inherit"
+          onClick={() => handleNavigate("/login")}
+        >
+          Login
+        </Button>
+        <Button
+          className="login"
+          color="inherit"
+          onClick={() => handleNavigate("/register")}
+        >
+          Register
+        </Button>
+        <button
+          className="photo__wrapper"
+          style={{ backgroundColor: `${red}`, margin: "auto" }}
+          onClick={handleClick}
+        >
+          {user ? "WF" : null}
+        </button>
+
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          sx={{
+            marginTop: "1.3rem",
+            borderRadius: "1rem !important",
+          }}
+        >
+          {/*<button className="sign__out__button" onClick={handleLogoutClick}>*/}
+          {/*    Sign out*/}
+          {/*</button>*/}
+          <button className="sign__out__button">Sign out</button>
+        </Popover>
+      </Box>
     </div>
   );
 }

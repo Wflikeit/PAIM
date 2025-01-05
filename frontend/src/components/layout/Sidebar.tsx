@@ -16,7 +16,6 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const { filters } = useSelector((state: RootState) => state.products);
 
-  // Only render Sidebar on the homepage
   if (location.pathname !== "/") {
     return null;
   }

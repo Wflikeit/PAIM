@@ -78,11 +78,6 @@ button.add-to-cart {
     border-color: #33c4ff;
 }
 
-button.login {
-    background-color: #ff5733;
-    border-color: #ff5733;
-    margin-top: 3rem;
-}
 
 button.cart {
     background-color: #ffb233;
@@ -271,8 +266,7 @@ main {
     z-index: 3;
 
     .icon__wrapper {
-        display: grid;
-        place-content: center;
+        margin: auto 0;
 
         .photo__wrapper {
             border: none;
