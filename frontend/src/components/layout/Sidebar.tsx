@@ -7,7 +7,6 @@ import { useLocation } from "react-router-dom";
 import { RootState } from "../../redux/store";
 import CheckBoxGroup from "./CheckBoxGroup";
 import {
-  applyFilter,
   setCountryOfOriginFilter,
   setFruitOrVegetableFilter,
 } from "../../model/product";
@@ -17,17 +16,19 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const { filters } = useSelector((state: RootState) => state.products);
 
+  // Only render Sidebar on the homepage
   if (location.pathname !== "/") {
     return null;
   }
 
+  // Define filter categories
   const categories = [
     {
       title: "Category",
-      options: ["Warzywa", "Owoce"],
-      filterValues: ["Warzywo", "Owoc"],
-      filterKey: "fruitOrVegetable",
-      filterAction: setFruitOrVegetableFilter,
+      options: ["Warzywa", "Owoce"], // Displayed labels
+      filterValues: ["Warzywo", "Owoc"], // Actual filter values
+      filterKey: "fruitOrVegetable", // Corresponding key in Redux state
+      filterAction: setFruitOrVegetableFilter, // Redux action to update the filter
     },
     {
       title: "Kraj pochodzenia",
@@ -42,16 +43,17 @@ const Sidebar = () => {
     <nav className="sidebar">
       <List style={{ position: "sticky", marginBottom: "200px" }}>
         <Box sx={{ mt: 1, color: blue[500] }}>
+          {/* Render CheckBoxGroup dynamically for each category */}
           {categories.map((category, index) => (
             <CheckBoxGroup
               key={index}
               title={category.title}
               options={category.options}
               filterValues={category.filterValues}
-              selectedValues={filters[category.filterKey] || []}
+              selectedValues={filters[category.filterKey] || []} // Pass selected filter values
               onChange={(filterValue: string) => {
+                // Dispatch the appropriate filter action
                 dispatch(category.filterAction(filterValue));
-                dispatch(applyFilter());
               }}
             />
           ))}

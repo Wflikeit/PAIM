@@ -1,28 +1,19 @@
-import { useEffect, useState } from "react";
-import { fetchProducts } from "../api/productsApi.ts";
+import { useQuery } from "react-query";
+import axios from "axios";
+import { Product } from "../api/productsApi";
 
-const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+const BACKEND_URL = "http://localhost:8002";
 
-  useEffect(() => {
-    const getProducts = async () => {
-      try {
-        const data = await fetchProducts();
-        console.log(data);
-        setProducts(data);
-      } catch (error) {
-        setError("Failed to fetch products: " + error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getProducts();
-  }, []);
-
-  return { products, loading, error };
+const fetchProductsFromApi = async (): Promise<Product[]> => {
+  const response = await axios.get<{ products: Product[] }>(
+    `${BACKEND_URL}/api/products`,
+  );
+  if (!response.data.products) {
+    throw new Error("Products not found in the response");
+  }
+  return response.data.products;
 };
 
-export default useProducts;
+export const useProducts = () => {
+  return useQuery("products", fetchProductsFromApi);
+};
