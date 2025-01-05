@@ -14,7 +14,7 @@ interface Client {
 const fetchClients = async (): Promise<Client[]> => {
   try {
     const response = await axios.get<Client[]>(
-      "http://localhost:8000/api/clients",
+      "http://localhost:8002/api/clients",
     );
     return await response.data;
   } catch (error) {
