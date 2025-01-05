@@ -41,7 +41,6 @@ const Sidebar = () => {
     <nav className="sidebar">
       <List style={{ position: "sticky", marginBottom: "200px" }}>
         <Box sx={{ mt: 1, color: "#4caf50" }}>
-          {/* Render CheckBoxGroup dynamically for each category */}
           {categories.map((category, index) => (
             <CheckBoxGroup
               key={index}
@@ -50,7 +49,6 @@ const Sidebar = () => {
               filterValues={category.filterValues}
               selectedValues={filters[category.filterKey] || []} // Pass selected filter values
               onChange={(filterValue: string) => {
-                // Dispatch the appropriate filter action
                 dispatch(category.filterAction(filterValue));
               }}
             />

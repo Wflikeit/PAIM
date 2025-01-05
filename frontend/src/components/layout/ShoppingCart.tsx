@@ -22,7 +22,7 @@ const ShoppingCartMiniature = () => {
           },
         }}
       >
-        <ShoppingCartIcon sx={{ fontSize: "2.5rem", color: "#159d17" }} />
+        <ShoppingCartIcon sx={{ fontSize: "2.5rem", color: "#177c1b" }} />
       </Badge>
     </Link>
   );
