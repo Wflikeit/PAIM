@@ -5,7 +5,8 @@ interface ProductsState {
   products: Product[];
   filteredProducts: Product[];
   filters: {
-    fruitOrVegetable: string | null;
+    fruitOrVegetable: [];
+    countryOfOrigin: []; // New filter
   };
   loading: boolean;
   error: string | null;
@@ -15,7 +16,8 @@ const initialState: ProductsState = {
   products: [],
   filteredProducts: [],
   filters: {
-    fruitOrVegetable: null,
+    fruitOrVegetable: [], // Initialize as an empty array
+    countryOfOrigin: [], // Initialize as an empty array
   },
   loading: false,
   error: null,
@@ -25,25 +27,47 @@ const initialState: ProductsState = {
 export const fetchProducts = createAsyncThunk<Product[]>(
   "products/fetchProducts",
   async () => {
-    const products = await fetchProductsFromApi();
-    return products;
+    return await fetchProductsFromApi();
   },
 );
+
+const toggleFilter = (currentFilters: string[], value: string): string[] => {
+  return currentFilters.includes(value)
+    ? currentFilters.filter((item) => item !== value) // Remove if exists
+    : [...currentFilters, value]; // Add if not exists
+};
 
 const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
     applyFilter(state) {
-      const { fruitOrVegetable } = state.filters;
-      state.filteredProducts = state.products.filter((product) =>
-        fruitOrVegetable
-          ? product.fruit_or_vegetable === fruitOrVegetable
-          : true,
+      const { fruitOrVegetable, countryOfOrigin } = state.filters;
+
+      state.filteredProducts = state.products.filter((product) => {
+        const matchesFruitOrVegetable =
+          fruitOrVegetable.length === 0 ||
+          fruitOrVegetable.includes(product.fruit_or_vegetable);
+
+        const matchesCountryOfOrigin =
+          countryOfOrigin.length === 0 ||
+          countryOfOrigin.includes(product.country_of_origin);
+
+        return matchesFruitOrVegetable && matchesCountryOfOrigin;
+      });
+    },
+
+    setFruitOrVegetableFilter(state, action: PayloadAction<string>) {
+      state.filters.fruitOrVegetable = toggleFilter(
+        state.filters.fruitOrVegetable,
+        action.payload,
       );
     },
-    setFruitOrVegetableFilter(state, action: PayloadAction<string | null>) {
-      state.filters.fruitOrVegetable = action.payload;
+    setCountryOfOriginFilter(state, action: PayloadAction<string>) {
+      state.filters.countryOfOrigin = toggleFilter(
+        state.filters.countryOfOrigin,
+        action.payload,
+      );
     },
   },
   extraReducers: (builder) => {
@@ -67,6 +91,10 @@ const productsSlice = createSlice({
   },
 });
 
-export const { applyFilter, setFruitOrVegetableFilter } = productsSlice.actions;
+export const {
+  applyFilter,
+  setFruitOrVegetableFilter,
+  setCountryOfOriginFilter, // Export new action
+} = productsSlice.actions;
 
 export default productsSlice.reducer;
