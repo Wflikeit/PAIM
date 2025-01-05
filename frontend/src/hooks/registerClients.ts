@@ -19,7 +19,7 @@ const registerClients = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/register",
+        "http://localhost:8002/api/register",
         clientdata,
         {
           headers: {

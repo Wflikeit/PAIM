@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 const Logo = () => {
   return (
     <Box>
-      <h2 style={{ textAlign: "center", color: "blue", fontSize: "30px" }}>
+      <h2 style={{ textAlign: "center", color: "#177c1b", fontSize: "30px" }}>
         Food Market
       </h2>
     </Box>

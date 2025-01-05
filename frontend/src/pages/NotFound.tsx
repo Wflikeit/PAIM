@@ -1,18 +1,22 @@
-import React from "react";
+import Box from '@mui/material/Box/Box';
+import Typography from '@mui/material/Typography/Typography';
+import React from 'react';
 
-const NotFound: React.FC = () => {
-  return (
-    <div style={{ textAlign: "center", padding: "50px", color: "black" }}>
-      <h1>404 - Page Not Found</h1>
-      <p>Sorry, the page you are looking for does not exist.</p>
-      <p>
-        You may have mistyped the address or the page may have moved.{" "}
-        <a href="/" style={{ color: "blue", textDecoration: "underline" }}>
-          Go back to the homepage.
-        </a>
-      </p>
-    </div>
-  );
+const NotFound = () => {
+    return (
+        <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh',
+                flexDirection: 'column',
+            }}
+        >
+            <Typography variant="h1">404 Not Found</Typography>
+            <a href="/">Home Page</a>
+        </Box>
+    );
 };
 
 export default NotFound;

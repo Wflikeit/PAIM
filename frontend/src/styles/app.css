@@ -27,6 +27,12 @@ a:hover {
     color: var(--hover-green);
 }
 
+#root {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
 body {
     font-size: 14px;
     margin: 0; /* Remove the margin in all browsers. */
@@ -72,25 +78,6 @@ button.add-to-cart {
     border-color: #33c4ff;
 }
 
-button.login {
-    background-color: #ff5733;
-    border-color: #ff5733;
-}
-
-button.cart {
-    background-color: #ffb233;
-    border-color: #ffb233;
-}
-
-button.about {
-    background-color: #4caf50;
-    border-color: #4caf50;
-}
-
-button.contact {
-    background-color: #f44336;
-    border-color: #f44336;
-}
 
 button.delete {
     background-color: #f44336;
@@ -131,48 +118,6 @@ button.login {
     border-color: #4caf50;
 }
 
-button.login:hover {
-    background-color: #388e3c;
-    border-color: #388e3c;
-}
-
-button.register {
-    background-color: transparent;
-    border-color: #f44336;
-    color: #f44336;
-    margin-top: 10px;
-}
-
-button.register:hover {
-    background-color: #f44336;
-    color: white;
-    border-color: #f44336;
-}
-
-button.register-button {
-    background-color: #4caf50;
-    border-color: #4caf50;
-    color: white;
-    transition: background-color 0.3s,
-    border-color 0.3s;
-}
-
-button.register-button:hover {
-    background-color: #388e3c;
-    border-color: #388e3c;
-}
-
-button.register-button:focus {
-    outline: 4px solid #4caf50;
-}
-
-.buttons-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-top: 20px;
-    width: 100%;
-}
 
 @media (prefers-color-scheme: light) {
     :root {
@@ -263,8 +208,7 @@ main {
     z-index: 3;
 
     .icon__wrapper {
-        display: grid;
-        place-content: center;
+        margin: auto 0;
 
         .photo__wrapper {
             border: none;
@@ -281,36 +225,6 @@ main {
     }
 }
 
-.link {
-    display: grid;
-    place-content: center;
-    place-items: center;
-
-    .avatar {
-        background: none;
-    }
-
-    .icon {
-        color: black;
-    }
-
-    & __active,
-    &:hover {
-        .avatar {
-            background-color: rgba(0, 63, 225, 10%) !important;
-            border-radius: 1.5rem !important;
-        }
-
-        .typography,
-        .icon {
-            color: rgb(0, 63, 225);
-        }
-    }
-
-    .typography {
-        font-weight: 550;
-    }
-}
 
 .sign__out__button {
     background: white;

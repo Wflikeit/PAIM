@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Button, Container, Typography } from "@mui/material";
+import {Box, Button, TextField, Typography} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -60,31 +60,32 @@ const LoginForm = () => {
   };
 
   return (
-    <Container className="buttons-container">
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Email"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          type="password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {error && <Typography color="error">{error}</Typography>}
+    <form onSubmit={handleSubmit}>
+      <TextField
+        label="Email"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <TextField
+        label="Password"
+        type="password"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      {error && <Typography color="error">{error}</Typography>}
+      <Box>
         <Button
           type="submit"
           className="login"
           variant="contained"
           color="primary"
+          fullWidth
         >
           Login
         </Button>
@@ -94,11 +95,12 @@ const LoginForm = () => {
           onClick={handleRegisterRedirect}
           variant="contained"
           color="secondary"
+          fullWidth
         >
           Register
         </Button>
-      </form>
-    </Container>
+      </Box>
+    </form>
   );
 };
 

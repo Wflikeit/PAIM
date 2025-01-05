@@ -1,81 +1,58 @@
 import React from "react";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import { Box, Input, Slider, Stack } from "@mui/material";
-import { blue } from "@mui/material/colors";
-import CheckBoxGroup from "./CheckBoxGroup.tsx";
+import { Box } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { RootState } from "../../redux/store";
+import CheckBoxGroup from "./CheckBoxGroup";
+import {
+  setCountryOfOriginFilter,
+  setFruitOrVegetableFilter,
+} from "../../model/product";
 
 const Sidebar = () => {
-  const [value, setValue] = React.useState(30);
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const { filters } = useSelector((state: RootState) => state.products);
 
-  const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setValue(newValue as number);
-  };
+  if (location.pathname !== "/") {
+    return null;
+  }
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value === "" ? 0 : Number(event.target.value));
-  };
-
+  // Define filter categories
   const categories = [
     {
       title: "Category",
-      options: ["Warzywa", "Owoce"],
+      options: ["Warzywa", "Owoce"], // Displayed labels
+      filterValues: ["Warzywo", "Owoc"], // Actual filter values
+      filterKey: "fruitOrVegetable", // Corresponding key in Redux state
+      filterAction: setFruitOrVegetableFilter, // Redux action to update the filter
     },
     {
       title: "Kraj pochodzenia",
       options: ["Polska", "Hiszpania"],
+      filterValues: ["Polska", "Hiszpania"],
+      filterKey: "countryOfOrigin",
+      filterAction: setCountryOfOriginFilter,
     },
   ];
-
-  const handleBlur = () => {
-    if (value < 0) {
-      setValue(0);
-    } else if (value > 100) {
-      setValue(100);
-    }
-  };
 
   return (
     <nav className="sidebar">
       <List style={{ position: "sticky", marginBottom: "200px" }}>
-        <Box sx={{ mt: 1, color: blue[500] }}>
+        <Box sx={{ mt: 1, color: "#4caf50" }}>
           {categories.map((category, index) => (
             <CheckBoxGroup
               key={index}
               title={category.title}
               options={category.options}
+              filterValues={category.filterValues}
+              selectedValues={filters[category.filterKey] || []} // Pass selected filter values
+              onChange={(filterValue: string) => {
+                dispatch(category.filterAction(filterValue));
+              }}
             />
           ))}
-          <ListItem>
-            <Box style={{ color: blue[500], width: "100%" }}>
-              <h3>Max Price</h3>
-              <Stack direction="column" spacing={2} alignItems="center">
-                <Slider
-                  value={typeof value === "number" ? value : 0}
-                  onChange={handleSliderChange}
-                  aria-labelledby="input-slider"
-                  sx={{ flex: 1 }}
-                />
-                <div>
-                  <Input
-                    value={value}
-                    size="small"
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    inputProps={{
-                      step: 10,
-                      min: 0,
-                      max: 100,
-                      type: "number",
-                      "aria-labelledby": "input-slider",
-                    }}
-                    sx={{ width: "50%" }}
-                  />
-                  <span style={{ marginLeft: "10px" }}>Zł</span>
-                </div>
-              </Stack>
-            </Box>
-          </ListItem>
         </Box>
       </List>
     </nav>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-interface Product {
+export interface Product {
   id: string;
   name: string;
   price: number;
@@ -12,29 +12,24 @@ interface Product {
   imageId: string;
 }
 
-interface ProductResponse {
-  product?: Product;
-}
+const BACKEND_URL = "http://localhost:8002";
 
-const BACKEND_URL = "http://localhost:8000";
-
-export const fetchProducts = async (): Promise<Product[]> => {
+export const fetchProductsFromApi = async (): Promise<Product[]> => {
   try {
-    const response = await axios.get<ProductResponse>(
-      `${BACKEND_URL}/api/products/6775934ed79a82364c118356`,
+    const response = await axios.get<{ products: Product[] }>(
+      `${BACKEND_URL}/api/products`,
     );
 
-    const product = response.data.product;
+    const products = response.data.products;
+    console.log("Products fetched from the API:", products);
 
-    if (!product) {
-      new Error("Product not found in the response");
+    if (!products) {
+      throw new Error("Products not found in the response");
     }
 
-    console.log(product);
-
-    return Array(36).fill(product);
+    return products;
   } catch (error) {
     console.error("Error fetching products:", error);
-    return [];
+    throw error; // Let Redux handle the error
   }
 };

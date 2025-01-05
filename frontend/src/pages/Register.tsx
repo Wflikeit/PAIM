@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Button, Container, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import registerClients from "../hooks/registerClients";
 
 const RegisterForm = () => {
@@ -60,93 +60,110 @@ const RegisterForm = () => {
   };
 
   return (
-    <Container>
-      <form onSubmit={handleSubmit}>
-        <Typography
-          variant="h3"
-          gutterBottom
-          style={{ color: "black", textAlign: "center" }}
-          sx={{ paddingTop: "60px" }}
-        >
-          Create account
-        </Typography>
-
-        <TextField
-          label="Email"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => {
-            console.log("Email: " + e.target.value);
-            setEmail(e.target.value);
-          }}
-        />
-
-        <TextField
-          label="NIP"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={nip}
-          onChange={(e) => setNip(e.target.value)}
-        />
-
-        <TextField
-          label="Nazwa firmy"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={company_name}
-          onChange={(e) => setCompanyName(e.target.value)}
-        />
-
-        <TextField
-          label="Adres płatności (oddziel przecinkami)"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={payment_address}
-          onChange={(e) => setPaymentAddress(e.target.value)}
-        />
-
-        <TextField
-          label="Adres dostawy (oddziel przecinkami)"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={delivery_address}
-          onChange={(e) => setDeliveryAddress(e.target.value)}
-        />
-
-        <TextField
-          label="Hasło"
-          type="password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        {error && (
-          <Typography variant="body2" color="error" gutterBottom>
-            {error}
+    <Box
+      sx={{
+        margin: "auto",
+        maxWidth: " 36rem",
+        minHeight: "100dvh",
+        display: "grid",
+        placeItems: "center",
+      }}
+    >
+      <Box>
+        <form onSubmit={handleSubmit}>
+          <Typography
+            variant="h3"
+            gutterBottom
+            style={{ color: "black", textAlign: "center" }}
+            sx={{ paddingTop: "60px" }}
+            size={"small"}
+          >
+            Create account
           </Typography>
-        )}
 
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          className="register-button"
-          fullWidth
-          onChange={(e) => setOrders("zamowienie")}
-        >
-          Register
-        </Button>
-      </form>
-    </Container>
+          <TextField
+            label="Email"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={email}
+            onChange={(e) => {
+              console.log("Email: " + e.target.value);
+              setEmail(e.target.value);
+            }}
+            size={"small"}
+          />
+
+          <TextField
+            label="NIP"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={nip}
+            onChange={(e) => setNip(e.target.value)}
+            size={"small"}
+          />
+
+          <TextField
+            label="Nazwa firmy"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={company_name}
+            onChange={(e) => setCompanyName(e.target.value)}
+            size={"small"}
+          />
+
+          <TextField
+            label="Adres płatności (oddziel przecinkami)"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={payment_address}
+            onChange={(e) => setPaymentAddress(e.target.value)}
+            size={"small"}
+          />
+
+          <TextField
+            label="Adres dostawy (oddziel przecinkami)"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={delivery_address}
+            onChange={(e) => setDeliveryAddress(e.target.value)}
+            size={"small"}
+          />
+
+          <TextField
+            label="Hasło"
+            type="password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            size={"small"}
+          />
+
+          {error && (
+            <Typography variant="body2" color="error" gutterBottom>
+              {error}
+            </Typography>
+          )}
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            className="register-button"
+            fullWidth
+            onChange={(e) => setOrders("zamowienie")}
+          >
+            Register
+          </Button>
+        </form>
+      </Box>
+    </Box>
   );
 };
 
