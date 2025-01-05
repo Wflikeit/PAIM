@@ -19,21 +19,38 @@ const LoginForm = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:8000/api/register", {
-        email,
-        password,
+      // Create FormData to handle the POST request
+      const formData = new FormData();
+      formData.append("username", email); // Backend expects "username" for email
+      formData.append("password", password);
+
+
+      const response = await axios.post("http://127.0.0.1:8000/admin/login", formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       });
 
-      const { role } = response.data;
+      console.log("Response data:", response.data);
 
+      const { access_token } = response.data;
+      const tokenPayload = JSON.parse(
+        atob(access_token.split(".")[1]) // Decode JWT payload
+      );
+      const role = tokenPayload.role;
+
+      // Store the token and role in localStorage
+      localStorage.setItem("access_token", access_token);
       localStorage.setItem("user_role", role);
 
+      // Redirect based on role
       if (role === "admin") {
         navigate("/admin");
       } else {
         navigate("/");
       }
     } catch (error) {
+      console.error("Login failed:", error);
       setError("Invalid email or password");
     }
   };

@@ -1,7 +1,6 @@
-from application.auth.auth import authenticate_user, create_access_token, is_admin
+from application.auth.auth import authenticate_user, create_access_token, is_admin, generate_token_for_user
 from fastapi import APIRouter, HTTPException, status, Depends
-
-from application.auth.auth import generate_token_for_user
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter()
 
@@ -17,14 +16,27 @@ async def login_for_access_token(email: str, password: str):
     access_token = generate_token_for_user(user)
     return {"access_token": access_token, "token_type": "bearer"}
 
+# user: dict = Depends(is_admin)
 
-
-# Admin routes
-@router.get("/")
-async def admin_home(user: dict = Depends(is_admin)):
+@router.get("/", dependencies=[Depends(is_admin)])
+async def admin_home():
     return {"message": "Welcome to the Admin Page"}
 
-@router.get("/stats")
-async def admin_stats(user: dict = Depends(is_admin)):
+@router.get("/stats", dependencies=[Depends(is_admin)])
+async def admin_stats():
     stats = {"users": 100, "products": 50}
     return stats
+
+@router.post("/login")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+        )
+
+    access_token = create_access_token(data={"sub": user["email"], "role": user.get("role")})
+    print(f"Generated access token: {access_token}")
+
+    return {"access_token": access_token, "token_type": "bearer"}

@@ -7,10 +7,12 @@ from application.responses import ProductResponse
 from domain.product import Product
 from infrastructure.containers import Container
 
+from application.auth.auth import is_admin
+
 router = APIRouter()
 
 
-@router.post("/upload", response_model=ProductResponse)
+@router.post("/upload")
 @inject
 async def upload_product_endpoint(
     request: Request,

@@ -1,13 +1,24 @@
+from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from pymongo import MongoClient
-from fastapi import HTTPException, status
-
+from fastapi import Depends, HTTPException, status
+from jose import JWTError, jwt
 from infrastructure.mongo.mongo_client import MongoDBClient
+# import logging
+#
+# # Set up logging
+# logging.basicConfig(
+#     level=logging.DEBUG,  # Set the logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+#     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+#     handlers=[
+#         logging.StreamHandler()  # Log to the console
+#         # You can add a FileHandler here to log to a file
+#     ],
+# )
+# logger = logging.getLogger(__name__)
 
 
-SECRET_KEY = "your_secret_key"  # Replace with a secure key
+SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -25,30 +36,24 @@ def create_access_token(data: dict, role: str = None, expires_delta: timedelta =
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
 
-    # Include role in the token payload if provided
     if role:
         to_encode.update({"role": role})
 
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-
 def authenticate_user(email: str, password: str):
-    # Check in Admin collection
     admin_user = admin_collection.find_one({"email": email})
     if admin_user and verify_password(password, admin_user["password"]):
         return {"email": admin_user["email"], "role": "admin"}
 
-    # Check in Client collection
     client_user = client_collection.find_one({"email": email})
     if client_user and verify_password(password, client_user["password"]):
-        return {"email": client_user["email"]}
+        return {"email": client_user["email"], "role": "client"}
 
-    # If not found in either collection
     return None
 
 def generate_token_for_user(user: dict) -> str:
-    # Generate a token with role information for admins
     return create_access_token(data={"sub": user["email"]}, role=user.get("role"))
 
 
@@ -68,10 +73,32 @@ def get_current_user(token: str):
     except JWTError:
         raise credentials_exception
 
-def is_admin(user: dict):
-    if user["role"] != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: user is not an admin",
-        )
-    return user
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+
+def is_admin(token: str = Depends(oauth2_scheme)):
+    # logger = logging.getLogger("is_admin")
+
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Access forbidden: user is not an admin",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    try:
+        # Decode the JWT token
+
+        # logger.debug(f"Decoded token payload: {payload}")
+
+        # Check the role in the payload
+        role = payload.get("role")
+        if role != "admin":
+            # logger.warning("Access denied: User is not an admin")
+            raise credentials_exception
+
+        # Log successful admin access
+        # logger.info("Access granted: User is an admin")
+        return payload
+    except JWTError as e:
+        # logger.error(f"Invalid token: {str(e)}")
+        raise credentials_exception

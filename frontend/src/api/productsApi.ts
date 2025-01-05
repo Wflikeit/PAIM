@@ -1,7 +1,6 @@
 import axios from "axios";
 
 interface Product {
-  // Define the fields of your Product interface
   id: string;
   name: string;
   price: number;
@@ -33,7 +32,6 @@ export const fetchProducts = async (): Promise<Product[]> => {
 
     console.log(product);
 
-    // Return an array of the product repeated multiple times
     return Array(36).fill(product);
   } catch (error) {
     console.error("Error fetching products:", error);
