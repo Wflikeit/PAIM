@@ -1,11 +1,20 @@
 import React from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import { Box, Input, Slider, Stack } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Input,
+  Slider,
+  Stack,
+} from "@mui/material";
 import { blue } from "@mui/material/colors";
-import CheckBoxGroup from "./CheckBoxGroup.tsx";
-import { useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
+import { useLocation } from "react-router-dom";
+import { RootState } from "../../redux/store.ts";
+import { applyFilter, setFruitOrVegetableFilter } from "../../model/product.ts";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -17,6 +26,14 @@ const Sidebar = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value === "" ? 0 : Number(event.target.value));
+  };
+  const dispatch = useDispatch();
+  const { filters } = useSelector((state: RootState) => state.products);
+
+  const handleCheckboxChange = (value: string | null) => {
+    const newValue = filters.fruitOrVegetable === value ? null : value; // Toggle filter
+    dispatch(setFruitOrVegetableFilter(newValue));
+    dispatch(applyFilter());
   };
 
   const categories = [
@@ -42,18 +59,32 @@ const Sidebar = () => {
     return null;
   }
 
-
   return (
     <nav className="sidebar">
       <List style={{ position: "sticky", marginBottom: "200px" }}>
         <Box sx={{ mt: 1, color: blue[500] }}>
-          {categories.map((category, index) => (
-            <CheckBoxGroup
-              key={index}
-              title={category.title}
-              options={category.options}
+          <ListItem>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={filters.fruitOrVegetable === "Warzywa"}
+                  onChange={() => handleCheckboxChange("Warzywo")}
+                />
+              }
+              label="Warzywa"
             />
-          ))}
+          </ListItem>
+          <ListItem>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={filters.fruitOrVegetable === "Owoc"}
+                  onChange={() => handleCheckboxChange("Owoc")}
+                />
+              }
+              label="Owoce"
+            />
+          </ListItem>
           <ListItem>
             <Box style={{ color: blue[500], width: "100%" }}>
               <h3>Max Price</h3>
