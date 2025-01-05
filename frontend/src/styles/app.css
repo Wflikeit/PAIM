@@ -225,36 +225,6 @@ main {
     }
 }
 
-.link {
-    display: grid;
-    place-content: center;
-    place-items: center;
-
-    .avatar {
-        background: none;
-    }
-
-    .icon {
-        color: black;
-    }
-
-    & __active,
-    &:hover {
-        .avatar {
-            background-color: rgba(0, 63, 225, 10%) !important;
-            border-radius: 1.5rem !important;
-        }
-
-        .typography,
-        .icon {
-            color: rgb(0, 63, 225);
-        }
-    }
-
-    .typography {
-        font-weight: 550;
-    }
-}
 
 .sign__out__button {
     background: white;
