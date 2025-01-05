@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from domain.exceptions import RepositoryError
+from infrastructure.api.endpoints.order_router import router as order_router
 from infrastructure.api.endpoints.auth_router import router as admin_router
 from infrastructure.api.endpoints.client_router import router as client_router
 from infrastructure.api.endpoints.product_router import router as product_router
@@ -30,6 +31,7 @@ app.add_middleware(
 
 app.include_router(product_router, prefix="/api", tags=["products"])
 app.include_router(client_router, prefix="/api", tags=["clients"])
+app.include_router(order_router, prefix="/api", tags=["orders"])
 app.include_router(admin_router, prefix="/admin", tags=["admin"])
 
 app.add_exception_handler(RepositoryError, repository_exception_handler)

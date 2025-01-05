@@ -18,7 +18,9 @@ def test_container(mocked_client_repository, mocked_address_repository):
     """Set up a test container with a test database."""
     container = Container()
     container.client_service.override(
-        ClientService(client_repo=mocked_client_repository, address_repo=mocked_address_repository)
+        ClientService(
+            client_repo=mocked_client_repository, address_repo=mocked_address_repository
+        )
     )
     return container
 
@@ -82,7 +84,7 @@ def mock_client_data():
 
 
 @pytest.fixture(scope="module")
-def mocked_address_response(client_data,mock_client_data):
+def mocked_address_response(client_data, mock_client_data):
     """Fixture returning a mock address response."""
     client_data["payment_address"]["id"] = mock_client_data["payment_address"]
     return AddressResponse(**client_data["payment_address"])
@@ -137,7 +139,7 @@ async def test_register_client_success(
     mock_client_response,
     mock_client_data,
     mocked_address_repository,
-    mocked_address_response
+    mocked_address_response,
 ):
     """Test the integration of the /register endpoint."""
     mocked_client_repository.register_client_db.return_value = mock_client_response
@@ -178,7 +180,9 @@ async def test_get_client_invalid_id(
     """Test retrieving a client with invalid ID."""
     invalid_client_id = "not_a_valid_id"
     test_container.client_service.override(
-        ClientService(client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo())
+        ClientService(
+            client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo()
+        )
     )
 
     response = test_client.get(f"/api/clients/{invalid_client_id}")
@@ -200,7 +204,9 @@ async def test_register_client_e2e_success(
 ):
     """End-to-end test for registering client."""
     test_container.client_service.override(
-        ClientService(client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo()),
+        ClientService(
+            client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo()
+        ),
     )
 
     response = test_client.post("/api/register", json=client_data)

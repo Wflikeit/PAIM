@@ -8,16 +8,24 @@ from domain.client import Client
 
 
 class ClientService:
-    def __init__(self, client_repo: AbstractClientRepository, address_repo: AbstractAddressRepository) -> None:
+    def __init__(
+        self,
+        client_repo: AbstractClientRepository,
+        address_repo: AbstractAddressRepository,
+    ) -> None:
         self._client_repo = client_repo
         self._address_repo = address_repo
 
     def register_client(self, client: Client) -> ClientResponse:
         client_data = client.model_dump()
         payment_address = Address(**client_data["payment_address"])
-        client_data["payment_address"] = self._address_repo.add_address(payment_address).id
+        client_data["payment_address"] = self._address_repo.add_address(
+            payment_address
+        ).id
         delivery_address = Address(**client_data["delivery_address"])
-        client_data["delivery_address"] = self._address_repo.add_address(delivery_address).id
+        client_data["delivery_address"] = self._address_repo.add_address(
+            delivery_address
+        ).id
         client = Client(**client_data)
         return self._client_repo.register_client_db(client)
 

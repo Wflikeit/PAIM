@@ -1,17 +1,14 @@
-from datetime import date
 from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr
 from pydantic.v1 import Field
 
-from domain.product_order import ProductOrder
-
 
 class Order(BaseModel):
-    order_date: date = Field(default_factory=date.today)
+    delivery_date: str
     amount: float
-    products: List[ProductOrder] = Field(default_factory=list)
-    address: str
+    products: List[dict] = Field(default_factory=list)
+    delivery_address: str
     order_status: str
     email: EmailStr
     trucks: Optional[List[str]] = Field(default_factory=list)

@@ -9,6 +9,11 @@ from infrastructure.containers import Container
 router = APIRouter()
 
 
+@router.get("/")
+async def index():
+    print("inside index")
+
+
 @router.post("/register", response_model=ClientResponse)
 @inject
 async def upload_client(

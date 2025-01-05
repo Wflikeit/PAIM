@@ -36,4 +36,3 @@ class AddressRepositoryMongo(AbstractAddressRepository):
         address_data["id"] = str(address_data["_id"])
 
         return AddressResponse(**address_data)
-

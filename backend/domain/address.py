@@ -4,10 +4,12 @@ from pydantic import BaseModel, field_validator
 
 
 class Address(BaseModel):
-    street: str
+    voivodeship: str
+    county: str
     city: str
-    postal_code: str
+    street: str
     house_number: int
+    postal_code: str
 
     @field_validator("postal_code")
     def validate_postal_code(cls, value):

@@ -7,6 +7,7 @@ from infrastructure.mongo.address_repository import AddressRepositoryMongo
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
 from infrastructure.mongo.order_repository import OrderRepositoryMongo
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
+from infrastructure.mongo.warehouse_repository import WarehouseRepositoryMongo
 
 
 class Container(containers.DeclarativeContainer):
@@ -25,7 +26,7 @@ class Container(containers.DeclarativeContainer):
     client_repository = providers.Factory(ClientRepositoryMongo)
     order_repository = providers.Factory(OrderRepositoryMongo)
     address_repository = providers.Factory(AddressRepositoryMongo)
-
+    warehouse_repository = providers.Factory(WarehouseRepositoryMongo)
     # Service Provider
     product_service = providers.Factory(
         ProductService,
@@ -42,5 +43,5 @@ class Container(containers.DeclarativeContainer):
         OrderService,
         order_repo=order_repository,
         client_repo=client_repository,
-        product_repo=product_repository,
+        warehouse_repo=warehouse_repository,
     )

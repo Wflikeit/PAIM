@@ -1,10 +1,7 @@
-from datetime import date
 from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr
 from pydantic.v1 import Field
-
-from domain.product_order import ProductOrder
 
 
 class ProductResponse(BaseModel):
@@ -30,10 +27,10 @@ class ClientResponse(BaseModel):
 
 class OrderResponse(BaseModel):
     id: str
-    date: date
+    delivery_date: str
     amount: float
-    products: List[ProductOrder]
-    address: str
+    products: List[dict]
+    delivery_address: str
     order_status: str
     email: EmailStr
     trucks: Optional[List[str]]
@@ -43,7 +40,16 @@ class OrderResponse(BaseModel):
 
 class AddressResponse(BaseModel):
     id: str
-    street: str
+    voivodeship: str
+    county: str
     city: str
-    postal_code: str
+    street: str
     house_number: int
+    postal_code: str
+
+
+class WarehouseResponse(BaseModel):
+    id: str
+    address: str
+    product_quantities: dict
+    trucks: List[str] = Field(default_factory=list)
