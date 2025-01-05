@@ -18,7 +18,7 @@ const Header = () => {
         <HeaderLink to="/" text="Home" />
         <HeaderLink to="/contact" text="Contact" />
         <HeaderLink to="/about" text="About" />
-        <HeaderLink to="/products" text="Products" />
+        <HeaderLink to="/" text="Products" />
       </div>
       <ProfilePhotoWrapper user={undefined} />
     </header>

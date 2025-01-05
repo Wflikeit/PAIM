@@ -69,7 +69,7 @@ export default function ProfilePhotoWrapper({ user }: { user?: LoggedInUser }) {
             </Popover>
           </>
         )}
-        <Link to="/cart" className="cart" sx={{ margin: "auto" }}>
+        <Link href="/cart" className="cart" sx={{ margin: "auto" }}>
           <Badge
             badgeContent={5} // Hardcoded value of items in the cart
             color="secondary"
