@@ -32,7 +32,7 @@ const CheckBoxGroup: React.FC<CheckboxGroupProps> = ({
               />
             }
             label={option}
-            sx={{ display: "inline-flex", alignItems: "center" }}
+            sx={{ display: "inline-flex", alignItems: "center", color: 'black' }}
           />
         ))}
       </Box>
