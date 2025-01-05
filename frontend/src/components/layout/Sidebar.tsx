@@ -1,7 +1,6 @@
 import React from "react";
 import List from "@mui/material/List";
 import { Box } from "@mui/material";
-import { blue } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { RootState } from "../../redux/store";
@@ -41,7 +40,7 @@ const Sidebar = () => {
   return (
     <nav className="sidebar">
       <List style={{ position: "sticky", marginBottom: "200px" }}>
-        <Box sx={{ mt: 1, color: blue[500] }}>
+        <Box sx={{ mt: 1, color: "#4caf50" }}>
           {/* Render CheckBoxGroup dynamically for each category */}
           {categories.map((category, index) => (
             <CheckBoxGroup

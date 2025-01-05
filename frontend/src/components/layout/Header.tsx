@@ -1,4 +1,4 @@
-import ProfilePhotoWrapper from "../layout/ProfilePhotoWrapper";
+import UserActionsWrapper from "./UserActionsWrapper.tsx";
 import Logo from "./Logo.tsx";
 import React from "react";
 import HeaderLink from "./HeaderLink.tsx";
@@ -20,7 +20,7 @@ const Header = () => {
         <HeaderLink to="/about" text="About" />
         <HeaderLink to="/" text="Products" />
       </div>
-      <ProfilePhotoWrapper user={undefined} />
+      <UserActionsWrapper user={undefined} />
     </header>
   );
 };
