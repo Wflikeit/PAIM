@@ -10,7 +10,7 @@ const ShoppingCartMiniature = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
 
   // Calculate total quantity of items in the cart
-  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalQuantity = cartItems.length;
 
   return (
       <Link

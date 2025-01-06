@@ -14,8 +14,8 @@ const CartItemsHeader: React.FC = () => {
       }}
     >
       <Typography sx={{ fontWeight: 550 }}>PRODUCT DETAILS</Typography>
-      <Typography sx={{ fontWeight: 550, textAlign: "center" }}>
-        QUANTITY
+      <Typography sx={{ fontWeight: 550, textAlign: "center", width:"135zpx" }}>
+        AMOUNT [100kg]
       </Typography>
       <Typography sx={{ fontWeight: 550, textAlign: "center" }}>
         PRICE

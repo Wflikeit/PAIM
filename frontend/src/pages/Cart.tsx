@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store.ts";
 import { updateCartItemQuantity } from "../model/cardItem.ts";
 import WestIcon from "@mui/icons-material/West";
-import CartItemsHeader from "../components/cart/CardItemsHeader.tsx";
+import CartItemsHeader from "../components/cart/CartItemsHeader.tsx";
 import CartItem from "../components/cart/CartItem.tsx";
 
 const CartPage: React.FC = () => {
@@ -30,7 +30,7 @@ const CartPage: React.FC = () => {
       sx={{
         padding: "16px",
         color: "black",
-        margin: "15dvh auto",
+        margin: "10dvh auto",
         maxWidth: "50rem",
         minWidth: "30rem",
       }}
@@ -50,12 +50,12 @@ const CartPage: React.FC = () => {
           {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
         </Typography>
       </div>
-      <CartItemsHeader></CartItemsHeader>
+      <CartItemsHeader />
 
       {cartItems.length === 0 ? ( // Check the Redux cart items
         <Typography>Your cart is empty</Typography>
       ) : (
-        <div style={{ maxHeight: "25rem", overflow: "scroll" }}>
+        <div style={{ maxHeight: "33dvh", overflowY: "scroll" }}>
           {cartItems.map((item) => (
             <CartItem
               item={item}
