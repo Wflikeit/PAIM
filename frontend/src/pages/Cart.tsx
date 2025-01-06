@@ -1,17 +1,25 @@
 import React from "react";
-import { Box, Button, List, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  List,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store.ts";
-import { clearCart, removeFromCart } from "../model/cardItem.ts";
+import {
+  clearCart,
+  removeFromCart,
+  updateCartItemQuantity,
+} from "../model/cardItem.ts";
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const cartItems = useSelector((state: RootState) => state.cart.items); // Access Redux state
   const dispatch = useDispatch();
-
-  // Debugging log
-  console.log("Cart items in CartPage:", cartItems);
 
   // Function to handle removing an item from the cart
   const handleRemove = (id: string) => {
@@ -23,16 +31,20 @@ const CartPage: React.FC = () => {
     dispatch(clearCart());
   };
 
+  // Function to handle quantity change
+  const handleQuantityChange = (id: string, quantity: number) => {
+    if (quantity > 0) {
+      dispatch(updateCartItemQuantity({ id, quantity }));
+    }
+  };
+
   // Calculate the total price from the Redux cart items
   const totalPrice = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
   );
-    const state = useSelector((state: RootState) => state);
-    console.log("Entire Redux state:", state);
 
-
-    return (
+  return (
     <Box
       sx={{
         padding: "16px",
@@ -50,31 +62,87 @@ const CartPage: React.FC = () => {
       ) : (
         <>
           <List>
-            {cartItems.map((item) => {
-              console.log("Rendering item:", item); // Debugging log
-              return (
-                <Box
-                  key={item.id}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  <Typography>
-                    {item.name} x{item.quantity} - {item.price.toFixed(2)} zł
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleRemove(item.id)}
+            {cartItems.map((item) => (
+              <Box
+                key={item.id}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "1rem",
+                }}
+              >
+                <Typography>
+                  {item.name} - {item.price.toFixed(2)} zł
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <IconButton
+                    onClick={() =>
+                      handleQuantityChange(item.id, item.quantity - 1)
+                    }
+                    sx={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "4px",
+                      "&:hover": {
+                        backgroundColor: "#f0f0f0",
+                      },
+                    }}
                   >
-                    Remove
-                  </Button>
+                    -
+                  </IconButton>
+                  <TextField
+                    value={item.quantity}
+                    type="number"
+                    size="small"
+                    onChange={(e) =>
+                      handleQuantityChange(
+                        item.id,
+                        parseInt(e.target.value, 10) || 1,
+                      )
+                    }
+                    sx={{
+                      width: "50px",
+                      textAlign: "center",
+                      "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+                        {
+                          WebkitAppearance: "none",
+                          margin: 0,
+                        },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
+                      "& input": {
+                        padding: "8px", // Match the IconButton padding
+                        textAlign: "center",
+                      },
+                    }}
+                  />
+                  <IconButton
+                    onClick={() =>
+                      handleQuantityChange(item.id, item.quantity + 1)
+                    }
+                    sx={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "4px",
+                      "&:hover": {
+                        backgroundColor: "#f0f0f0",
+                      },
+                    }}
+                  >
+                    +
+                  </IconButton>
                 </Box>
-              );
-            })}
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleRemove(item.id)}
+                >
+                  Remove
+                </Button>
+              </Box>
+            ))}
           </List>
           <Typography variant="h6" sx={{ marginTop: "1rem" }}>
             Total: {totalPrice.toFixed(2)} zł
