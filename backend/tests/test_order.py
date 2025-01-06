@@ -159,7 +159,7 @@ def mock_warehouse_response(mock_warehouse_data):
         response.append(WarehouseResponse(**warehouse_item))
     return response
 
-
+@pytest.fixture(scope="module")
 def mock_order_response():
     """Fixture returning a mocked order response."""
     return {
@@ -199,21 +199,23 @@ def mock_order_response():
         "route_length": 123.0
     }
 
-
 async def assert_order_response(mock_order_data, response_json):
-    assert response_json["email"] == mock_order_data["email"]
-    assert response_json["payment_address"] == mock_order_data["payment_address"]
+    assert response_json["delivery_date"] == mock_order_data["delivery_date"]
+    assert response_json["amount"] == mock_order_data["amount"]
+    assert response_json["products"] == mock_order_data["products"]
     assert response_json["delivery_address"] == mock_order_data["delivery_address"]
-    assert response_json["nip"] == mock_order_data["nip"]
-    assert response_json["orders"] == mock_order_data["orders"]
-    assert response_json["company_name"] == mock_order_data["company_name"]
-
+    assert response_json["order_status"] == mock_order_data["order_status"]
+    assert response_json["email"] == mock_order_data["email"]
+    assert response_json["trucks"] == mock_order_data["trucks"]
+    assert response_json["warehouses"] == mock_order_data["warehouses"]
+    assert response_json["route_length"] == mock_order_data["route_length"]
 
 @pytest.mark.asyncio
 async def test_add_order_success_end_to_end(
         test_client,
         test_container,
         order_data,
+        mock_order_response
 ):
     """End-to-end test the of the /purchase endpoint."""
     test_container.order_service.override(
@@ -229,4 +231,4 @@ async def test_add_order_success_end_to_end(
 
     assert response.status_code == 200
     response_json = response.json()
-    await assert_order_response()
+    await assert_order_response(mock_order_response, response_json)
