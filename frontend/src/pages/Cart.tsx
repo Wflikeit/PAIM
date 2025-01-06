@@ -3,7 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store.ts";
-import { updateCartItemQuantity } from "../model/cardItem.ts";
+import { removeFromCart, updateCartItemQuantity } from "../model/cardItem.ts";
 import WestIcon from "@mui/icons-material/West";
 import CartItemsHeader from "../components/cart/CartItemsHeader.tsx";
 import CartItem from "../components/cart/CartItem.tsx";
@@ -15,8 +15,9 @@ const CartPage: React.FC = () => {
 
   const handleQuantityChange = (id: string, quantity: number) => {
     if (quantity > 0) {
-      dispatch(updateCartItemQuantity({ id, quantity }));
+      return dispatch(updateCartItemQuantity({ id, quantity }));
     }
+    return dispatch(removeFromCart(id));
   };
 
   // Calculate the total price from the Redux cart items
