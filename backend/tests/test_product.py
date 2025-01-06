@@ -1,4 +1,5 @@
 import base64
+import os
 from io import BytesIO
 from unittest.mock import AsyncMock
 
@@ -13,6 +14,8 @@ from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
 
+
+os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
 @pytest.fixture(scope="module")
 def test_container(mocked_product_repository):

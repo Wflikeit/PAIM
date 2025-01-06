@@ -18,3 +18,7 @@ class AbstractTruckRepository(abc.ABC):
     @abc.abstractmethod
     def get_trucks_by_warehouse(self, warehouse_id: str) -> List[TruckResponse]:
         pass
+
+    @abc.abstractmethod
+    def add_order_to_truck_db(self, order_id: str, truck_id:str) -> int:
+        pass

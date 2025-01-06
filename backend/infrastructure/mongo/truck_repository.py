@@ -29,7 +29,6 @@ class TruckRepositoryMongo(AbstractTruckRepository):
             raise EntityNotFoundError("Truck", truck_id)
 
         truck_data["id"] = str(truck_data["_id"])
-
         return TruckResponse(**truck_data)
 
     def get_trucks_by_warehouse(self, warehouse_id: str) -> List[TruckResponse]:
@@ -38,11 +37,22 @@ class TruckRepositoryMongo(AbstractTruckRepository):
         except Exception as err:
             raise InvalidIdError(warehouse_id, str(err))
 
-        trucks_data = self.truck_collection.find({"warehouses": warehouse_id})
+        trucks_data = self.truck_collection.find({"warehouse": warehouse_id})
 
         response = []
         for truck in trucks_data:
             truck["id"] = str(truck["_id"])
             response.append(TruckResponse(**truck))
-
         return response
+
+    def add_order_to_truck_db(self, order_id: str, truck_ids: List[str]) -> int:
+        try:
+            object_ids = [ObjectId(truck_id) for truck_id in truck_ids]
+        except Exception as err:
+            raise InvalidIdError(order_id, str(err))
+
+        result = self.truck_collection.update_many(
+            {"_id": {"$in": object_ids}},
+            {"$addToSet": {"orders": order_id}}
+        )
+        return result.modified_count

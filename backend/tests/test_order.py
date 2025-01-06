@@ -1,3 +1,4 @@
+import os
 from unittest.mock import AsyncMock
 
 import pytest
@@ -9,12 +10,15 @@ from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
 from infrastructure.mongo.order_repository import OrderRepositoryMongo
+from infrastructure.mongo.truck_repository import TruckRepositoryMongo
 from infrastructure.mongo.warehouse_repository import WarehouseRepositoryMongo
+
+os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
 
 @pytest.fixture(scope="module")
 def test_container(
-    mocked_client_repository, mocked_warehouse_repository, mocked_order_repository
+        mocked_client_repository, mocked_warehouse_repository, mocked_order_repository, mocked_truck_repository
 ):
     """Set up a test container with a test database."""
     container = Container()
@@ -23,6 +27,7 @@ def test_container(
             order_repo=mocked_order_repository,
             client_repo=mocked_client_repository,
             warehouse_repo=mocked_warehouse_repository,
+            truck_repo=mocked_truck_repository
         )
     )
     return container
@@ -54,10 +59,16 @@ def mocked_warehouse_repository():
 
 
 @pytest.fixture(scope="module")
+def mocked_truck_repository():
+    """Fixture returning a mocked TruckRepositoryMongo."""
+    return AsyncMock(TruckRepositoryMongo)
+
+
+@pytest.fixture(scope="module")
 def order_data():
     """Fixture returning data for a test order."""
     return {
-        "delivery_date": "11.55.2025",
+        "delivery_date": "11.05.2025",
         "amount": 600.5,
         "products": [
             {"product_id": "1", "quantity": 4.0},
@@ -149,20 +160,68 @@ def mock_warehouse_response(mock_warehouse_data):
     return response
 
 
+def mock_order_response():
+    """Fixture returning a mocked order response."""
+    return {
+        "id": "677c3333e6ba26d342d1786d",
+        "delivery_date": "11.05.2025",
+        "amount": 600.5,
+        "products": [{
+            "product_id": "1",
+            "quantity": 4.0
+        },
+            {
+                "product_id": "2",
+                "quantity": 5.0
+            },
+            {
+                "product_id": "3",
+                "quantity": 6.0
+            },
+            {
+                "product_id": "4",
+                "quantity": 7.0
+            },
+            {
+                "product_id": "5",
+                "quantity": 8.0
+            }
+        ],
+        "delivery_address": "0123456789",
+        "order_status": "pending",
+        "email": "mocked@mail.com",
+        "trucks": [
+            "677b2e6e58135031873da9db"
+        ],
+        "warehouses": [
+            "6779eba8536d018b5bbd8a50"
+        ],
+        "route_length": 123.0
+    }
+
+
+async def assert_order_response(mock_order_data, response_json):
+    assert response_json["email"] == mock_order_data["email"]
+    assert response_json["payment_address"] == mock_order_data["payment_address"]
+    assert response_json["delivery_address"] == mock_order_data["delivery_address"]
+    assert response_json["nip"] == mock_order_data["nip"]
+    assert response_json["orders"] == mock_order_data["orders"]
+    assert response_json["company_name"] == mock_order_data["company_name"]
+
+
 @pytest.mark.asyncio
-async def test_get_client_success(
-    test_client,
-    test_container,
-    mocked_warehouse_repository,
-    mock_warehouse_response,
-    order_data,
+async def test_add_order_success_end_to_end(
+        test_client,
+        test_container,
+        order_data,
 ):
-    """Test the integration of the check_warehouses fucntion in OrderService."""
+    """End-to-end test the of the /purchase endpoint."""
     test_container.order_service.override(
         OrderService(
             order_repo=OrderRepositoryMongo(),
             client_repo=ClientRepositoryMongo(),
             warehouse_repo=WarehouseRepositoryMongo(),
+            truck_repo=TruckRepositoryMongo()
         )
     )
 
@@ -170,4 +229,4 @@ async def test_get_client_success(
 
     assert response.status_code == 200
     response_json = response.json()
-    print(response_json)
+    await assert_order_response()

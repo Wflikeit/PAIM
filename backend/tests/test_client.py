@@ -1,3 +1,4 @@
+import os
 from unittest.mock import AsyncMock
 
 import pytest
@@ -12,6 +13,7 @@ from infrastructure.containers import Container
 from infrastructure.mongo.address_repository import AddressRepositoryMongo
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
 
+os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
 @pytest.fixture(scope="module")
 def test_container(mocked_client_repository, mocked_address_repository):
