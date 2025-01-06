@@ -3,11 +3,13 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import React from "react";
 import { Link } from "react-router-dom";
 
-
-
 const ShoppingCartMiniature = () => {
   return (
-    <Link to="/cart" className="cart" sx={{ margin: "auto" }}>
+    <Link
+      to="/cart"
+      className="cart"
+      style={{ margin: "auto", textDecoration: "none" }} // Ensure no underline
+    >
       <Badge
         badgeContent={5} // Hardcoded value of items in the cart
         color="secondary"
@@ -17,11 +19,12 @@ const ShoppingCartMiniature = () => {
         }}
         sx={{
           "& .MuiBadge-badge": {
-            fontSize: "1rem",
-            height: "1.2rem",
-            minWidth: "1.2rem",
-            transform: "translate(-25%, 25%)",
-            backgroundColor: "#ea2323",
+            fontSize: "1rem", // Badge text size
+            height: "1.2rem", // Badge height
+            minWidth: "1.2rem", // Badge width
+            transform: "translate(-25%, 25%)", // Adjust position
+            backgroundColor: "#ea2323", // Badge background color
+            color: "white", // Badge text color
           },
         }}
       >
