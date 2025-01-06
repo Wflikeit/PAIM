@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 
 interface ProductCardProps {
+  id: string;
   name: string;
   price: number;
   country_of_origin: string;
@@ -16,10 +17,11 @@ interface ProductCardProps {
   imageId: string;
   expiry_date: string;
   imageUrl?: string;
-  onAddToCart: () => void;
+  onAddToCart: () => void; // Add this property
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
+  id,
   name,
   price,
   country_of_origin,
@@ -27,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   fruit_or_vegetable,
   expiry_date,
   imageUrl,
-  onAddToCart,
+  onAddToCart, // Use this property
 }) => {
   return (
     <Card
@@ -45,7 +47,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       />
       <CardContent
         sx={{
-          flexGrow: 1, // Make CardContent grow to fill available height
+          flexGrow: 1,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -54,7 +56,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Typography variant="h5" component="div">
           {name}
         </Typography>
-
         <Typography
           variant="body2"
           color="text.secondary"
@@ -80,7 +81,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Typography>
         <Button
           className="add-to-cart"
-          onClick={onAddToCart}
+          onClick={onAddToCart} // Handle add to cart
           variant="contained"
           color="primary"
         >

@@ -1,10 +1,13 @@
-import { Badge, Link } from "@mui/material";
+import { Badge } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import React from "react";
+import { Link } from "react-router-dom";
+
+
 
 const ShoppingCartMiniature = () => {
   return (
-    <Link href="/cart" className="cart" sx={{ margin: "auto" }}>
+    <Link to="/cart" className="cart" sx={{ margin: "auto" }}>
       <Badge
         badgeContent={5} // Hardcoded value of items in the cart
         color="secondary"

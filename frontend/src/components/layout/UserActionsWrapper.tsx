@@ -20,7 +20,7 @@ export default function UserActionsWrapper({ user }: { user?: LoggedInUser }) {
           </>
         )}
 
-        {user && <ProfilePhotoWrapper />}
+        {user && <ProfilePhotoWrapper user={user}/>}
         <ShoppingCartMiniature />
       </Box>
     </div>
