@@ -1,10 +1,10 @@
 import React from "react";
 import {
+  Button,
   Card,
   CardContent,
-  Typography,
-  Button,
   CardMedia,
+  Typography,
 } from "@mui/material";
 
 interface ProductCardProps {
@@ -30,18 +30,40 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onAddToCart,
 }) => {
   return (
-    <Card>
+    <Card
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
       <CardMedia
         component="img"
         height="140"
         image={imageUrl || "https://via.placeholder.com/150"}
         alt={name}
       />
-      <CardContent>
+      <CardContent
+        sx={{
+          flexGrow: 1, // Make CardContent grow to fill available height
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
         <Typography variant="h5" component="div">
           {name}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {description}
         </Typography>
         <Typography variant="body2" color="text.secondary">

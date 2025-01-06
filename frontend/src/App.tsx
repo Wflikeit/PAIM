@@ -20,9 +20,9 @@ const App: React.FC = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/login" element={<Login />} />
         </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<RegisterForm />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

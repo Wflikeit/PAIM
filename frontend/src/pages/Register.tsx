@@ -16,7 +16,6 @@ const RegisterForm = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Walidacja
     if (
       !email ||
       !password ||
@@ -62,11 +61,11 @@ const RegisterForm = () => {
   return (
     <Box
       sx={{
-        margin: "auto",
-        maxWidth: " 36rem",
-        minHeight: "100dvh",
-        display: "grid",
-        placeItems: "center",
+        padding: "16px",
+        color: "black",
+        margin: "5dvh auto",
+        maxWidth: "30rem",
+        minWidth: "20rem",
       }}
     >
       <Box>
@@ -153,9 +152,9 @@ const RegisterForm = () => {
 
           <Button
             type="submit"
+            className="register"
             variant="contained"
-            color="primary"
-            className="register-button"
+            sx={{ backgroundColor: "#388e3c", marginTop: "1rem" }}
             fullWidth
             onChange={(e) => setOrders("zamowienie")}
           >

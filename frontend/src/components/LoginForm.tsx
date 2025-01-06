@@ -68,20 +68,21 @@ const LoginForm = () => {
           className="login"
           variant="contained"
           color="primary"
+          sx ={{marginTop: "1rem"}}
           fullWidth
         >
           Login
         </Button>
-        <Button
-          type="button"
-          className="register"
-          onClick={handleRegisterRedirect}
-          variant="contained"
-          color="secondary"
-          fullWidth
-        >
-          Register
-        </Button>
+          <Button
+            type="button"
+            className="register"
+            onClick={handleRegisterRedirect}
+            variant="contained"
+            sx = {{backgroundColor:"#388e3c", marginTop: "1rem"}}
+            fullWidth
+          >
+            Register
+          </Button>
       </Box>
     </form>
   );
