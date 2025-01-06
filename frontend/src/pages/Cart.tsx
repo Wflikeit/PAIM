@@ -1,37 +1,18 @@
 import React from "react";
-import {
-  Box,
-  Button,
-  IconButton,
-  List,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Box, Button, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store.ts";
-import {
-  clearCart,
-  removeFromCart,
-  updateCartItemQuantity,
-} from "../model/cardItem.ts";
+import { updateCartItemQuantity } from "../model/cardItem.ts";
+import WestIcon from "@mui/icons-material/West";
+import CartItemsHeader from "../components/cart/CardItemsHeader.tsx";
+import CartItem from "../components/cart/CartItem.tsx";
 
 const CartPage: React.FC = () => {
-  const navigate = useNavigate();
   const cartItems = useSelector((state: RootState) => state.cart.items); // Access Redux state
   const dispatch = useDispatch();
+  const currency: string = "zł";
 
-  // Function to handle removing an item from the cart
-  const handleRemove = (id: string) => {
-    dispatch(removeFromCart(id));
-  };
-
-  // Function to handle clearing the cart
-  const handleClear = () => {
-    dispatch(clearCart());
-  };
-
-  // Function to handle quantity change
   const handleQuantityChange = (id: string, quantity: number) => {
     if (quantity > 0) {
       dispatch(updateCartItemQuantity({ id, quantity }));
@@ -49,137 +30,73 @@ const CartPage: React.FC = () => {
       sx={{
         padding: "16px",
         color: "black",
-        margin: "20dvh auto",
+        margin: "15dvh auto",
         maxWidth: "50rem",
         minWidth: "30rem",
       }}
     >
-      <Typography variant="h4" gutterBottom>
-        Cart
-      </Typography>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          borderBottom: "lightgray solid .1rem",
+          paddingBottom: "1.5rem",
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 550 }}>
+          Shopping Cart
+        </Typography>
+        <Typography variant="h5" sx={{ fontWeight: 550 }}>
+          {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
+        </Typography>
+      </div>
+      <CartItemsHeader></CartItemsHeader>
+
       {cartItems.length === 0 ? ( // Check the Redux cart items
         <Typography>Your cart is empty</Typography>
       ) : (
-        <>
-          <List>
-            {cartItems.map((item) => (
-              <Box
-                key={item.id}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "1rem",
-                }}
-              >
-                <Typography>
-                  {item.name} - {item.price.toFixed(2)} zł
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <IconButton
-                    onClick={() =>
-                      handleQuantityChange(item.id, item.quantity - 1)
-                    }
-                    sx={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "4px",
-                      "&:hover": {
-                        backgroundColor: "#f0f0f0",
-                      },
-                    }}
-                  >
-                    -
-                  </IconButton>
-                  <TextField
-                    value={item.quantity}
-                    type="number"
-                    size="small"
-                    onChange={(e) =>
-                      handleQuantityChange(
-                        item.id,
-                        parseInt(e.target.value, 10) || 1,
-                      )
-                    }
-                    sx={{
-                      width: "50px",
-                      textAlign: "center",
-                      "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
-                        {
-                          WebkitAppearance: "none",
-                          margin: 0,
-                        },
-                      "& input[type=number]": {
-                        MozAppearance: "textfield",
-                      },
-                      "& input": {
-                        padding: "8px", // Match the IconButton padding
-                        textAlign: "center",
-                      },
-                    }}
-                  />
-                  <IconButton
-                    onClick={() =>
-                      handleQuantityChange(item.id, item.quantity + 1)
-                    }
-                    sx={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "4px",
-                      "&:hover": {
-                        backgroundColor: "#f0f0f0",
-                      },
-                    }}
-                  >
-                    +
-                  </IconButton>
-                </Box>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleRemove(item.id)}
-                >
-                  Remove
-                </Button>
-              </Box>
-            ))}
-          </List>
-          <Typography variant="h6" sx={{ marginTop: "1rem" }}>
-            Total: {totalPrice.toFixed(2)} zł
-          </Typography>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleClear}
-            sx={{ marginTop: "1rem" }}
-          >
-            Clear Cart
-          </Button>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "1.5rem",
-            }}
-          >
-            <Button
-              variant="outlined"
-              onClick={() => navigate("/")}
-              sx={{ flexGrow: 1, marginRight: "1rem" }}
-            >
-              Continue Shopping
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => console.log("Proceeding to checkout...")}
-              sx={{ flexGrow: 1 }}
-            >
-              Checkout
-            </Button>
-          </Box>
-        </>
+        <div style={{ maxHeight: "25rem", overflow: "scroll" }}>
+          {cartItems.map((item) => (
+            <CartItem
+              item={item}
+              handleQuantityChange={handleQuantityChange}
+              key={item.id}
+            ></CartItem>
+          ))}
+        </div>
       )}
+      <Typography variant="h6" sx={{ marginTop: "1rem", textAlign: "right" }}>
+        Total: {totalPrice.toFixed(2)} {currency}
+      </Typography>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginTop: "2rem",
+          alignItems: "center",
+        }}
+      >
+        <Link
+          to="/"
+          style={{
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            color: "green",
+          }}
+        >
+          <WestIcon fontSize="small" /> Continue Shopping
+        </Link>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => console.log("Proceeding to checkout...")}
+        >
+          Checkout
+        </Button>
+      </Box>
     </Box>
   );
 };
