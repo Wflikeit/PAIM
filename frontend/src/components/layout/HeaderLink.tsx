@@ -11,7 +11,6 @@ const HeaderLink: React.FC<HeaderLinkProps> = ({ to, text }) => {
     <Link
       to={to}
       style={{ color: "#159d17", fontSize: "1.25rem", margin: "auto" }}
-      underline="none"
     >
       {text}
     </Link>
