@@ -83,7 +83,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           className="add-to-cart"
           onClick={onAddToCart} // Handle add to cart
           variant="contained"
-          color="primary"
+          sx={{backgroundColor:"#177c1b"}}
         >
           Dodaj do koszyka
         </Button>

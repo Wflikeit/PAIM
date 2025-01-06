@@ -73,10 +73,6 @@ button:focus-visible {
     outline: 4px auto var(--main-green);
 }
 
-button.add-to-cart {
-    background-color: #33c4ff;
-    border-color: #33c4ff;
-}
 
 
 button.delete {
