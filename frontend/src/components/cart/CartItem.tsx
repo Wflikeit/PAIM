@@ -1,11 +1,11 @@
 import React from "react";
 import {Typography} from "@mui/material";
 import QuantityInput from "./QuantityInput.tsx";
-import {CartItem} from "../../model/cardItem.ts";
+import {CartItemModel} from "../../model/cardItem.ts";
 
 // Define the interface for the cart item
 interface CartItemProps {
-  item: CartItem;
+  item: CartItemModel;
   handleQuantityChange: (id: string, quantity: number) => void;
 }
 
@@ -28,11 +28,6 @@ const CartItem: React.FC<CartItemProps> = ({ item, handleQuantityChange }) => {
         productID={item.id}
         quantity={item.quantity}
         handleQuantityChange={handleQuantityChange}
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
       />
       <Typography sx={{ textAlign: "center" }}>
         {item.price.toFixed(2)} {currency}

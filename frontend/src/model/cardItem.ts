@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface CartItem {
+export interface CartItemModel {
   id: string;
   name: string;
   price: number;
@@ -8,7 +8,7 @@ export interface CartItem {
 }
 
 interface CartState {
-  items: CartItem[];
+  items: CartItemModel[];
 }
 
 const initialState: CartState = {
@@ -19,7 +19,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<CartItem>) => {
+    addToCart: (state, action: PayloadAction<CartItemModel>) => {
       console.log(
         "Before adding item:",
         JSON.parse(JSON.stringify(state.items)),

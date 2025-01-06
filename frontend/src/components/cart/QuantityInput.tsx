@@ -13,7 +13,14 @@ const QuantityInput: React.FC<QuantityInputProps> = ({
   handleQuantityChange,
 }) => {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        justifyContent: "center",
+      }}
+    >
       <IconButton
         onClick={() => handleQuantityChange(productID, quantity - 1)}
         sx={{
