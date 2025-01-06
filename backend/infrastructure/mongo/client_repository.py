@@ -4,7 +4,7 @@ from pydantic import EmailStr
 from application.client.client_repository import AbstractClientRepository
 from application.responses import ClientResponse
 from domain.client import Client
-from domain.exceptions import ClientNotFoundError, InvalidIdError
+from domain.exceptions import EntityNotFoundError, InvalidIdError
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 
@@ -27,7 +27,7 @@ class ClientRepositoryMongo(AbstractClientRepository):
         client_data = self.client_collection.find_one({"_id": object_id})
 
         if not client_data:
-            raise ClientNotFoundError(client_id)
+            raise EntityNotFoundError("Client", client_id)
 
         client_data["id"] = str(client_data["_id"])
         client_data["delivery_address"] = str(client_data["delivery_address"])

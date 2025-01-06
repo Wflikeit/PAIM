@@ -5,7 +5,7 @@ from bson import ObjectId
 from application.order.order_repository import AbstractOrderRepository
 from application.responses import OrderResponse
 from domain.order import Order
-from domain.exceptions import InvalidIdError, OrderNotFoundError
+from domain.exceptions import InvalidIdError, EntityNotFoundError
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 
@@ -26,7 +26,7 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         order_data = self.order_collection.find_one({"_id": object_id})
 
         if not order_data:
-            raise OrderNotFoundError(order_id)
+            raise EntityNotFoundError("Order", order_id)
 
         order_data["id"] = str(order_data["_id"])
 

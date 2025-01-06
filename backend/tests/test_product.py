@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 
 from application.product.product_service import ProductService
 from application.responses import ProductResponse
-from domain.exceptions import ProductNotFoundError
+from domain.exceptions import EntityNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
@@ -153,9 +153,7 @@ def test_get_product_not_found(mocked_product_repository, test_client):
     """Test retrieving a product that does not exist."""
     non_existent_product_id = str(ObjectId())
 
-    mocked_product_repository.get_product_by_id.side_effect = ProductNotFoundError(
-        non_existent_product_id
-    )
+    mocked_product_repository.get_product_by_id.side_effect = EntityNotFoundError("Product", non_existent_product_id)
 
     response = test_client.get(f"/api/products/{non_existent_product_id}")
 

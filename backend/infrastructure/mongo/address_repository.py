@@ -3,7 +3,7 @@ from bson import ObjectId
 from application.address.address_repository import AbstractAddressRepository
 from application.responses import AddressResponse
 from domain.address import Address
-from domain.exceptions import InvalidIdError, AddressNotFoundError
+from domain.exceptions import InvalidIdError, EntityNotFoundError
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 
@@ -31,7 +31,7 @@ class AddressRepositoryMongo(AbstractAddressRepository):
         address_data = self.address_collection.find_one({"_id": object_id})
 
         if not address_data:
-            raise AddressNotFoundError(address_id)
+            raise EntityNotFoundError("Address", address_id)
 
         address_data["id"] = str(address_data["_id"])
 

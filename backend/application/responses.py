@@ -53,3 +53,10 @@ class WarehouseResponse(BaseModel):
     address: str
     product_quantities: dict
     trucks: List[str] = Field(default_factory=list)
+
+
+class TruckResponse(BaseModel):
+    id: str
+    registration_number: str
+    orders: List[str] = Field(default_factory=list)
+    warehouse: str

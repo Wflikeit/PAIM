@@ -6,7 +6,7 @@ from starlette.testclient import TestClient
 
 from application.client.client_service import ClientService
 from application.responses import ClientResponse, AddressResponse
-from domain.exceptions import ClientNotFoundError
+from domain.exceptions import EntityNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.address_repository import AddressRepositoryMongo
@@ -161,9 +161,7 @@ async def test_register_client_success(
 async def test_get_client_not_found(mocked_client_repository, test_client):
     """Test retrieving a client that does not exist."""
     non_existent_client_id = str(ObjectId())
-    mocked_client_repository.get_client_db.side_effect = ClientNotFoundError(
-        non_existent_client_id
-    )
+    mocked_client_repository.get_client_db.side_effect = EntityNotFoundError("Client", non_existent_client_id)
 
     response = test_client.get(f"/api/clients/{non_existent_client_id}")
 

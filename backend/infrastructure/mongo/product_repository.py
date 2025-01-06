@@ -4,7 +4,7 @@ from bson import ObjectId
 
 from application.product.product_repository import AbstractProductRepository
 from application.responses import ProductResponse
-from domain.exceptions import ProductNotFoundError, InvalidIdError
+from domain.exceptions import EntityNotFoundError, InvalidIdError
 from domain.product import Product
 from infrastructure.mongo.mongo_client import MongoDBClient
 
@@ -34,7 +34,7 @@ class ProductRepositoryMongo(AbstractProductRepository):
         product = self.product_collection.find_one({"_id": object_id})
 
         if not product:
-            raise ProductNotFoundError(product_id)
+            raise EntityNotFoundError("Product", product_id)
 
         product["id"] = str(product["_id"])
         product["file"] = (
