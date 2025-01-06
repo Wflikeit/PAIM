@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, List } from "@mui/material";
+import { Box, List, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CartItem from "../components/CartItem";
 import CartSummary from "../components/CartSummary";
@@ -37,7 +37,15 @@ const CartPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ padding: "16px" }} style={{ color: "black" }}>
+    <Box
+      sx={{
+        padding: "16px",
+        color: "black",
+        margin: "20dvh auto",
+        maxWidth: "50rem",
+        minWidth: "30rem",
+      }}
+    >
       <Typography variant="h4" gutterBottom>
         Cart
       </Typography>

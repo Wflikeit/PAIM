@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ListItem, ListItemText } from "@mui/material";
+import {Button, ListItem, ListItemText} from "@mui/material"; // Define the interface for the cart item
 
 // Define the interface for the cart item
 interface CartItemProps {

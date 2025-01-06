@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import HeaderLink from "./HeaderLink.tsx";
-import ShoppingCartMiniature from "./ShoppingCart.tsx";
+import ShoppingCartMiniature from "./ShoppingCartMiniature.tsx";
 import ProfilePhotoWrapper from "./ProfilePhotoWrapper.tsx";
 
 export interface LoggedInUser {

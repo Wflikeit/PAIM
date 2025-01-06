@@ -146,14 +146,6 @@ footer {
     justify-content: space-between;
 }
 
-main {
-    grid-column: 2/3;
-    grid-row: 2/3;
-    height: 100%;
-    overflow-y: scroll;
-    max-height: 85dvh;
-}
-
 ::-webkit-scrollbar {
 
     -webkit-appearance: none;
