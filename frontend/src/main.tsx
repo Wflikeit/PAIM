@@ -1,4 +1,4 @@
-import React from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./styles/app.css";
@@ -10,13 +10,13 @@ import { PersistGate } from "redux-persist/integration/react";
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
-  // <StrictMode>
-  <Provider store={store}>
-    <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </PersistGate>
-  </Provider>,
-  // </StrictMode>,
+  <StrictMode>
+    <Provider store={store}>
+      <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </PersistGate>
+    </Provider>
+  </StrictMode>,
 );
