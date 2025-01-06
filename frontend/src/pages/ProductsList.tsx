@@ -48,12 +48,13 @@ const ProductsList: React.FC = () => {
           imageUrl={product.file}
           imageId={product.imageId}
           onAddToCart={() => {
-            dispatch(
+              dispatch(
               addToCart({
                 id: product.id,
                 name: product.name,
                 price: product.price,
                 quantity: 1, // Default quantity to add
+                photo: product.file,
               }),
             );
           }}

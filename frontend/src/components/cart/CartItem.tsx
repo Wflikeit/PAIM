@@ -23,7 +23,16 @@ const CartItem: React.FC<CartItemProps> = ({ item, handleQuantityChange }) => {
         padding: "1rem 0",
       }}
     >
-      <Typography>{item.name}</Typography>
+      <div>
+        <img
+          src={item.photo}
+          alt={item.name}
+          width={100}
+          height={100}
+          style={{ objectFit: "cover", borderRadius: "8px" }} // Optional: Add styling
+        />
+          <Typography>{item.name}</Typography>
+      </div>
       <QuantityInput
         productID={item.id}
         quantity={item.quantity}
