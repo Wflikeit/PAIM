@@ -25,7 +25,7 @@ const LoginForm = () => {
       formData.append("password", password);
 
 
-      const response = await axios.post("http://127.0.0.1:8000/admin/login", formData, {
+      const response = await axios.post("http://127.0.0.1:8002/admin/login", formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
@@ -42,6 +42,7 @@ const LoginForm = () => {
       // Store the token and role in localStorage
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("user_role", role);
+      localStorage.setItem("fullname", response.data.fullname);
 
       // Redirect based on role
       if (role === "admin") {

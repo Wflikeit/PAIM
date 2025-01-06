@@ -4,18 +4,6 @@ from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
 from jose import JWTError, jwt
 from infrastructure.mongo.mongo_client import MongoDBClient
-# import logging
-#
-# # Set up logging
-# logging.basicConfig(
-#     level=logging.DEBUG,  # Set the logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-#     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-#     handlers=[
-#         logging.StreamHandler()  # Log to the console
-#         # You can add a FileHandler here to log to a file
-#     ],
-# )
-# logger = logging.getLogger(__name__)
 
 
 SECRET_KEY = "your_secret_key"
@@ -45,11 +33,11 @@ def create_access_token(data: dict, role: str = None, expires_delta: timedelta =
 def authenticate_user(email: str, password: str):
     admin_user = admin_collection.find_one({"email": email})
     if admin_user and verify_password(password, admin_user["password"]):
-        return {"email": admin_user["email"], "role": "admin"}
+        return {"email": admin_user["email"], "role": "admin", "fullname": admin_user["fullname"]}
 
     client_user = client_collection.find_one({"email": email})
     if client_user and verify_password(password, client_user["password"]):
-        return {"email": client_user["email"], "role": "client"}
+        return {"email": client_user["email"], "role": "client", "fullname": client_user["fullname"]}
 
     return None
 

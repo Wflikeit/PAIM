@@ -1,8 +1,12 @@
 import { red } from "@mui/material/colors";
 import Popover from "@mui/material/Popover";
 import React, { useState } from "react";
+import {LoggedInUser} from "./UserActionsWrapper.tsx";
 
-const ProfilePhotoWrapper = ({ user }) => {
+interface ProfilePhotoWrapperProps{
+    user: LoggedInUser
+}
+const ProfilePhotoWrapper:React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -26,7 +30,7 @@ const ProfilePhotoWrapper = ({ user }) => {
         }}
         onClick={handleClick}
       >
-        {user.email ? user.email[0].toUpperCase() : "U"}
+        {user.fullname ? user.fullname[0].toUpperCase() : "U"}
       </button>
 
       <Popover

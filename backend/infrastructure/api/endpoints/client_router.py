@@ -20,7 +20,6 @@ async def upload_client(
     request: Client,
     client_service: ClientService = Depends(Provide[Container.client_service]),
 ) -> ClientResponse:
-    # Hash the password
     request.password = pwd_context.hash(request.password)
 
     return client_service.register_client(request)

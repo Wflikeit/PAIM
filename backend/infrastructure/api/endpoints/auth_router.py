@@ -16,7 +16,6 @@ async def login_for_access_token(email: str, password: str):
     access_token = generate_token_for_user(user)
     return {"access_token": access_token, "token_type": "bearer"}
 
-# user: dict = Depends(is_admin)
 
 @router.get("/", dependencies=[Depends(is_admin)])
 async def admin_home():
@@ -37,6 +36,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         )
 
     access_token = create_access_token(data={"sub": user["email"], "role": user.get("role")})
+    fullname = user["fullname"]
     print(f"Generated access token: {access_token}")
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "fullname" : fullname}

@@ -2,7 +2,7 @@ import axios from "axios";
 
 const login = async (email, password) => {
     try {
-        const response = await axios.post("http://127.0.0.1:8000/admin/login", {
+        const response = await axios.post("http://127.0.0.1:8002/admin/login", {
             username: email,
             password: password
         });

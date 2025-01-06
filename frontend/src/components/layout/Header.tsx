@@ -1,9 +1,20 @@
-import UserActionsWrapper from "./UserActionsWrapper.tsx";
+import UserActionsWrapper, {LoggedInUser} from "./UserActionsWrapper.tsx";
 import Logo from "./Logo.tsx";
 import React from "react";
 import HeaderLink from "./HeaderLink.tsx";
 
-const Header = () => {
+
+const Header: React.FC = () => {
+  const token = localStorage.getItem("access_token");
+  const role = localStorage.getItem("user_role");
+  const fullname = localStorage.getItem("fullname");
+
+
+  const user: LoggedInUser | undefined =
+    token && role && fullname ? { token, role, fullname } : undefined;
+
+  console.log("Header user object:", user);
+
   return (
     <header className="layout__header">
       <Logo />
@@ -20,7 +31,7 @@ const Header = () => {
         <HeaderLink to="/about" text="About" />
         <HeaderLink to="/" text="Products" />
       </div>
-      <UserActionsWrapper user={undefined} />
+      <UserActionsWrapper user={user} />
     </header>
   );
 };

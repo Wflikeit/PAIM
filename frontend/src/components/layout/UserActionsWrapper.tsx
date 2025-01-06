@@ -5,11 +5,17 @@ import ShoppingCartMiniature from "./ShoppingCart.tsx";
 import ProfilePhotoWrapper from "./ProfilePhotoWrapper.tsx";
 
 export interface LoggedInUser {
-  email: string;
+  fullname: string;
+  token: string;
   role: string;
 }
 
-export default function UserActionsWrapper({ user }: { user?: LoggedInUser }) {
+interface UsersActionWrapperProps {
+  user?: LoggedInUser;
+}
+
+const UserActionsWrapper: React.FC<UsersActionWrapperProps> = ({ user }) => {
+
   return (
     <div className="icon__wrapper">
       <Box sx={{ display: "flex", gap: 2, height: "3rem" }}>
@@ -20,9 +26,11 @@ export default function UserActionsWrapper({ user }: { user?: LoggedInUser }) {
           </>
         )}
 
-        {user && <ProfilePhotoWrapper />}
+        {user && <ProfilePhotoWrapper user={user} />}
         <ShoppingCartMiniature />
       </Box>
     </div>
   );
-}
+};
+
+export default UserActionsWrapper;
