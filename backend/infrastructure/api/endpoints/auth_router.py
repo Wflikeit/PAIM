@@ -16,16 +16,6 @@ async def login_for_access_token(email: str, password: str):
     access_token = generate_token_for_user(user)
     return {"access_token": access_token, "token_type": "bearer"}
 
-
-@router.get("/", dependencies=[Depends(is_admin)])
-async def admin_home():
-    return {"message": "Welcome to the Admin Page"}
-
-@router.get("/stats", dependencies=[Depends(is_admin)])
-async def admin_stats():
-    stats = {"users": 100, "products": 50}
-    return stats
-
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)

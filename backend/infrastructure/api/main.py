@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from application.auth.auth import is_admin
 from domain.exceptions import RepositoryError
-from infrastructure.api.endpoints.auth_router import router as admin_router
+from infrastructure.api.endpoints.auth_router import router as auth_router
+from infrastructure.api.endpoints.admin_router import router as admin_router
 from infrastructure.api.endpoints.client_router import router as client_router
 from infrastructure.api.endpoints.product_router import router as product_router
 from infrastructure.api.exception_handler import repository_exception_handler
@@ -34,6 +35,7 @@ app.add_middleware(
 app.include_router(product_router, prefix="/api", tags=["products"])
 app.include_router(client_router, prefix="/api", tags=["clients"])
 app.include_router(admin_router, prefix="/admin", tags=["admin"])
+app.include_router(auth_router, prefix="/auth", tags=["admin"])
 
 app.add_exception_handler(RepositoryError, repository_exception_handler)
 

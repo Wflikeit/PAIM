@@ -19,7 +19,6 @@ const Admin = () => {
         setMessage(response.data.message);
       } catch (err) {
         if (axios.isAxiosError(err) && err.response?.status === 403) {
-          // Permission denied (403)
           setHasError(true);
         } else {
           console.error("Unexpected error:", err);

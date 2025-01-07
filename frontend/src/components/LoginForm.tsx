@@ -24,7 +24,7 @@ const LoginForm = () => {
       formData.append("password", password);
 
 
-      const response = await axios.post("http://127.0.0.1:8002/admin/login", formData, {
+      const response = await axios.post("http://127.0.0.1:8002/auth/login", formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
