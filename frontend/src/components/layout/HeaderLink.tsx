@@ -1,5 +1,5 @@
-import { Link } from "@mui/material";
 import React from "react";
+import { Link } from "react-router-dom";
 
 type HeaderLinkProps = {
   to: string;
@@ -9,9 +9,8 @@ type HeaderLinkProps = {
 const HeaderLink: React.FC<HeaderLinkProps> = ({ to, text }) => {
   return (
     <Link
-      href={to}
-      sx={{ color: "#159d17", fontSize: "1.25rem", margin: "auto" }}
-      underline="none"
+      to={to}
+      style={{ color: "#159d17", fontSize: "1.25rem", margin: "auto" }}
     >
       {text}
     </Link>

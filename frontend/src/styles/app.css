@@ -73,10 +73,6 @@ button:focus-visible {
     outline: 4px auto var(--main-green);
 }
 
-button.add-to-cart {
-    background-color: #33c4ff;
-    border-color: #33c4ff;
-}
 
 .photo__wrapper {
   background-color: #f44336; /* Replace with red[500] equivalent */
@@ -158,14 +154,6 @@ footer {
     grid-row: 3 / 4;
     height: 100%;
     justify-content: space-between;
-}
-
-main {
-    grid-column: 2/3;
-    grid-row: 2/3;
-    height: 100%;
-    overflow-y: scroll;
-    max-height: 85dvh;
 }
 
 ::-webkit-scrollbar {

@@ -1,66 +1,103 @@
-import React, { useState } from "react";
-import { Box, Typography, List } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import CartItem from "../components/CartItem";
-import CartSummary from "../components/CartSummary";
-
-interface CartItemType {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
+import React from "react";
+import { Box, Button, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store.ts";
+import { removeFromCart, updateCartItemQuantity } from "../model/cardItem.ts";
+import WestIcon from "@mui/icons-material/West";
+import CartItemsHeader from "../components/cart/CartItemsHeader.tsx";
+import CartItem from "../components/cart/CartItem.tsx";
 
 const CartPage: React.FC = () => {
-  const navigate = useNavigate();
+  const cartItems = useSelector((state: RootState) => state.cart.items); // Access Redux state
+  const dispatch = useDispatch();
+  const currency: string = "zł";
 
-  const [cart, setCart] = useState<CartItemType[]>([
-    { id: "1", name: "Produkt 1", price: 29.99, quantity: 2 },
-    { id: "2", name: "Produkt 2", price: 19.99, quantity: 1 },
-  ]);
-
-  const removeFromCart = (id: string) => {
-    setCart(cart.filter((item) => item.id !== id));
+  const handleQuantityChange = (id: string, quantity: number) => {
+    if (quantity > 0) {
+      return dispatch(updateCartItemQuantity({ id, quantity }));
+    }
+    return dispatch(removeFromCart(id));
   };
 
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-
-  const handleContinueShopping = () => {
-    navigate("/");
-    console.log("Kontynuuj zakupy");
-  };
-
-  const handleProceedToCheckout = () => {
-    console.log("Przejdź do kasy");
-  };
+  // Calculate the total price from the Redux cart items
+  const totalPrice = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0,
+  );
 
   return (
-    <Box sx={{ padding: "16px" }} style={{ color: "black" }}>
-      <Typography variant="h4" gutterBottom>
-        Cart
-      </Typography>
-      {cart.length === 0 ? (
-        <Typography>Twój koszyk jest pusty</Typography>
+    <Box
+      sx={{
+        padding: "16px",
+        color: "black",
+        margin: "10dvh auto",
+        maxWidth: "50rem",
+        minWidth: "30rem",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          borderBottom: "lightgray solid .1rem",
+          paddingBottom: "1.5rem",
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 550 }}>
+          Shopping Cart
+        </Typography>
+        <Typography variant="h5" sx={{ fontWeight: 550 }}>
+          {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
+        </Typography>
+      </div>
+      <CartItemsHeader />
+
+      {cartItems.length === 0 ? ( // Check the Redux cart items
+        <Typography>Your cart is empty</Typography>
       ) : (
-        <List>
-          {cart.map((item) => (
+        <div style={{ maxHeight: "33dvh", overflowY: "scroll" }}>
+          {cartItems.map((item) => (
             <CartItem
-              id={item.id}
-              name={item.name}
-              price={item.price}
-              quantity={item.quantity}
-              removeFromCart={removeFromCart}
-            />
+              item={item}
+              handleQuantityChange={handleQuantityChange}
+              key={item.id}
+            ></CartItem>
           ))}
-        </List>
+        </div>
       )}
-      <CartSummary
-        totalPrice={getTotalPrice()}
-        onContinueShopping={handleContinueShopping}
-        onProceedToCheckout={handleProceedToCheckout}
-      />
+      <Typography variant="h6" sx={{ marginTop: "1rem", textAlign: "right" }}>
+        Total: {totalPrice.toFixed(2)} {currency}
+      </Typography>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginTop: "2rem",
+          alignItems: "center",
+        }}
+      >
+        <Link
+          to="/"
+          style={{
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            color: "green",
+          }}
+        >
+          <WestIcon fontSize="small" /> Continue Shopping
+        </Link>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => console.log("Proceeding to checkout...")}
+        >
+          Checkout
+        </Button>
+      </Box>
     </Box>
   );
 };

@@ -1,13 +1,14 @@
 import React from "react";
 import {
+  Button,
   Card,
   CardContent,
-  Typography,
-  Button,
   CardMedia,
+  Typography,
 } from "@mui/material";
 
 interface ProductCardProps {
+  id: string;
   name: string;
   price: number;
   country_of_origin: string;
@@ -16,10 +17,11 @@ interface ProductCardProps {
   imageId: string;
   expiry_date: string;
   imageUrl?: string;
-  onAddToCart: () => void;
+  onAddToCart: () => void; // Add this property
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
+  id,
   name,
   price,
   country_of_origin,
@@ -27,21 +29,42 @@ const ProductCard: React.FC<ProductCardProps> = ({
   fruit_or_vegetable,
   expiry_date,
   imageUrl,
-  onAddToCart,
+  onAddToCart, // Use this property
 }) => {
   return (
-    <Card>
+    <Card
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
       <CardMedia
         component="img"
         height="140"
         image={imageUrl || "https://via.placeholder.com/150"}
         alt={name}
       />
-      <CardContent>
+      <CardContent
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
         <Typography variant="h5" component="div">
           {name}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {description}
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -58,9 +81,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Typography>
         <Button
           className="add-to-cart"
-          onClick={onAddToCart}
+          onClick={onAddToCart} // Handle add to cart
           variant="contained"
-          color="primary"
+          sx={{backgroundColor:"#177c1b"}}
         >
           Dodaj do koszyka
         </Button>

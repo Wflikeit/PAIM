@@ -1,13 +1,15 @@
 import React from "react";
 import ProductCard from "../components/ProductCard";
 import { Box } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useProducts } from "../hooks/useProducts.ts";
+import { addToCart } from "../model/cardItem"; // Import the addToCart action
 
 const ProductsList: React.FC = () => {
   const { filters } = useSelector((state: RootState) => state.products);
   const { data: products = [], isLoading, error } = useProducts();
+  const dispatch = useDispatch();
 
   const filteredProducts = products.filter((product) => {
     const matchesFruitOrVegetable =
@@ -35,6 +37,7 @@ const ProductsList: React.FC = () => {
     >
       {filteredProducts.map((product) => (
         <ProductCard
+          id={product.id}
           key={product.id}
           name={product.name}
           price={product.price}
@@ -44,7 +47,17 @@ const ProductsList: React.FC = () => {
           expiry_date={product.expiry_date}
           imageUrl={product.file}
           imageId={product.imageId}
-          onAddToCart={() => console.log("Product added to cart")}
+          onAddToCart={() => {
+              dispatch(
+              addToCart({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: 1, // Default quantity to add
+                photo: product.file,
+              }),
+            );
+          }}
         />
       ))}
     </Box>

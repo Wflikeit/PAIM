@@ -10,17 +10,24 @@ import {
   setFruitOrVegetableFilter,
 } from "../../model/product";
 
-const Sidebar = () => {
+const Sidebar: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { filters } = useSelector((state: RootState) => state.products);
 
+  // Only render the sidebar on the root path
   if (location.pathname !== "/") {
     return null;
   }
 
-  // Define filter categories
-  const categories = [
+  // Define filter categories with explicit typing for filterKey
+  const categories: {
+    title: string;
+    options: string[];
+    filterValues: string[];
+    filterKey: keyof typeof filters; // Ensure filterKey matches filters keys
+    filterAction: (value: string) => any;
+  }[] = [
     {
       title: "Category",
       options: ["Warzywa", "Owoce"], // Displayed labels
@@ -38,24 +45,24 @@ const Sidebar = () => {
   ];
 
   return (
-    <nav className="sidebar">
-      <List style={{ position: "sticky", marginBottom: "200px" }}>
-        <Box sx={{ mt: 1, color: "#4caf50" }}>
-          {categories.map((category, index) => (
-            <CheckBoxGroup
-              key={index}
-              title={category.title}
-              options={category.options}
-              filterValues={category.filterValues}
-              selectedValues={filters[category.filterKey] || []} // Pass selected filter values
-              onChange={(filterValue: string) => {
-                dispatch(category.filterAction(filterValue));
-              }}
-            />
-          ))}
-        </Box>
-      </List>
-    </nav>
+      <nav className="sidebar">
+        <List sx={{ position: "sticky", top: "0", marginBottom: "200px" }}>
+          <Box sx={{ mt: 1, color: "#4caf50" }}>
+            {categories.map((category, index) => (
+                <CheckBoxGroup
+                    key={index}
+                    title={category.title}
+                    options={category.options}
+                    filterValues={category.filterValues}
+                    selectedValues={filters[category.filterKey] || []} // Pass selected filter values
+                    onChange={(filterValue: string) => {
+                      dispatch(category.filterAction(filterValue));
+                    }}
+                />
+            ))}
+          </Box>
+        </List>
+      </nav>
   );
 };
 

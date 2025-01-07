@@ -6,11 +6,11 @@ const Login = () => {
   return (
     <Box
       sx={{
-        margin: "auto",
-        maxWidth: " 36rem",
-        minHeight: "100dvh",
-        display: "grid",
-        placeItems: "center",
+        padding: "16px",
+        color: "black",
+        margin: "20dvh auto",
+        maxWidth: "30rem",
+        minWidth: "20rem",
       }}
     >
       <Box>
