@@ -32,11 +32,6 @@ class TruckRepositoryMongo(AbstractTruckRepository):
         return TruckResponse(**truck_data)
 
     def get_trucks_by_warehouse(self, warehouse_id: str) -> List[TruckResponse]:
-        try:
-            ObjectId(warehouse_id)
-        except Exception as err:
-            raise InvalidIdError(warehouse_id, str(err))
-
         trucks_data = self.truck_collection.find({"warehouse": warehouse_id})
 
         response = []
@@ -53,6 +48,17 @@ class TruckRepositoryMongo(AbstractTruckRepository):
 
         result = self.truck_collection.update_many(
             {"_id": {"$in": object_ids}},
-            {"$addToSet": {"orders": order_id}}
+            {"$addToSet": {"active_orders": order_id}}
+        )
+        return result.modified_count
+
+    def delete_order_from_truck_db(self, order_id: str, truck_ids: List[str]) -> int:
+        try:
+            object_ids = [ObjectId(truck_id) for truck_id in truck_ids]
+        except Exception as err:
+            raise InvalidIdError(order_id, str(err))
+        result = self.truck_collection.update_many(
+            {"_id": {"$in": object_ids}},
+            {"$pull": {"active_orders": order_id}}
         )
         return result.modified_count

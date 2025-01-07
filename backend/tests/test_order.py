@@ -2,10 +2,11 @@ import os
 from unittest.mock import AsyncMock
 
 import pytest
+from bson import ObjectId
 from starlette.testclient import TestClient
 
 from application.order.order_service import OrderService
-from application.responses import WarehouseResponse
+from application.responses import WarehouseResponse, OrderResponse
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
@@ -159,17 +160,19 @@ def mock_warehouse_response(mock_warehouse_data):
         response.append(WarehouseResponse(**warehouse_item))
     return response
 
+
 @pytest.fixture(scope="module")
-def mock_order_response():
-    """Fixture returning a mocked order response."""
+def mock_order_response_data():
+    """Fixture returning a mocked order response data."""
     return {
-        "id": "677c3333e6ba26d342d1786d",
+        "id": str(ObjectId),
         "delivery_date": "11.05.2025",
         "amount": 600.5,
-        "products": [{
-            "product_id": "1",
-            "quantity": 4.0
-        },
+        "products": [
+            {
+                "product_id": "1",
+                "quantity": 4.0
+            },
             {
                 "product_id": "2",
                 "quantity": 5.0
@@ -199,6 +202,7 @@ def mock_order_response():
         "route_length": 123.0
     }
 
+
 async def assert_order_response(mock_order_data, response_json):
     assert response_json["delivery_date"] == mock_order_data["delivery_date"]
     assert response_json["amount"] == mock_order_data["amount"]
@@ -210,12 +214,35 @@ async def assert_order_response(mock_order_data, response_json):
     assert response_json["warehouses"] == mock_order_data["warehouses"]
     assert response_json["route_length"] == mock_order_data["route_length"]
 
+
+@pytest.mark.asyncio
+async def test_set_order_as_complete(
+        test_client,
+        test_container,
+        order_data,
+        mock_order_response_data,
+        mocked_order_repository,
+        mocked_truck_repository
+):
+    """Integration test the of the /purchase endpoint."""
+    order_id = mock_order_response_data
+    mocked_order_repository.update_order_status_db.return_value = True
+    mock_order_response_data["order_status"] = "complete"
+    mocked_order_repository.get_order_by_id.return_value = OrderResponse(**mock_order_response_data)
+    mocked_truck_repository.delete_order_from_truck_db.return_value = 1
+    response = test_client.get(f"/api/orders/{order_id}/complete")
+
+    assert response.status_code == 200
+    response_json = response.json()["order"]
+    await assert_order_response(mock_order_response_data, response_json)
+
+
 @pytest.mark.asyncio
 async def test_add_order_success_end_to_end(
         test_client,
         test_container,
         order_data,
-        mock_order_response
+        mock_order_response_data,
 ):
     """End-to-end test the of the /purchase endpoint."""
     test_container.order_service.override(
@@ -231,4 +258,29 @@ async def test_add_order_success_end_to_end(
 
     assert response.status_code == 200
     response_json = response.json()
-    await assert_order_response(mock_order_response, response_json)
+    await assert_order_response(mock_order_response_data, response_json)
+
+
+@pytest.mark.asyncio
+async def test_set_order_as_complete_end_to_end(
+        test_client,
+        test_container,
+        order_data,
+        mock_order_response_data,
+):
+    """End-to-end test the of the /purchase endpoint."""
+    test_container.order_service.override(
+        OrderService(
+            order_repo=OrderRepositoryMongo(),
+            client_repo=ClientRepositoryMongo(),
+            warehouse_repo=WarehouseRepositoryMongo(),
+            truck_repo=TruckRepositoryMongo()
+        )
+    )
+    order_id = "677c5b8db9eefa08e904efc2"
+    mock_order_response_data["order_status"] = "complete"
+    response = test_client.get(f"/api/orders/{order_id}/complete")
+
+    assert response.status_code == 200
+    response_json = response.json()["order"]
+    await assert_order_response(mock_order_response_data, response_json)

@@ -58,6 +58,6 @@ class WarehouseResponse(BaseModel):
 class TruckResponse(BaseModel):
     id: str
     registration_number: str
-    orders: List[str] = Field(default_factory=list)
+    active_orders: List[str] = Field(default_factory=list)
     warehouse: str
     lift_capacity: float

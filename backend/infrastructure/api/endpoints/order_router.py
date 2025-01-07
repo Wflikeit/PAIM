@@ -33,3 +33,11 @@ async def get_all_orders(
     order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> dict:
     return {"orders": order_service.get_orders()}
+
+@router.get("/orders/{order_id}/complete", response_model=dict)
+@inject
+async def set_order_status_complete(
+    order_id: str,
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+) -> dict:
+    return {"order": order_service.mark_order_as_complete(order_id)}

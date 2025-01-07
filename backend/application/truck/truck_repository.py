@@ -22,3 +22,7 @@ class AbstractTruckRepository(abc.ABC):
     @abc.abstractmethod
     def add_order_to_truck_db(self, order_id: str, truck_id:str) -> int:
         pass
+
+    @abc.abstractmethod
+    def delete_order_from_truck_db(self, truck_id: str, truck_ids: List[str]) -> int:
+        pass

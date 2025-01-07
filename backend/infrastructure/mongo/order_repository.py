@@ -18,7 +18,7 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         order_data["id"] = str(self.order_collection.insert_one(order_data).inserted_id)
         return OrderResponse(**order_data)
 
-    def get_order(self, order_id: str) -> OrderResponse:
+    def get_order_by_id(self, order_id: str) -> OrderResponse:
         try:
             object_id = ObjectId(order_id)
         except Exception as err:
@@ -42,3 +42,15 @@ class OrderRepositoryMongo(AbstractOrderRepository):
             response_list.append(OrderResponse(**order))
 
         return response_list
+
+    def update_order_status_db(self, order_id: str, status: str) -> bool:
+        try:
+            object_id = ObjectId(order_id)
+        except Exception as err:
+            raise InvalidIdError(order_id, str(err))
+        result = self.order_collection.update_one(
+            {"_id": object_id},
+            {"$set": {"order_status": status}},
+        )
+
+        return result.acknowledged

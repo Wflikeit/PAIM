@@ -11,9 +11,13 @@ class AbstractOrderRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_order(self, order_id: str) -> OrderResponse:
+    def get_order_by_id(self, order_id: str) -> OrderResponse:
         pass
 
     @abc.abstractmethod
     def get_all_orders(self) -> List[OrderResponse]:
+        pass
+
+    @abc.abstractmethod
+    def update_order_status_db(self, order_id: str, status: str) -> bool:
         pass
