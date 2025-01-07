@@ -1,14 +1,17 @@
+import {LoggedInUser} from "../../auth/authService.ts";
 import { red } from "@mui/material/colors";
 import Popover from "@mui/material/Popover";
 import React, { useState } from "react";
-import {LoggedInUser} from "../../auth/authService.ts";
+import { useNavigate } from "react-router-dom";
 
-interface ProfilePhotoWrapperProps{
-    user: LoggedInUser
+interface ProfilePhotoWrapperProps {
+  user: LoggedInUser;
 }
-const ProfilePhotoWrapper:React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
+
+const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
+  // Function to handle clicking the profile photo button
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -17,7 +20,6 @@ const ProfilePhotoWrapper:React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
     setAnchorEl(null);
   };
   const open = Boolean(anchorEl);
-
   const id = open ? "simple-popover" : undefined;
 
   return (
