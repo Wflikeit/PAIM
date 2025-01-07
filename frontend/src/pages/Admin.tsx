@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import NotFound from "./NotFound";
+import {TOKEN_KEY} from "../auth/authService.ts";
 
 const Admin = () => {
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const fetchAdminData = async () => {
@@ -11,33 +13,32 @@ const Admin = () => {
         const token = localStorage.getItem("access_token"); // Retrieve the token from localStorage
         const response = await axios.get("http://127.0.0.1:8002/admin/", {
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+            Authorization: `Bearer ${token}`,
           },
         });
-        setMessage(response.data.message); // Set the message from the backend
+        setMessage(response.data.message);
       } catch (err) {
-        setError("You are not authorized to view this page.");
-        console.error(err);
+        if (axios.isAxiosError(err) && err.response?.status === 403) {
+          // Permission denied (403)
+          setHasError(true);
+        } else {
+          console.error("Unexpected error:", err);
+        }
       }
     };
 
     fetchAdminData();
   }, []);
 
-  if (error) {
-    return (
-      <div>
-        <h1>Admin Page</h1>
-        <p style={{ color: "red" }}>{error}</p>
-      </div>
-    );
+  if (hasError) {
+    return <NotFound />;
   }
 
   return (
-    <div>
-      <h1>Admin Page</h1>
-      <p>{message}</p>
-    </div>
+      <div>
+        <h1>Admin Page</h1>
+        <p>{message}</p>
+      </div>
   );
 };
 

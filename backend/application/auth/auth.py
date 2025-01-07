@@ -74,19 +74,9 @@ def is_admin(token: str = Depends(oauth2_scheme)):
     )
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     try:
-        # Decode the JWT token
-
-        # logger.debug(f"Decoded token payload: {payload}")
-
-        # Check the role in the payload
         role = payload.get("role")
         if role != "admin":
-            # logger.warning("Access denied: User is not an admin")
             raise credentials_exception
-
-        # Log successful admin access
-        # logger.info("Access granted: User is an admin")
         return payload
     except JWTError as e:
-        # logger.error(f"Invalid token: {str(e)}")
         raise credentials_exception

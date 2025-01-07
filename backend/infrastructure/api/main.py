@@ -20,7 +20,7 @@ app.container = container
 
 # zapobieganie CORS
 origins = [
-    "*",  # frontend
+    "http://localhost:5173",  # frontend
 ]
 
 app.add_middleware(

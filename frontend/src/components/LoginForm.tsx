@@ -19,9 +19,8 @@ const LoginForm = () => {
     }
 
     try {
-      // Create FormData to handle the POST request
       const formData = new FormData();
-      formData.append("username", email); // Backend expects "username" for email
+      formData.append("username", email);
       formData.append("password", password);
 
 

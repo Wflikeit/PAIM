@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Home from "./pages/ProductsList";
 import Login from "./pages/Login";
 import About from "./pages/About";
@@ -10,22 +10,35 @@ import NotFound from "./pages/NotFound";
 import Layout from "./components/layout/Layout";
 
 const App: React.FC = () => {
-  return (
-      <Router>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/register" element={<RegisterForm />} />
-            <Route path="/login" element={<Login />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
+    return (
+        <BrowserRouter>
+          <EnsureAuth />
+
+            <Routes>
+                <Route element={<Layout/>}>
+                    <Route
+                        path="/*"
+                        element={
+                            <ProtectedRouteWrapper allowedRoles={[UserRole.ADMIN, UserRole.CLIENT]}>
+                                <Routes>
+                                    <Route path="/" element={<Home/>}/>
+
+                                    <Route path="/checkout" element={<CartPage/>}/>
+                                    <Route path="/admin" element={<Admin/>}/>
+                                </Routes>
+                            </ProtectedRouteWrapper>
+                    }/>
+                <Route path="/cart" element={<CartPage/>}/>
+                <Route path="/about" element={<About/>}/>
+                <Route path="/contact" element={<Contact/>}/>
+            </Route>
+                <Route path="/register" element={<RegisterForm/>}/>
+                <Route path="/login" element={<Login/>}/>
+                <Route path="*" element={<NotFound/>}/>
         </Routes>
-      </Router>
-  );
+</BrowserRouter>
+)
+    ;
 };
 
 export default App;
