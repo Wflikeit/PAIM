@@ -1,7 +1,7 @@
 import { red } from "@mui/material/colors";
 import Popover from "@mui/material/Popover";
 import React, { useState } from "react";
-import {LoggedInUser} from "./UserActionsWrapper.tsx";
+import {LoggedInUser} from "../../auth/authService.ts";
 
 interface ProfilePhotoWrapperProps{
     user: LoggedInUser

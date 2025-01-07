@@ -3,12 +3,9 @@ import { Box } from "@mui/material";
 import HeaderLink from "./HeaderLink.tsx";
 import ShoppingCartMiniature from "./ShoppingCartMiniature.tsx";
 import ProfilePhotoWrapper from "./ProfilePhotoWrapper.tsx";
+import {LoggedInUser} from "../../auth/authService.ts";
 
-export interface LoggedInUser {
-  fullname: string;
-  token: string;
-  role: string;
-}
+
 
 interface UsersActionWrapperProps {
   user?: LoggedInUser;

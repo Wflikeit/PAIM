@@ -1,14 +1,25 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {Box, Button, TextField, Typography} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import {getUserFromToken, TOKEN_KEY} from "../auth/authService.ts";
+import {useCustomNavigation} from "../hooks/useCustomNavigation.ts";
 
 const LoginForm = () => {
+  const {navigateToHome} = useCustomNavigation()
+  const token = localStorage.getItem(TOKEN_KEY);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
   const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      navigateToHome();
+    }
+  }, [navigateToHome, token]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -39,16 +50,11 @@ const LoginForm = () => {
       const role = tokenPayload.role;
 
       // Store the token and role in localStorage
-      localStorage.setItem("access_token", access_token);
+      localStorage.setItem(TOKEN_KEY, access_token);
+      console.log(getUserFromToken());
       localStorage.setItem("user_role", role);
       localStorage.setItem("fullname", response.data.fullname);
-
-      // Redirect based on role
-      if (role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      navigateToHome()
     } catch (error) {
       console.error("Login failed:", error);
       setError("Invalid email or password");

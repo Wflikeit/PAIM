@@ -8,6 +8,10 @@ import CartPage from "./pages/Cart";
 import RegisterForm from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/layout/Layout";
+import {ProtectedRouteWrapper} from "./auth/ProtectedRouterWrapper.tsx";
+import {UserRole} from "./auth/UserRole.ts"
+import React from "react";
+import {EnsureAuth} from "./auth/EnsureAuth.tsx";
 
 const App: React.FC = () => {
     return (
