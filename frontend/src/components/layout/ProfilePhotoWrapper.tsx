@@ -30,7 +30,12 @@ const ProfilePhotoWrapper:React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
         }}
         onClick={handleClick}
       >
-        {user.fullname ? user.fullname[0].toUpperCase() : "U"}
+        {user.fullname
+            ? user.fullname
+           .split(" ")
+           .map((part) => part[0].toUpperCase())
+           .join("")
+        : "U"}
       </button>
 
       <Popover
