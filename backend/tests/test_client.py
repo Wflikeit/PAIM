@@ -70,7 +70,7 @@ def client_data():
         "nip": "0123456789",
         "orders": [],
         "password": "mock_password",
-        # "company_name": "mock_company_name",
+        "company_name": "mock_company_name",
     }
 
 
@@ -85,7 +85,7 @@ def mock_client_data():
         "nip": "0123456789",
         "orders": [],
         "password": "mock_password",
-        # "company_name": "mock_company_name",
+        "company_name": "mock_company_name",
     }
 
 
@@ -108,7 +108,7 @@ async def assert_client_response(mock_client_data, response_json):
     assert response_json["delivery_address"] == mock_client_data["delivery_address"]
     assert response_json["nip"] == mock_client_data["nip"]
     assert response_json["orders"] == mock_client_data["orders"]
-    # assert response_json["company_name"] == mock_client_data["company_name"]
+    assert response_json["company_name"] == mock_client_data["company_name"]
 
 
 # 🔗 Integration Test
