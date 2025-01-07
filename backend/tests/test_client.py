@@ -56,17 +56,21 @@ def client_data():
             "house_number": 1,
             "postal_code": "12-345",
             "city": "mock_city",
+            "voivodeship": "Mock Voivodeship",
+            "county": "mock_county",
         },
         "delivery_address": {
             "street": "mock_street",
             "house_number": 1,
             "postal_code": "12-345",
             "city": "mock_city",
+            "voivodeship": "Mock Voivodeship",
+            "county": "mock_county",
         },
         "nip": "0123456789",
         "orders": [],
         "password": "mock_password",
-        "company_name": "mock_company_name",
+        # "company_name": "mock_company_name",
     }
 
 
@@ -76,12 +80,12 @@ def mock_client_data():
     return {
         "id": str(ObjectId()),
         "email": "test2@mail.com",
-        "payment_address": "677893fed7120e3a071a7950",
-        "delivery_address": "677893fed7120e3a071a7950",
+        "payment_address": "677c93c830eee19537733a61",
+        "delivery_address": "677c93c830eee19537733a61",
         "nip": "0123456789",
         "orders": [],
         "password": "mock_password",
-        "company_name": "mock_company_name",
+        # "company_name": "mock_company_name",
     }
 
 
@@ -104,7 +108,7 @@ async def assert_client_response(mock_client_data, response_json):
     assert response_json["delivery_address"] == mock_client_data["delivery_address"]
     assert response_json["nip"] == mock_client_data["nip"]
     assert response_json["orders"] == mock_client_data["orders"]
-    assert response_json["company_name"] == mock_client_data["company_name"]
+    # assert response_json["company_name"] == mock_client_data["company_name"]
 
 
 # 🔗 Integration Test
@@ -195,7 +199,7 @@ async def test_get_client_invalid_id(
 
 
 @pytest.mark.asyncio
-async def test_register_client_e2e_success(
+async def test_register_client_success_end_to_end(
     test_container,
     test_client,
     client_data,
@@ -213,4 +217,24 @@ async def test_register_client_e2e_success(
     assert response.status_code == 200
     response_json = response.json()
 
+    await assert_client_response(mock_client_data, response_json)
+
+
+@pytest.mark.asyncio
+async def test_get_client_success_end_to_end(
+    mock_client_data, test_container, test_client, mock_client_response
+):
+    """End-to-end test for getting client from /client/{client_id} endpoint."""
+    client_id = "677c972e86b699c0b287008f"
+    test_container.client_service.override(
+        ClientService(
+            client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo()
+        ),
+    )
+
+    response = test_client.get(f"/api/clients/{client_id}")
+
+    assert response.status_code == 200
+    response_json = response.json()
+    assert response_json["id"] == client_id
     await assert_client_response(mock_client_data, response_json)

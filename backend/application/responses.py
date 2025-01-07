@@ -17,12 +17,21 @@ class ProductResponse(BaseModel):
 
 class ClientResponse(BaseModel):
     id: str
-    email: str
+    email: EmailStr
     payment_address: str
     delivery_address: str
-    nip: str
-    orders: List[str] = Field(default_factory=list)
-    company_name: str
+    nip: Optional[str] = ''
+    orders: Optional[List[str]] = Field(default_factory=list)
+    company_name: Optional[str] = ''
+
+
+class AddressResponse(BaseModel):
+    id: str
+    voivodeship: str
+    city: str
+    street: str
+    house_number: int
+    postal_code: str
 
 
 class OrderResponse(BaseModel):
@@ -38,14 +47,6 @@ class OrderResponse(BaseModel):
     route_length: float
 
 
-class AddressResponse(BaseModel):
-    id: str
-    voivodeship: str
-    county: str
-    city: str
-    street: str
-    house_number: int
-    postal_code: str
 
 
 class WarehouseResponse(BaseModel):
