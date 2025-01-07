@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr
@@ -11,7 +12,7 @@ class ProductResponse(BaseModel):
     country_of_origin: str
     description: str
     fruit_or_vegetable: str
-    expiry_date: str
+    expiry_date: datetime
     file: str
 
 

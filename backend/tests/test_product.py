@@ -51,7 +51,7 @@ def product_data():
         "country_of_origin": "Poland",
         "description": "Ziemniaczek",
         "fruit_or_vegetable": "Warzywo",
-        "expiry_date": "10.12.2025",
+        "expiry_date": "2025-01-07T14:23:45.123000Z",
     }
 
 
@@ -74,7 +74,7 @@ def mocked_product_data(binary_file_data):
         "country_of_origin": "Poland",
         "description": "Ziemniaczek",
         "fruit_or_vegetable": "Warzywo",
-        "expiry_date": "10.12.2025",
+        "expiry_date": "2025-01-07T14:23:45.123000Z",
         "file": f"data:image/jpeg;base64,{base64_file_data}",
     }
 
@@ -109,7 +109,7 @@ async def test_get_product_successful(
     response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
-    product = response.json()["products"]
+    product = response.json()["product"]
     await assert_product_response(mocked_product_data, product)
     assert product["file"] == mocked_product_data["file"]
 
@@ -168,7 +168,7 @@ def test_get_product_not_found(mocked_product_repository, test_client):
 
 
 @pytest.mark.asyncio
-async def test_get_product_success(
+async def test_get_product_success_end_to_end(
     mocked_product_data,
     binary_file_data,
     mocked_product_repository,
@@ -177,7 +177,7 @@ async def test_get_product_success(
     test_container,
 ):
     """End-to-end test of the /products/{product_id} endpoint."""
-    product_id = "6775934ed79a82364c118356"
+    product_id = "677d54ba7c9eb1bc5b40c5d7"
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())
     )
@@ -185,13 +185,13 @@ async def test_get_product_success(
     response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
-    product = response.json()["products"]
+    product = response.json()["product"]
     await assert_product_response(product_data, product)
     assert product["file"] == mocked_product_data["file"]
 
 
 @pytest.mark.asyncio
-async def test_get_all_products_success(
+async def test_get_all_products_success_end_to_end(
     mocked_product_data,
     mocked_product_repository,
     test_client,
@@ -231,7 +231,7 @@ async def test_upload_product_end_to_end(
 
     response_get = test_client.get(f"/api/products/{response_json['id']}")
     assert response_get.status_code == 200
-    product = response_get.json()["products"]
+    product = response_get.json()["product"]
 
     await assert_product_response(product, response_json)
     assert response_json["file"] == product["file"]
