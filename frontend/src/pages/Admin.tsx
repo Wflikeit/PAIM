@@ -18,7 +18,8 @@ import { Bar } from "react-chartjs-2";
 import {
   BarElement,
   CategoryScale,
-  Chart as ChartJS, ChartOptions,
+  Chart as ChartJS,
+  ChartOptions,
   Legend,
   LinearScale,
   Tooltip,
@@ -61,7 +62,6 @@ const Admin = () => {
       //   },
       // });
       // setData(response.data);
-      console.log("Fetching reports with filters:", filters);
     } catch (error) {
       console.error("Error fetching reports:", error);
     }
@@ -101,7 +101,6 @@ const Admin = () => {
       },
     },
   };
-
 
   return (
     <Box sx={{ padding: "16px" }}>
