@@ -90,7 +90,7 @@ const CheckoutPage: React.FC = () => {
         >
           <WestIcon fontSize="small" /> Continue Shopping
         </Link>
-        <Link variant="contained" color="primary" to={"/checkout"}>
+        <Link color="primary" to={"/checkout"}>
           Checkout
         </Link>
       </Box>
