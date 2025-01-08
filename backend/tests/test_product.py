@@ -9,11 +9,11 @@ from starlette.testclient import TestClient
 
 from application.product.product_service import ProductService
 from application.responses import ProductResponse
+from domain.entities import Entity
 from domain.exceptions import EntityNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
-
 
 os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
@@ -59,7 +59,11 @@ def product_data():
 @pytest.fixture(scope="module")
 def binary_file_data():
     """Fixture returning sample binary data."""
-    with open("test_images/kartofel.jpeg", "rb") as file:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, "test_images", "kartofel.jpeg")
+
+    # Open and read the binary file
+    with open(file_path, "rb") as file:
         return file.read()
 
 
@@ -156,7 +160,7 @@ def test_get_product_not_found(mocked_product_repository, test_client):
     non_existent_product_id = str(ObjectId())
 
     mocked_product_repository.get_product_by_id.side_effect = EntityNotFoundError(
-        "Product", non_existent_product_id
+        Entity.product.value, non_existent_product_id
     )
 
     response = test_client.get(f"/api/products/{non_existent_product_id}")
@@ -214,18 +218,21 @@ async def test_get_all_products_success_end_to_end(
 
 @pytest.mark.asyncio
 async def test_upload_product_end_to_end(
-    test_container, test_client, product_data, mocked_product_repository
+    test_container,
+    test_client,
+    product_data,
+    mocked_product_repository,
+    binary_file_data,
 ):
     """End-to-end test of the /upload endpoint."""
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())
     )
-    with open("test_images/kartofel.jpeg", "rb") as image_file:
-        response = test_client.post(
-            "/api/upload",
-            data=product_data,
-            files={"file": ("xxx.jpeg", image_file, "image/jpeg")},
-        )
+    response = test_client.post(
+        "/api/upload",
+        data=product_data,
+        files={"file": ("xxx.jpeg", binary_file_data, "image/jpeg")},
+    )
 
     assert response.status_code == 200
     response_json = response.json()
@@ -251,5 +258,6 @@ async def test_get_product_invalid_id(test_client, test_container):
     assert response.status_code == 404
     assert (
         response.json()["error"]
-        == f"ID: {invalid_product_id} is invalid: '{invalid_product_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+        == f"ID of {Entity.product.value} is invalid: '{invalid_product_id}' "
+        "is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     )

@@ -4,6 +4,7 @@ from bson import ObjectId
 
 from application.responses import TruckResponse
 from application.truck.truck_repository import AbstractTruckRepository
+from domain.entities import Entity
 from domain.exceptions import InvalidIdError, EntityNotFoundError
 from domain.truck import Truck
 from infrastructure.mongo.mongo_client import MongoDBClient
@@ -22,7 +23,7 @@ class TruckRepositoryMongo(AbstractTruckRepository):
         try:
             object_id = ObjectId(truck_id)
         except Exception as err:
-            raise InvalidIdError(truck_id, str(err))
+            raise InvalidIdError(Entity.truck.value, truck_id, str(err))
         truck_data = self.truck_collection.find_one({"_id": object_id})
 
         if not truck_data:
@@ -44,7 +45,7 @@ class TruckRepositoryMongo(AbstractTruckRepository):
         try:
             object_ids = [ObjectId(truck_id) for truck_id in truck_ids]
         except Exception as err:
-            raise InvalidIdError(order_id, str(err))
+            raise InvalidIdError(Entity.order.value, order_id, str(err))
 
         result = self.truck_collection.update_many(
             {"_id": {"$in": object_ids}}, {"$addToSet": {"active_orders": order_id}}
@@ -55,7 +56,7 @@ class TruckRepositoryMongo(AbstractTruckRepository):
         try:
             object_ids = [ObjectId(truck_id) for truck_id in truck_ids]
         except Exception as err:
-            raise InvalidIdError(order_id, str(err))
+            raise InvalidIdError(Entity.order.value, order_id, str(err))
         result = self.truck_collection.update_many(
             {"_id": {"$in": object_ids}}, {"$pull": {"active_orders": order_id}}
         )

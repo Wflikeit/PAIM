@@ -89,13 +89,14 @@ class OrderService:
 
         order_from_db = self._order_repo.add_order(Order(**order_data))
         order_id = order_from_db.model_dump()["id"]
+        order_data["id"] = order_id
 
         if not self._client_repo.add_order_to_client_db(order_id, order_data["email"]):
             raise Exception("Failed to link order to client")
         if self._truck_repo.add_order_to_truck_db(order_id, trucks) != len(trucks):
             raise Exception("Failed to link order to trucks")
 
-        return OrderResponse(**order_from_db.model_dump())
+        return OrderResponse(**order_data)
 
     def assign_warehouses_and_trucks(
         self, order_products: List[dict], total_weight: float, delivery_date: str
@@ -114,7 +115,7 @@ class OrderService:
             warehouse_products = warehouse[warehouse_id]
 
             trucks = self.assign_trucks_for_warehouse(
-                warehouse_id, remaining_products, warehouse_products, delivery_date
+                warehouse_id, remaining_products, warehouse_products
             )
             if not trucks:
                 continue
@@ -140,7 +141,6 @@ class OrderService:
         self,
         warehouse_id: str,
         order_products: List[dict],
-        warehouse_products: dict,
         delivery_date: str,
     ) -> List[str]:
         trucks = self._truck_repo.get_trucks_by_warehouse(warehouse_id)

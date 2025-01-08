@@ -5,6 +5,7 @@ from application.responses import AddressResponse
 from domain.address import Address
 from domain.exceptions import InvalidIdError, EntityNotFoundError
 from infrastructure.mongo.mongo_client import MongoDBClient
+from domain.entities import Entity
 
 
 class AddressRepositoryMongo(AbstractAddressRepository):
@@ -27,11 +28,11 @@ class AddressRepositoryMongo(AbstractAddressRepository):
         try:
             object_id = ObjectId(address_id)
         except Exception as err:
-            raise InvalidIdError(address_id, str(err))
+            raise InvalidIdError(Entity.address.value, address_id, str(err))
         address_data = self.address_collection.find_one({"_id": object_id})
 
         if not address_data:
-            raise EntityNotFoundError("Address", address_id)
+            raise EntityNotFoundError(Entity.address.value, address_id)
 
         address_data["id"] = str(address_data["_id"])
 

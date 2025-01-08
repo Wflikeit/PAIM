@@ -5,6 +5,7 @@ from bson import ObjectId
 
 from application.order.order_repository import AbstractOrderRepository
 from application.responses import OrderResponse
+from domain.entities import Entity
 from domain.order import Order
 from domain.exceptions import InvalidIdError, EntityNotFoundError
 from infrastructure.mongo.mongo_client import MongoDBClient
@@ -23,11 +24,11 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         try:
             object_id = ObjectId(order_id)
         except Exception as err:
-            raise InvalidIdError(order_id, str(err))
+            raise InvalidIdError(Entity.order.value, order_id, str(err))
         order_data = self.order_collection.find_one({"_id": object_id})
 
         if not order_data:
-            raise EntityNotFoundError("Order", order_id)
+            raise EntityNotFoundError(Entity.order.value, order_id)
 
         order_data["id"] = str(order_data["_id"])
         order_data["delivery_date"] = order_data["delivery_date"].replace(
@@ -52,7 +53,7 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         try:
             object_id = ObjectId(order_id)
         except Exception as err:
-            raise InvalidIdError(order_id, str(err))
+            raise InvalidIdError(Entity.order.value, order_id, str(err))
         result = self.order_collection.update_one(
             {"_id": object_id},
             {"$set": {"order_status": status}},

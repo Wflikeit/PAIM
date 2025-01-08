@@ -5,6 +5,7 @@ from bson import ObjectId
 
 from application.product.product_repository import AbstractProductRepository
 from application.responses import ProductResponse
+from domain.entities import Entity
 from domain.exceptions import EntityNotFoundError, InvalidIdError
 from domain.product import Product
 from infrastructure.mongo.mongo_client import MongoDBClient
@@ -31,7 +32,7 @@ class ProductRepositoryMongo(AbstractProductRepository):
         try:
             object_id = ObjectId(product_id)
         except Exception as err:
-            raise InvalidIdError(product_id, str(err))
+            raise InvalidIdError(Entity.product.value, product_id, str(err))
         product = self.product_collection.find_one({"_id": object_id})
 
         if not product:

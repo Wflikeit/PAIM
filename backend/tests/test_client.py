@@ -7,6 +7,7 @@ from starlette.testclient import TestClient
 
 from application.client.client_service import ClientService
 from application.responses import ClientResponse, AddressResponse
+from domain.entities import Entity
 from domain.exceptions import EntityNotFoundError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
@@ -168,14 +169,15 @@ async def test_get_client_not_found(mocked_client_repository, test_client):
     """Test retrieving a client that does not exist."""
     non_existent_client_id = str(ObjectId())
     mocked_client_repository.get_client_db.side_effect = EntityNotFoundError(
-        "Client", non_existent_client_id
+        Entity.client.value, non_existent_client_id
     )
 
     response = test_client.get(f"/api/clients/{non_existent_client_id}")
 
     assert response.status_code == 404
     assert (
-        response.json()["error"] == f"Client with ID {non_existent_client_id} not found"
+        response.json()["error"]
+        == f"{Entity.client.value} with ID {non_existent_client_id} not found"
     )
 
 
@@ -196,7 +198,8 @@ async def test_get_client_invalid_id(
     assert response.status_code == 404
     assert (
         response.json()["error"]
-        == f"ID: {invalid_client_id} is invalid: '{invalid_client_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+        == f"ID of {Entity.client.value} is invalid: '{invalid_client_id}' "
+        "is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     )
 
 

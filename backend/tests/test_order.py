@@ -293,8 +293,9 @@ async def test_add_order_success(
     mocked_warehouse_response,
     mocked_warehouse_repository,
     mocked_client_repository,
+    mocked_another_order_response_data,
 ):
-    """Integration test for marking orders."""
+    """Integration test for making orders."""
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
     # this is used in loop for each warehouse
     mocked_truck_repository.get_trucks_by_warehouse.side_effect = (
@@ -307,12 +308,14 @@ async def test_add_order_success(
         **mocked_order_response_data
     )
     mocked_client_repository.add_order_to_client_db.return_value = True
-    mocked_truck_repository.add_order_to_truck_db.return_value = 2
+    mocked_truck_repository.add_order_to_trucks_db.return_value = len(
+        mocked_another_order_response_data["trucks"]
+    )
     response = test_client.post("/api/purchase", json=order_data)
 
     assert response.status_code == 200
     response_json = response.json()
-    await assert_order_response(mocked_order_response_data, response_json)
+    await assert_order_response(mocked_another_order_response_data, response_json)
 
 
 # @pytest.mark.asyncio
