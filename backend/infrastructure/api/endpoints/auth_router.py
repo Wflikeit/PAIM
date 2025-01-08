@@ -25,7 +25,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Invalid email or password",
         )
 
-    access_token = create_access_token(data={"sub": user["email"], "role": user.get("role")})
+    access_token = create_access_token(data={"sub": user["email"], "role": user.get("role"), "fullname": user.get("fullname")})
     fullname = user["fullname"]
     print(f"Generated access token: {access_token}")
 

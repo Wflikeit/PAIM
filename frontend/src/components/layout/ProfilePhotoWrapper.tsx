@@ -10,18 +10,32 @@ interface ProfilePhotoWrapperProps {
 
 const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const navigate = useNavigate();
 
   // Function to handle clicking the profile photo button
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
+  // Function to handle closing the popover
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  // Function to handle the sign-out action
+  const handleSignOut = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_role");
+    localStorage.removeItem("fullname");
+
+    // Navigate to the login page
+    navigate("/login");
+  };
+
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
-
+  console.log(user.fullname)
   return (
     <>
       <button
@@ -29,15 +43,26 @@ const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
         style={{
           backgroundColor: red[500],
           margin: "auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "50px",
+          height: "50px",
+          borderRadius: "50%",
+          fontSize: "18px",
+          color: "white",
+          border: "none",
+          cursor: "pointer",
         }}
         onClick={handleClick}
       >
         {user.fullname
-            ? user.fullname
-           .split(" ")
-           .map((part) => part[0].toUpperCase())
-           .join("")
-        : "U"}
+          ? user.fullname
+              .split(" ")
+              .map((part) => part[0].toUpperCase())
+              .join("")
+          : "U"}
+
       </button>
 
       <Popover
@@ -58,7 +83,20 @@ const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
           borderRadius: "1rem",
         }}
       >
-        <button className="sign__out__button">Sign out</button>
+        <button
+          className="sign__out__button"
+          onClick={handleSignOut}
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+            color: "red",
+            cursor: "pointer",
+            padding: "1rem",
+            fontSize: "16px",
+          }}
+        >
+          Sign out
+        </button>
       </Popover>
     </>
   );
