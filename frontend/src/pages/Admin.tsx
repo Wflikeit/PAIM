@@ -9,7 +9,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -28,7 +27,10 @@ import {
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const Admin = () => {
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
     startDate: null,
     endDate: null,
   });
@@ -62,6 +64,7 @@ const Admin = () => {
       //   },
       // });
       // setData(response.data);
+      console.log("Fetching reports for filters:", filters);
     } catch (error) {
       console.error("Error fetching reports:", error);
     }
@@ -123,7 +126,6 @@ const Admin = () => {
             onChange={(newValue) =>
               setFilters({ ...filters, startDate: newValue })
             }
-            renderInput={(params) => <TextField {...params} fullWidth />}
           />
           <DatePicker
             label="End Date"
@@ -131,7 +133,6 @@ const Admin = () => {
             onChange={(newValue) =>
               setFilters({ ...filters, endDate: newValue })
             }
-            renderInput={(params) => <TextField {...params} fullWidth />}
           />
         </LocalizationProvider>
 
