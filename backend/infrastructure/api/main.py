@@ -12,7 +12,6 @@ from infrastructure.api.exception_handler import repository_exception_handler
 from infrastructure.containers import Container
 
 
-
 app = FastAPI()
 
 container = Container()
