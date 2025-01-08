@@ -96,7 +96,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Typography>
 
         <div
-          style={{ display: "flex", alignItems: "center", marginTop: "16px" }}
+          style={{ display: "flex", alignItems: "center", marginTop: "16px", justifyContent: "space-evenly" }}
         >
           <QuantityInput
             quantity={localQuantity} // Pass localQuantity to QuantityInput
