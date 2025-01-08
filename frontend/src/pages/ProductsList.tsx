@@ -9,7 +9,6 @@ import { addToCart } from "../model/cardItem";
 const ProductsList: React.FC = () => {
   const { filters } = useSelector((state: RootState) => state.products);
   const { data: products = [], isLoading, error } = useProducts();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
   const dispatch = useDispatch();
 
   const filteredProducts = products.filter((product) => {
@@ -49,9 +48,6 @@ const ProductsList: React.FC = () => {
       }}
     >
       {filteredProducts.map((product) => {
-        const cartItem = cartItems.find((item) => item.id === product.id);
-        const quantity = cartItem?.quantity || 1;
-
         return (
           <ProductCard
             key={product.id}
@@ -64,7 +60,6 @@ const ProductsList: React.FC = () => {
             expiry_date={product.expiry_date}
             imageUrl={product.file}
             imageId={product.imageId}
-            quantity={quantity}
             onAddToCart={(quantity) => handleAddToCart(product, quantity)}
           />
         );
