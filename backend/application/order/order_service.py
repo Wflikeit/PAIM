@@ -93,7 +93,7 @@ class OrderService:
 
         if not self._client_repo.add_order_to_client_db(order_id, order_data["email"]):
             raise Exception("Failed to link order to client")
-        if self._truck_repo.add_order_to_truck_db(order_id, trucks) != len(trucks):
+        if self._truck_repo.add_order_to_trucks_db(order_id, trucks) != len(trucks):
             raise Exception("Failed to link order to trucks")
 
         return OrderResponse(**order_data)

@@ -41,7 +41,7 @@ class TruckRepositoryMongo(AbstractTruckRepository):
             response.append(TruckResponse(**truck))
         return response
 
-    def add_order_to_truck_db(self, order_id: str, truck_ids: List[str]) -> int:
+    def add_order_to_trucks_db(self, order_id: str, truck_ids: List[str]) -> int:
         try:
             object_ids = [ObjectId(truck_id) for truck_id in truck_ids]
         except Exception as err:
