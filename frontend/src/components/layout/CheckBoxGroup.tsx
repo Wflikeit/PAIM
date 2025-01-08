@@ -3,10 +3,10 @@ import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
 
 interface CheckboxGroupProps {
   title: string;
-  options: string[]; // Display values
-  filterValues: string[]; // Corresponding values used for filtering
-  selectedValues: string[]; // Currently selected filter values
-  onChange: (filterValue: string) => void; // Handle filter toggling
+  options: string[];
+  filterValues: string[];
+  selectedValues: string[];
+  onChange: (filterValue: string) => void;
 }
 
 const CheckBoxGroup: React.FC<CheckboxGroupProps> = ({

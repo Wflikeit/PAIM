@@ -136,7 +136,11 @@ const Admin = () => {
           />
         </LocalizationProvider>
 
-        <Button variant="contained" color="primary" onClick={fetchReports}>
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: "#177c1b" }}
+          onClick={fetchReports}
+        >
           Generate Report
         </Button>
       </Box>

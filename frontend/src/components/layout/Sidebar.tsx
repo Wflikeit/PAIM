@@ -30,13 +30,13 @@ const Sidebar: React.FC = () => {
   }[] = [
     {
       title: "Category",
-      options: ["Warzywa", "Owoce"], // Displayed labels
-      filterValues: ["Warzywo", "Owoc"], // Actual filter values
-      filterKey: "fruitOrVegetable", // Corresponding key in Redux state
-      filterAction: setFruitOrVegetableFilter, // Redux action to update the filter
+      options: ["Warzywa", "Owoce"],
+      filterValues: ["Warzywo", "Owoc"],
+      filterKey: "fruitOrVegetable",
+      filterAction: setFruitOrVegetableFilter,
     },
     {
-      title: "Kraj pochodzenia",
+      title: "Country of origin",
       options: ["Polska", "Hiszpania"],
       filterValues: ["Polska", "Hiszpania"],
       filterKey: "countryOfOrigin",

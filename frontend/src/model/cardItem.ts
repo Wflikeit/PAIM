@@ -24,21 +24,19 @@ const cartSlice = createSlice({
       console.log(
         "Before adding item:",
         JSON.parse(JSON.stringify(state.items)),
-      ); // Convert Proxy to plain array
+      );
       const existingItem = state.items.find(
         (item) => item.id === action.payload.id,
       );
       if (existingItem) {
-        console.log("Item exists, incrementing quantity"); // Debugging log
         existingItem.quantity += 1;
       } else {
-        console.log("Adding new item to cart"); // Debugging log
         state.items.push({ ...action.payload, quantity: 1 });
       }
       console.log(
         "After adding item:",
         JSON.parse(JSON.stringify(state.items)),
-      ); // Convert Proxy to plain array
+      );
     },
 
     removeFromCart: (state, action: PayloadAction<string>) => {

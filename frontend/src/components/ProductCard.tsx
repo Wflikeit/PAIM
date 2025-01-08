@@ -17,7 +17,7 @@ interface ProductCardProps {
   imageId: string;
   expiry_date: string;
   imageUrl?: string;
-  onAddToCart: () => void; // Add this property
+  onAddToCart: () => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   fruit_or_vegetable,
   expiry_date,
   imageUrl,
-  onAddToCart, // Use this property
+  onAddToCart,
 }) => {
   return (
     <Card
@@ -68,24 +68,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {description}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Kraj pochodzenia: {country_of_origin}
+          Country of origin: {country_of_origin}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Typ: {fruit_or_vegetable}
+          Type: {fruit_or_vegetable}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Data ważności: {expiry_date}
+          Expiration date: {expiry_date}
         </Typography>
         <Typography variant="h6" color="text.primary">
-          Cena: {price} zł
+          Price: {price} zł
         </Typography>
         <Button
           className="add-to-cart"
-          onClick={onAddToCart} // Handle add to cart
+          onClick={onAddToCart}
           variant="contained"
           sx={{backgroundColor:"#177c1b"}}
         >
-          Dodaj do koszyka
+          Add to cart
         </Button>
       </CardContent>
     </Card>

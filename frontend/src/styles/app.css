@@ -131,17 +131,6 @@ button.login {
     }
 }
 
-
-footer {
-    border-top: 1px solid #ddd;
-    color: #999;
-    display: flex;
-    grid-column: 2 / 3;
-    grid-row: 3 / 4;
-    height: 100%;
-    justify-content: space-between;
-}
-
 ::-webkit-scrollbar {
 
     -webkit-appearance: none;
