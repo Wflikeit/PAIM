@@ -38,7 +38,9 @@ class ProductRepositoryMongo(AbstractProductRepository):
             raise EntityNotFoundError("Product", product_id)
 
         product["id"] = str(product["_id"])
-        product["expiry_date"] = product["expiry_date"].replace(tzinfo=datetime.timezone.utc)
+        product["expiry_date"] = product["expiry_date"].replace(
+            tzinfo=datetime.timezone.utc
+        )
         product["file"] = (
             f"data:image/jpeg;base64,{base64.b64encode(product["file"]).decode('utf-8')}"
         )
@@ -51,7 +53,9 @@ class ProductRepositoryMongo(AbstractProductRepository):
         response_list = []
         for product in products:
             product["id"] = str(product["_id"])
-            product["expiry_date"] = product["expiry_date"].replace(tzinfo=datetime.timezone.utc)
+            product["expiry_date"] = product["expiry_date"].replace(
+                tzinfo=datetime.timezone.utc
+            )
             product["file"] = (
                 f"data:image/jpeg;base64,{base64.b64encode(product["file"]).decode('utf-8')}"
             )

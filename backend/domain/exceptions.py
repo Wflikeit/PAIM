@@ -15,5 +15,3 @@ class EntityNotFoundError(RepositoryError):
 class InvalidIdError(RepositoryError):
     def __init__(self, product_id: str, message: str):
         super().__init__(f"ID: {product_id} is invalid: {message}")
-
-

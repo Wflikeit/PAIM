@@ -47,8 +47,7 @@ class TruckRepositoryMongo(AbstractTruckRepository):
             raise InvalidIdError(order_id, str(err))
 
         result = self.truck_collection.update_many(
-            {"_id": {"$in": object_ids}},
-            {"$addToSet": {"active_orders": order_id}}
+            {"_id": {"$in": object_ids}}, {"$addToSet": {"active_orders": order_id}}
         )
         return result.modified_count
 
@@ -58,7 +57,6 @@ class TruckRepositoryMongo(AbstractTruckRepository):
         except Exception as err:
             raise InvalidIdError(order_id, str(err))
         result = self.truck_collection.update_many(
-            {"_id": {"$in": object_ids}},
-            {"$pull": {"active_orders": order_id}}
+            {"_id": {"$in": object_ids}}, {"$pull": {"active_orders": order_id}}
         )
         return result.modified_count

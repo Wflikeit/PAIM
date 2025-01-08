@@ -1,4 +1,3 @@
-from datetime import date
 from typing import List
 
 from application.client.client_repository import AbstractClientRepository
@@ -10,46 +9,56 @@ from domain.order import Order
 
 
 def calculate_total_weight(products: List[dict]) -> float:
-    weight = 0
-    for product in products:
-        weight += product["quantity"]
-    return weight
+    return sum(product["quantity"] for product in products)
 
 
-def get_warehouses_that_meets_demand(
-        warehouses: List[WarehouseResponse], order_products: List[dict],
+def get_warehouses_with_available_products(
+    warehouses: List[WarehouseResponse], order_products: List[dict]
 ) -> List[dict]:
-    each_warehouse_with_demanded_products = []
+    """
+    Find warehouses that can supply the demanded products.
+    """
+    warehouse_availability = []
     for warehouse in warehouses:
-        warehouse_availability = {}
+        available_products = {}
         warehouse_data = warehouse.model_dump()
         warehouse_id = warehouse_data["id"]
-        warehouse_availability[warehouse_id] = []
 
         for product in order_products:
             product_quantities = warehouse_data["product_quantities"]
             product_id = product["product_id"]
-            if product_id in product_quantities:
-                if product["quantity"] <= product_quantities[product_id]:
-                    warehouse_availability[warehouse_id].append(product_quantities)
-        each_warehouse_with_demanded_products.append(warehouse_availability)
-    sorted_warehouses = sorted(each_warehouse_with_demanded_products,
-                               key=lambda item: len(next(iter(item.values()))),
-                               reverse=True)
-    return sorted_warehouses
+            if product_id in product_quantities and product_quantities[product_id] > 0:
+                available_products[product_id] = min(
+                    product_quantities[product_id], product["quantity"]
+                )
+
+        if available_products:
+            warehouse_availability.append({warehouse_id: available_products})
+    return warehouse_availability
 
 
-def subtract_products_from_order(order_products: List[dict], products_in_warehouse: List[dict]) -> List[dict]:
-    new_order_products_data = []
-    for order in order_products:
-        for product_id in order.keys():
-            for product_in_warehouse in products_in_warehouse:
-                product_in_warehouse_id = list(product_in_warehouse.keys())[0]
-                if product_id == product_in_warehouse_id:
-                    quantity = order[product_id] - product_in_warehouse[product_in_warehouse_id]
-                    new_order_products_data.append({product_id: quantity})
+def subtract_products_from_order(
+    order_products: List[dict], warehouse_products: dict
+) -> List[dict]:
+    """Subtract products fulfilled by a warehouse from the remaining order."""
+    remaining_products = []
+    for product in order_products:
+        product_id = product["product_id"]
+        quantity_needed = product["quantity"]
 
-    return new_order_products_data
+        if product_id in warehouse_products:
+            quantity_supplied = warehouse_products[product_id]
+            if quantity_needed > quantity_supplied:
+                remaining_products.append(
+                    {
+                        "product_id": product_id,
+                        "quantity": quantity_needed - quantity_supplied,
+                    }
+                )
+        else:
+            remaining_products.append(product)
+
+    return remaining_products
 
 
 class OrderService:
@@ -58,7 +67,7 @@ class OrderService:
         order_repo: AbstractOrderRepository,
         client_repo: AbstractClientRepository,
         warehouse_repo: AbstractWarehouseRepository,
-        truck_repo: AbstractTruckRepository
+        truck_repo: AbstractTruckRepository,
     ):
         self._warehouse_repo = warehouse_repo
         self._order_repo = order_repo
@@ -68,18 +77,102 @@ class OrderService:
     def add_order(self, order: Order) -> OrderResponse:
         order_data = order.model_dump()
         delivery_date = order_data["delivery_date"]
-        total_weight = calculate_total_weight(order_data["products"])
-        order_data["warehouses"], order_data["trucks"] = self.check_warehouses(order_data["products"], total_weight, delivery_date)
+        products = order_data["products"]
+        total_weight = calculate_total_weight(products)
+
+        warehouses, trucks = self.assign_warehouses_and_trucks(
+            products, total_weight, delivery_date
+        )
+
+        order_data["warehouses"] = warehouses
+        order_data["trucks"] = trucks
 
         order_from_db = self._order_repo.add_order(Order(**order_data))
-        order_from_db_data = order_from_db.model_dump()
-        order_id = order_from_db_data["id"]
-        order_email = order_from_db_data["email"]
+        order_id = order_from_db.model_dump()["id"]
 
-        self._client_repo.add_order_to_client_db(order_id, order_email)
-        truck_ids = order_from_db_data["trucks"]
-        self._truck_repo.add_order_to_truck_db(order_id, truck_ids)
-        return OrderResponse(**order_from_db_data)
+        if not self._client_repo.add_order_to_client_db(order_id, order_data["email"]):
+            raise Exception("Failed to link order to client")
+        if self._truck_repo.add_order_to_truck_db(order_id, trucks) != len(trucks):
+            raise Exception("Failed to link order to trucks")
+
+        return OrderResponse(**order_from_db.model_dump())
+
+    def assign_warehouses_and_trucks(
+        self, order_products: List[dict], total_weight: float, delivery_date: str
+    ) -> tuple[List[str], List[str]]:
+        warehouses = self._warehouse_repo.get_warehouses()
+        available_warehouses = get_warehouses_with_available_products(
+            warehouses, order_products
+        )
+
+        assigned_warehouses = []
+        assigned_trucks = []
+        remaining_products = order_products
+
+        for warehouse in available_warehouses:
+            warehouse_id = list(warehouse.keys())[0]
+            warehouse_products = warehouse[warehouse_id]
+
+            trucks = self.assign_trucks_for_warehouse(
+                warehouse_id, remaining_products, warehouse_products, delivery_date
+            )
+            if not trucks:
+                continue
+
+            assigned_trucks.extend(trucks)
+            assigned_warehouses.append(warehouse_id)
+            remaining_products = subtract_products_from_order(
+                remaining_products, warehouse_products
+            )
+            total_weight = calculate_total_weight(remaining_products)
+
+            if total_weight == 0:
+                break
+
+        if total_weight > 0:
+            raise Exception(
+                "Unable to fulfill order: insufficient warehouses or trucks"
+            )
+
+        return assigned_warehouses, assigned_trucks
+
+    def assign_trucks_for_warehouse(
+        self,
+        warehouse_id: str,
+        order_products: List[dict],
+        warehouse_products: dict,
+        delivery_date: str,
+    ) -> List[str]:
+        trucks = self._truck_repo.get_trucks_by_warehouse(warehouse_id)
+        assigned_trucks = []
+        remaining_weight = calculate_total_weight(order_products)
+
+        for truck in trucks:
+            truck_data = truck.model_dump()
+            truck_capacity = truck_data["lift_capacity"]
+
+            if not self.is_available_on_date(
+                truck_data["active_orders"], delivery_date
+            ):
+                continue
+
+            if remaining_weight == 0:
+                break
+
+            if truck_capacity >= remaining_weight:
+                assigned_trucks.append(truck_data["id"])
+                return assigned_trucks
+
+            remaining_weight -= truck_capacity
+            assigned_trucks.append(truck_data["id"])
+
+        return assigned_trucks
+
+    def is_available_on_date(self, orders: List[str], delivery_date: str) -> bool:
+        return all(
+            self.get_order_by_id(order).model_dump()["delivery_date"] != delivery_date
+            for order in orders
+        )
 
     def get_order_by_id(self, order_id: str) -> OrderResponse:
         return self._order_repo.get_order_by_id(order_id)
@@ -87,51 +180,15 @@ class OrderService:
     def get_orders(self) -> List[OrderResponse]:
         return self._order_repo.get_all_orders()
 
-    def check_warehouses(self, order_products: List[dict], total_weight: float, delivery_date: str) -> tuple[List[str],List[str]]:
-        warehouses = self._warehouse_repo.get_warehouses()
-        warehouse_availability = get_warehouses_that_meets_demand(warehouses, order_products)
-
-        assigned_trucks_memory = []
-        assigned_warehouses_memory = []
-        for warehouse in warehouse_availability:
-            warehouse_id = list(warehouse.keys())[0]
-            assigned_trucks, total_weight = self.find_trucks_for_delivery(warehouse_id, total_weight, delivery_date)
-            if total_weight <= 0:
-                return [warehouse_id], assigned_trucks
-            else:
-                assigned_trucks_memory += assigned_trucks
-                assigned_warehouses_memory += warehouse_id
-                order_products = subtract_products_from_order(order_products, warehouse[warehouse_id])
-        return assigned_warehouses_memory, assigned_trucks_memory
-
-    def find_trucks_for_delivery(self, warehouse, total_weight: float, delivery_date: str) -> tuple[List[str], float]:
-        trucks = self._truck_repo.get_trucks_by_warehouse(warehouse)
-        assigned_trucks = []
-        for truck in trucks:
-            truck_data = truck.model_dump()
-            if not self.is_available_on_date(truck_data["active_orders"], delivery_date):
-                continue
-            total_weight -= truck_data["lift_capacity"]
-            assigned_trucks.append(truck_data["id"])
-            if total_weight <= 0:
-                break
-        return assigned_trucks, total_weight
-
-    def is_available_on_date(self, orders: List[str], delivery_date: str) -> bool:
-        for order in orders:
-            order_data = self.get_order_by_id(order).model_dump()
-            if order_data["delivery_date"] == delivery_date:
-                return False
-        return True
-
     def mark_order_as_complete(self, order_id: str) -> OrderResponse:
         if not self._order_repo.update_order_status_db(order_id, "complete"):
             raise Exception("Failed to mark order as complete")
         order = self._order_repo.get_order_by_id(order_id)
         order_data = order.model_dump()
         truck_ids = order_data["trucks"]
-        modified_trucks = self._truck_repo.delete_order_from_truck_db(order_id, truck_ids)
+        modified_trucks = self._truck_repo.delete_order_from_truck_db(
+            order_id, truck_ids
+        )
         if modified_trucks != len(truck_ids):
             raise Exception("Failed to mark order as complete")
-
         return OrderResponse(**order_data)

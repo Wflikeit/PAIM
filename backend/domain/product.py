@@ -9,6 +9,6 @@ class Product(BaseModel):
     price: float
     country_of_origin: str
     description: str
-    fruit_or_vegetable: str
+    is_vegetable: bool
     expiry_date: datetime
     file: Optional[UploadFile] = None

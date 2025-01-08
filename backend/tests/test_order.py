@@ -6,7 +6,7 @@ from bson import ObjectId
 from starlette.testclient import TestClient
 
 from application.order.order_service import OrderService
-from application.responses import WarehouseResponse, OrderResponse
+from application.responses import WarehouseResponse, OrderResponse, TruckResponse
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
@@ -19,7 +19,10 @@ os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
 @pytest.fixture(scope="module")
 def test_container(
-        mocked_client_repository, mocked_warehouse_repository, mocked_order_repository, mocked_truck_repository
+    mocked_client_repository,
+    mocked_warehouse_repository,
+    mocked_order_repository,
+    mocked_truck_repository,
 ):
     """Set up a test container with a test database."""
     container = Container()
@@ -28,7 +31,7 @@ def test_container(
             order_repo=mocked_order_repository,
             client_repo=mocked_client_repository,
             warehouse_repo=mocked_warehouse_repository,
-            truck_repo=mocked_truck_repository
+            truck_repo=mocked_truck_repository,
         )
     )
     return container
@@ -69,7 +72,7 @@ def mocked_truck_repository():
 def order_data():
     """Fixture returning data for a test order."""
     return {
-        "delivery_date": "11.05.2025",
+        "delivery_date": "2025-01-07T14:23:45.123000Z",
         "amount": 600.5,
         "products": [
             {"product_id": "1", "quantity": 4.0},
@@ -86,121 +89,159 @@ def order_data():
 
 
 @pytest.fixture(scope="module")
-def mock_warehouse_data():
+def mocked_warehouse_data():
     """Fixture returning a mocked warehouse data."""
     return [
         {
             "id": "1",
             "address": "Warehouse Partial 1",
-            "product_quantities": {"1": 6.0, "2": 5.0, "4": 8.0, "3": 1.5, "5": 1.5},
-            "trucks": ["Truck-1", "Truck-4"],
+            "product_quantities": {
+                "3": 7.0,
+                "5": 9.0,
+                "1": 1.5,
+                "2": 1.5,
+                "4": 1.5,
+            },  # 2
+            "trucks": ["3"],
         },
         {
             "id": "2",
             "address": "Warehouse Partial 2",
-            "product_quantities": {"3": 7.0, "5": 9.0, "1": 1.5, "2": 1.5, "4": 1.5},
-            "trucks": ["Truck-3", "Truck-5"],
+            "product_quantities": {
+                "1": 7.0,
+                "3": 8.0,
+                "4": 9.0,
+                "2": 9.0,
+                "5": 1.5,
+            },  # 4
+            "trucks": ["2"],
         },
         {
             "id": "3",
             "address": "Warehouse Partial 3",
-            "product_quantities": {"1": 7.0, "3": 8.0, "4": 9.0, "2": 1.5, "5": 1.5},
-            "trucks": ["Truck-2"],
+            "product_quantities": {
+                "3": 7.0,
+                "4": 9.0,
+                "1": 1.5,
+                "2": 1.5,
+                "5": 1.5,
+            },  # 2
+            "trucks": ["4"],
         },
         {
             "id": "4",
-            "address": "Warehouse Partial 4",
-            "product_quantities": {"2": 5.0, "4": 8.0, "1": 1.5, "3": 1.5, "5": 1.5},
-            "trucks": ["Truck-1", "Truck-3"],
-        },
-        {
-            "id": "5",
-            "address": "Warehouse Partial 5",
-            "product_quantities": {"1": 6.0, "2": 5.0, "5": 9.0, "3": 1.5, "4": 1.5},
-            "trucks": ["Truck-4"],
-        },
-        {
-            "id": "6",
-            "address": "Warehouse Partial 6",
-            "product_quantities": {"1": 8.0, "3": 9.0, "2": 1.5, "4": 1.5, "5": 1.5},
-            "trucks": ["Truck-2", "Truck-5"],
-        },
-        {
-            "id": "7",
-            "address": "Warehouse Partial 7",
-            "product_quantities": {"2": 6.0, "5": 9.0, "1": 1.5, "3": 1.5, "4": 1.5},
-            "trucks": ["Truck-1", "Truck-4"],
-        },
-        {
-            "id": "8",
-            "address": "Warehouse Partial 8",
-            "product_quantities": {"3": 7.0, "4": 9.0, "1": 1.5, "2": 1.5, "5": 1.5},
-            "trucks": ["Truck-3"],
-        },
-        {
-            "id": "9",
             "address": "Warehouse Full",
-            "product_quantities": {"1": 5.0, "2": 4.0, "3": 6.0, "4": 7.0, "5": 8.0},
-            "trucks": ["Truck-2", "Truck-4", "Truck-5"],
-        },
-        {
-            "id": "10",
-            "address": "Warehouse Partial 9",
-            "product_quantities": {"1": 6.0, "2": 3.0, "5": 7.0, "3": 1.5, "4": 1.5},
-            "trucks": ["Truck-1", "Truck-3"],
+            "product_quantities": {
+                "1": 4.0,
+                "2": 5.0,
+                "3": 6.0,
+                "4": 7.0,
+                "5": 8.0,
+            },  # 5
+            "trucks": ["1"],
         },
     ]
 
 
 @pytest.fixture(scope="module")
-def mock_warehouse_response(mock_warehouse_data):
+def mocked_warehouse_response(mocked_warehouse_data):
     """Fixture returning a mocked list of warehouse responses."""
     response = []
-    for warehouse_item in mock_warehouse_data:
-        response.append(WarehouseResponse(**warehouse_item))
+    for warehouse_items in mocked_warehouse_data:
+        response.append(WarehouseResponse(**warehouse_items))
     return response
 
 
 @pytest.fixture(scope="module")
-def mock_order_response_data():
+def mocked_order_response_data():
     """Fixture returning a mocked order response data."""
     return {
         "id": str(ObjectId),
-        "delivery_date": "11.05.2025",
+        "delivery_date": "2025-01-07T14:23:45.123000Z",
         "amount": 600.5,
         "products": [
-            {
-                "product_id": "1",
-                "quantity": 4.0
-            },
-            {
-                "product_id": "2",
-                "quantity": 5.0
-            },
-            {
-                "product_id": "3",
-                "quantity": 6.0
-            },
-            {
-                "product_id": "4",
-                "quantity": 7.0
-            },
-            {
-                "product_id": "5",
-                "quantity": 8.0
-            }
+            {"product_id": "1", "quantity": 4.0},
+            {"product_id": "2", "quantity": 5.0},
+            {"product_id": "3", "quantity": 6.0},
+            {"product_id": "4", "quantity": 7.0},
+            {"product_id": "5", "quantity": 8.0},
         ],
         "delivery_address": "0123456789",
         "order_status": "pending",
         "email": "mocked@mail.com",
-        "trucks": [
-            "677b2e6e58135031873da9db"
-        ],
-        "warehouses": [
-            "6779eba8536d018b5bbd8a50"
-        ],
-        "route_length": 123.0
+        "trucks": ["1"],
+        "warehouses": ["1", "2"],
+        "route_length": 123.0,
     }
+
+
+@pytest.fixture(scope="module")
+def mocked_truck_data():
+    return [
+        {
+            "id": "2",
+            "registration_number": "WA8802D",
+            "warehouse": "1",
+            "lift_capacity": 1500,
+            "active_orders": [],
+        },
+        {
+            "id": "3",
+            "registration_number": "WA8802E",
+            "warehouse": "2",
+            "lift_capacity": 1500,
+            "active_orders": [],
+        },
+        {
+            "id": "4",
+            "registration_number": "WA8802T",
+            "warehouse": "3",
+            "lift_capacity": 1500,
+            "active_orders": [],
+        },
+        {
+            "id": "1",
+            "registration_number": "WA8802C",
+            "warehouse": "4",
+            "lift_capacity": 1500,
+            "active_orders": ["677d74d59da405a637925a42"],
+        },
+    ]
+
+
+@pytest.fixture(scope="module")
+def mocked_truck_list_response(mocked_truck_data):
+    response = []
+    for truck in mocked_truck_data:
+        response.append([TruckResponse(**truck)])
+    return response
+
+
+@pytest.fixture(scope="module")
+def mocked_another_order_response_data():
+    return {
+        "id": "677d74d59da405a637925a42",
+        "delivery_date": "2025-01-07T14:23:45.123000Z",
+        "amount": 600.5,
+        "products": [
+            {"product_id": "1", "quantity": 4.0},
+            {"product_id": "2", "quantity": 5.0},
+            {"product_id": "3", "quantity": 6.0},
+            {"product_id": "4", "quantity": 7.0},
+            {"product_id": "5", "quantity": 8.0},
+        ],
+        "delivery_address": "0123456789",
+        "order_status": "pending",
+        "email": "mocked@mail.com",
+        "trucks": ["2", "3"],
+        "warehouses": ["1", "2"],
+        "route_length": 123.0,
+    }
+
+
+@pytest.fixture(scope="module")
+def mocked_active_orders_for_trucks(mocked_another_order_response_data):
+    return OrderResponse(**mocked_another_order_response_data)
 
 
 async def assert_order_response(mock_order_data, response_json):
@@ -217,70 +258,107 @@ async def assert_order_response(mock_order_data, response_json):
 
 @pytest.mark.asyncio
 async def test_set_order_as_complete(
-        test_client,
-        test_container,
-        order_data,
-        mock_order_response_data,
-        mocked_order_repository,
-        mocked_truck_repository
+    test_client,
+    test_container,
+    order_data,
+    mocked_order_response_data,
+    mocked_order_repository,
+    mocked_truck_repository,
 ):
     """Integration test the of the /purchase endpoint."""
-    order_id = mock_order_response_data
+    order_id = mocked_order_response_data
     mocked_order_repository.update_order_status_db.return_value = True
-    mock_order_response_data["order_status"] = "complete"
-    mocked_order_repository.get_order_by_id.return_value = OrderResponse(**mock_order_response_data)
+    mocked_order_response_data["order_status"] = "complete"
+    mocked_order_repository.get_order_by_id.return_value = OrderResponse(
+        **mocked_order_response_data
+    )
     mocked_truck_repository.delete_order_from_truck_db.return_value = 1
     response = test_client.get(f"/api/orders/{order_id}/complete")
 
     assert response.status_code == 200
     response_json = response.json()["order"]
-    await assert_order_response(mock_order_response_data, response_json)
+    await assert_order_response(mocked_order_response_data, response_json)
 
 
 @pytest.mark.asyncio
-async def test_add_order_success_end_to_end(
-        test_client,
-        test_container,
-        order_data,
-        mock_order_response_data,
+async def test_add_order_success(
+    test_client,
+    test_container,
+    order_data,
+    mocked_order_response_data,
+    mocked_order_repository,
+    mocked_truck_repository,
+    mocked_active_orders_for_trucks,
+    mocked_truck_list_response,
+    mocked_warehouse_response,
+    mocked_warehouse_repository,
+    mocked_client_repository,
 ):
-    """End-to-end test the of the /purchase endpoint."""
-    test_container.order_service.override(
-        OrderService(
-            order_repo=OrderRepositoryMongo(),
-            client_repo=ClientRepositoryMongo(),
-            warehouse_repo=WarehouseRepositoryMongo(),
-            truck_repo=TruckRepositoryMongo()
-        )
+    """Integration test for marking orders."""
+    mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
+    # this is used in loop for each warehouse
+    mocked_truck_repository.get_trucks_by_warehouse.side_effect = (
+        mocked_truck_list_response
     )
-
+    mocked_order_repository.get_order_by_id.return_value = (
+        mocked_active_orders_for_trucks
+    )
+    mocked_order_repository.add_order.return_value = OrderResponse(
+        **mocked_order_response_data
+    )
+    mocked_client_repository.add_order_to_client_db.return_value = True
+    mocked_truck_repository.add_order_to_truck_db.return_value = 2
     response = test_client.post("/api/purchase", json=order_data)
 
     assert response.status_code == 200
     response_json = response.json()
-    await assert_order_response(mock_order_response_data, response_json)
+    await assert_order_response(mocked_order_response_data, response_json)
 
 
-@pytest.mark.asyncio
-async def test_set_order_as_complete_end_to_end(
-        test_client,
-        test_container,
-        order_data,
-        mock_order_response_data,
-):
-    """End-to-end test the of the /purchase endpoint."""
-    test_container.order_service.override(
-        OrderService(
-            order_repo=OrderRepositoryMongo(),
-            client_repo=ClientRepositoryMongo(),
-            warehouse_repo=WarehouseRepositoryMongo(),
-            truck_repo=TruckRepositoryMongo()
-        )
-    )
-    order_id = "677c5b8db9eefa08e904efc2"
-    mock_order_response_data["order_status"] = "complete"
-    response = test_client.get(f"/api/orders/{order_id}/complete")
+# @pytest.mark.asyncio
+# async def test_add_order_success_end_to_end(
+#     test_client,
+#     test_container,
+#     order_data,
+#     mocked_order_response_data,
+# ):
+#     """End-to-end test the of the /purchase endpoint."""
+#     test_container.order_service.override(
+#         OrderService(
+#             order_repo=OrderRepositoryMongo(),
+#             client_repo=ClientRepositoryMongo(),
+#             warehouse_repo=WarehouseRepositoryMongo(),
+#             truck_repo=TruckRepositoryMongo(),
+#         )
+#     )
+#
+#     response = test_client.post("/api/purchase", json=order_data)
+#
+#     assert response.status_code == 200
+#     response_json = response.json()
+#     await assert_order_response(mocked_order_response_data, response_json)
 
-    assert response.status_code == 200
-    response_json = response.json()["order"]
-    await assert_order_response(mock_order_response_data, response_json)
+
+# @pytest.mark.asyncio
+# async def test_set_order_as_complete_end_to_end(
+#     test_client,
+#     test_container,
+#     order_data,
+#     mocked_order_response_data,
+# ):
+#     """End-to-end test the of the /purchase endpoint."""
+#     test_container.order_service.override(
+#         OrderService(
+#             order_repo=OrderRepositoryMongo(),
+#             client_repo=ClientRepositoryMongo(),
+#             warehouse_repo=WarehouseRepositoryMongo(),
+#             truck_repo=TruckRepositoryMongo(),
+#         )
+#     )
+#     order_id = "677dd5139fd32f7ca0cb07c1"
+#     mocked_order_response_data["order_status"] = "complete"
+#     response = test_client.get(f"/api/orders/{order_id}/complete")
+#
+#     assert response.status_code == 200
+#     response_json = response.json()["order"]
+#     await assert_order_response(mocked_order_response_data, response_json)

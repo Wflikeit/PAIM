@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr
@@ -5,7 +6,7 @@ from pydantic.v1 import Field
 
 
 class Order(BaseModel):
-    delivery_date: str
+    delivery_date: datetime
     amount: float
     products: List[dict] = Field(default_factory=list)
     delivery_address: str

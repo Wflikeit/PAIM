@@ -34,6 +34,7 @@ async def get_all_orders(
 ) -> dict:
     return {"orders": order_service.get_orders()}
 
+
 @router.get("/orders/{order_id}/complete", response_model=dict)
 @inject
 async def set_order_status_complete(

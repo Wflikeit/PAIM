@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 
 from bson import ObjectId
@@ -29,7 +30,9 @@ class OrderRepositoryMongo(AbstractOrderRepository):
             raise EntityNotFoundError("Order", order_id)
 
         order_data["id"] = str(order_data["_id"])
-
+        order_data["delivery_date"] = order_data["delivery_date"].replace(
+            tzinfo=datetime.timezone.utc
+        )
         return OrderResponse(**order_data)
 
     def get_all_orders(self) -> List[OrderResponse]:
@@ -38,7 +41,9 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         response_list = []
         for order in orders:
             order["id"] = str(order["_id"])
-
+            order["delivery_date"] = order["delivery_date"].replace(
+                tzinfo=datetime.timezone.utc
+            )
             response_list.append(OrderResponse(**order))
 
         return response_list

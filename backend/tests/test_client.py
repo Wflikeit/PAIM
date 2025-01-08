@@ -15,6 +15,7 @@ from infrastructure.mongo.client_repository import ClientRepositoryMongo
 
 os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
+
 @pytest.fixture(scope="module")
 def test_container(mocked_client_repository, mocked_address_repository):
     """Set up a test container with a test database."""
@@ -68,7 +69,6 @@ def client_data():
             "county": "mock_county",
         },
         "nip": "0123456789",
-        "orders": [],
         "password": "mock_password",
         "company_name": "mock_company_name",
     }
@@ -167,7 +167,9 @@ async def test_register_client_success(
 async def test_get_client_not_found(mocked_client_repository, test_client):
     """Test retrieving a client that does not exist."""
     non_existent_client_id = str(ObjectId())
-    mocked_client_repository.get_client_db.side_effect = EntityNotFoundError("Client", non_existent_client_id)
+    mocked_client_repository.get_client_db.side_effect = EntityNotFoundError(
+        "Client", non_existent_client_id
+    )
 
     response = test_client.get(f"/api/clients/{non_existent_client_id}")
 

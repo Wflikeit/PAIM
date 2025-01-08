@@ -11,7 +11,7 @@ class ProductResponse(BaseModel):
     price: float
     country_of_origin: str
     description: str
-    fruit_or_vegetable: str
+    is_vegetable: bool
     expiry_date: datetime
     file: str
 
@@ -21,9 +21,9 @@ class ClientResponse(BaseModel):
     email: EmailStr
     payment_address: str
     delivery_address: str
-    nip: Optional[str] = ''
+    nip: Optional[str] = ""
     orders: Optional[List[str]] = Field(default_factory=list)
-    company_name: Optional[str] = ''
+    company_name: Optional[str] = ""
 
 
 class AddressResponse(BaseModel):
@@ -37,17 +37,15 @@ class AddressResponse(BaseModel):
 
 class OrderResponse(BaseModel):
     id: str
-    delivery_date: str
+    delivery_date: datetime
     amount: float
     products: List[dict]
     delivery_address: str
     order_status: str
     email: EmailStr
-    trucks: Optional[List[str]]
-    warehouses: Optional[List[str]]
+    trucks: List[str]
+    warehouses: List[str]
     route_length: float
-
-
 
 
 class WarehouseResponse(BaseModel):

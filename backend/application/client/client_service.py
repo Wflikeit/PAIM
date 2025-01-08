@@ -1,5 +1,3 @@
-from pydantic import EmailStr
-
 from application.address.address_repository import AbstractAddressRepository
 from application.client.client_repository import AbstractClientRepository
 from application.responses import ClientResponse
@@ -21,7 +19,9 @@ class ClientService:
         payment_address = Address(**client_data["payment_address"])
         client_data["payment_address"] = self._address_repo.add_address(payment_address)
         delivery_address = Address(**client_data["delivery_address"])
-        client_data["delivery_address"] = self._address_repo.add_address(delivery_address)
+        client_data["delivery_address"] = self._address_repo.add_address(
+            delivery_address
+        )
         client = Client(**client_data)
         return self._client_repo.register_client_db(client)
 

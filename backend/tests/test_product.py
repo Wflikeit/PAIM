@@ -17,6 +17,7 @@ from infrastructure.mongo.product_repository import ProductRepositoryMongo
 
 os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
+
 @pytest.fixture(scope="module")
 def test_container(mocked_product_repository):
     """Set up a test container with a test database."""
@@ -50,7 +51,7 @@ def product_data():
         "price": 100.0,
         "country_of_origin": "Poland",
         "description": "Ziemniaczek",
-        "fruit_or_vegetable": "Warzywo",
+        "is_vegetable": True,
         "expiry_date": "2025-01-07T14:23:45.123000Z",
     }
 
@@ -73,7 +74,7 @@ def mocked_product_data(binary_file_data):
         "price": 100.0,
         "country_of_origin": "Poland",
         "description": "Ziemniaczek",
-        "fruit_or_vegetable": "Warzywo",
+        "is_vegetable": True,
         "expiry_date": "2025-01-07T14:23:45.123000Z",
         "file": f"data:image/jpeg;base64,{base64_file_data}",
     }
@@ -86,9 +87,7 @@ async def assert_product_response(mocked_product_data, response_json):
         response_json["country_of_origin"] == mocked_product_data["country_of_origin"]
     )
     assert response_json["description"] == mocked_product_data["description"]
-    assert (
-        response_json["fruit_or_vegetable"] == mocked_product_data["fruit_or_vegetable"]
-    )
+    assert response_json["is_vegetable"] == mocked_product_data["is_vegetable"]
     assert response_json["expiry_date"] == mocked_product_data["expiry_date"]
 
 
@@ -156,7 +155,9 @@ def test_get_product_not_found(mocked_product_repository, test_client):
     """Test retrieving a product that does not exist."""
     non_existent_product_id = str(ObjectId())
 
-    mocked_product_repository.get_product_by_id.side_effect = EntityNotFoundError("Product", non_existent_product_id)
+    mocked_product_repository.get_product_by_id.side_effect = EntityNotFoundError(
+        "Product", non_existent_product_id
+    )
 
     response = test_client.get(f"/api/products/{non_existent_product_id}")
 
@@ -177,7 +178,7 @@ async def test_get_product_success_end_to_end(
     test_container,
 ):
     """End-to-end test of the /products/{product_id} endpoint."""
-    product_id = "677d54ba7c9eb1bc5b40c5d7"
+    product_id = "6775934ed79a82364c118356"
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())
     )
