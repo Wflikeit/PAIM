@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -6,6 +6,7 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
+import QuantityInput from "./cart/QuantityInput";
 
 interface ProductCardProps {
   id: string;
@@ -17,7 +18,7 @@ interface ProductCardProps {
   imageId: string;
   expiry_date: string;
   imageUrl?: string;
-  onAddToCart: () => void;
+  onAddToCart: (quantity: number) => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -31,6 +32,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
   imageUrl,
   onAddToCart,
 }) => {
+  const [localQuantity, setLocalQuantity] = useState(1);
+
+  const handleQuantityChange = (productID: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      return; // Prevent the quantity from going below 1
+    }
+    setLocalQuantity(newQuantity); // Update local quantity
+  };
+
+  const handleAddToCart = () => {
+    onAddToCart(localQuantity); // Add the product to the cart
+    setLocalQuantity(1); // Reset the quantity to 1 after adding to the cart
+  };
+
   return (
     <Card
       sx={{
@@ -77,16 +92,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
           Expiration date: {expiry_date}
         </Typography>
         <Typography variant="h6" color="text.primary">
-          Price: {price} zł
+          Price: {price} zł/kg
         </Typography>
-        <Button
-          className="add-to-cart"
-          onClick={onAddToCart}
-          variant="contained"
-          sx={{backgroundColor:"#177c1b"}}
+
+        <div
+          style={{ display: "flex", alignItems: "center", marginTop: "16px", justifyContent: "space-evenly" }}
         >
-          Add to cart
-        </Button>
+          <QuantityInput
+            quantity={localQuantity} // Pass localQuantity to QuantityInput
+            productID={id}
+            handleQuantityChange={handleQuantityChange}
+          />
+          <Button
+            className="add-to-cart"
+            onClick={handleAddToCart}
+            variant="contained"
+            sx={{ backgroundColor: "#177c1b" }}
+          >
+            Add to cart
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
