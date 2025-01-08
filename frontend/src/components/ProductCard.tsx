@@ -18,7 +18,6 @@ interface ProductCardProps {
   imageId: string;
   expiry_date: string;
   imageUrl?: string;
-  onUpdateQuantity: (id: string, newQuantity: number) => void;
   onAddToCart: (quantity: number) => void;
 }
 
@@ -31,7 +30,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   fruit_or_vegetable,
   expiry_date,
   imageUrl,
-  onUpdateQuantity,
   onAddToCart,
 }) => {
   const [localQuantity, setLocalQuantity] = useState(1);
@@ -41,7 +39,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
       return; // Prevent the quantity from going below 1
     }
     setLocalQuantity(newQuantity); // Update local quantity
-    onUpdateQuantity(productID, newQuantity); // Notify parent (ProductsList)
   };
 
   const handleAddToCart = () => {
@@ -112,7 +109,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             variant="contained"
             sx={{ backgroundColor: "#177c1b" }}
           >
-            Add {localQuantity} to cart
+            Add to cart
           </Button>
         </div>
       </CardContent>

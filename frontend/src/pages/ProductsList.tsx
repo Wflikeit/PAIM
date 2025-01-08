@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useProducts } from "../hooks/useProducts.ts";
-import { addToCart, updateCartItemQuantity } from "../model/cardItem"; // Import actions
+import { addToCart } from "../model/cardItem";
 
 const ProductsList: React.FC = () => {
   const { filters } = useSelector((state: RootState) => state.products);
@@ -23,15 +23,6 @@ const ProductsList: React.FC = () => {
 
     return matchesFruitOrVegetable && matchesCountryOfOrigin;
   });
-
-  const handleUpdateQuantity = (productID: string, newQuantity: number) => {
-    dispatch(
-      updateCartItemQuantity({
-        id: productID,
-        quantity: newQuantity,
-      }),
-    );
-  };
 
   const handleAddToCart = (product: any, quantity: number) => {
     dispatch(
@@ -74,7 +65,6 @@ const ProductsList: React.FC = () => {
             imageUrl={product.file}
             imageId={product.imageId}
             quantity={quantity}
-            onUpdateQuantity={handleUpdateQuantity}
             onAddToCart={(quantity) => handleAddToCart(product, quantity)}
           />
         );
