@@ -8,6 +8,7 @@ import CartPage from "./pages/Cart";
 import RegisterForm from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/layout/Layout";
+import CheckoutPage from "./pages/Checkout.tsx";
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/login" element={<Login />} />
