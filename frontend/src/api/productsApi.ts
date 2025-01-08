@@ -12,7 +12,7 @@ export interface Product {
   imageId: string;
 }
 
-const BACKEND_URL = "http://localhost:8002";
+export const BACKEND_URL = "http://localhost:8002";
 
 export const fetchProductsFromApi = async (): Promise<Product[]> => {
   try {

@@ -1,5 +1,6 @@
 import axios from "axios";
+import {BACKEND_URL} from "./productsApi.ts";
 
 export const placeOrder = (orderDetails: any) => {
-  return axios.post("/api/order", orderDetails);
+  return axios.post(BACKEND_URL + "/api/order", orderDetails);
 };
