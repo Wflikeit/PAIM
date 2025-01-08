@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from "axios";
 
-import { TOKEN_KEY } from '../auth/authService';
-import {useCustomNavigation} from "./useCustomNavigation.ts";
+import { TOKEN_KEY } from "../auth/authService";
+import { useCustomNavigation } from "./useCustomNavigation.ts";
 
 const useUnauthorizedRedirect = () => {
   const { navigateToLoginPage } = useCustomNavigation();
@@ -17,7 +17,7 @@ const useUnauthorizedRedirect = () => {
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 };
 

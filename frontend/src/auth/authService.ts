@@ -1,14 +1,14 @@
-import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
-import { UserRole } from './UserRole';
+import { UserRole } from "./UserRole";
 
 type DecodedToken = {
   exp: number;
   role: UserRole;
   fullname: string;
 };
-export const TOKEN_KEY = 'access_token';
+export const TOKEN_KEY = "access_token";
 export const checkTokenValidity = (unauthorizedCallback: () => void) => {
   const token = localStorage.getItem(TOKEN_KEY);
   if (!token) {
@@ -34,7 +34,7 @@ export interface LoggedInUser {
   role: string;
 }
 
-export const  getUserFromToken = () => {
+export const getUserFromToken = () => {
   const decodedToken = getDecodedToken();
 
   if (!decodedToken) {
@@ -57,5 +57,5 @@ const getDecodedToken = () => {
   return jwtDecode(token) as DecodedToken;
 };
 export const setAuthorizationHeader = (token: string) => {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 };

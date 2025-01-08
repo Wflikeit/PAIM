@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NotFound from "./NotFound";
-import {TOKEN_KEY} from "../auth/authService.ts";
+import { TOKEN_KEY } from "../auth/authService.ts";
 
 const Admin = () => {
   const [message, setMessage] = useState("");
@@ -34,10 +34,10 @@ const Admin = () => {
   }
 
   return (
-      <div>
-        <h1>Admin Page</h1>
-        <p>{message}</p>
-      </div>
+    <div>
+      <h1>Admin Page</h1>
+      <p>{message}</p>
+    </div>
   );
 };
 

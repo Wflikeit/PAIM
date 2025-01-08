@@ -1,4 +1,4 @@
-import {LoggedInUser} from "../../auth/authService.ts";
+import { LoggedInUser } from "../../auth/authService.ts";
 import { red } from "@mui/material/colors";
 import Popover from "@mui/material/Popover";
 import React, { useState } from "react";
@@ -35,7 +35,7 @@ const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
-  console.log(user.fullname)
+  console.log(user.fullname);
   return (
     <>
       <button
@@ -62,7 +62,6 @@ const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
               .map((part) => part[0].toUpperCase())
               .join("")
           : "U"}
-
       </button>
 
       <Popover

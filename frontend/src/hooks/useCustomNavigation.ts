@@ -1,18 +1,18 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export function useCustomNavigation() {
   const navigate = useNavigate();
 
-
   function navigateToLoginPage() {
-    navigate('/login');
+    navigate("/login");
   }
+
   function navigateToHome() {
-    navigate('/');
+    navigate("/");
   }
 
   return {
     navigateToLoginPage,
-    navigateToHome
+    navigateToHome,
   };
 }
