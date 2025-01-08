@@ -1,5 +1,6 @@
 import base64
 from typing import List
+
 from bson import ObjectId
 
 from application.product.product_repository import AbstractProductRepository

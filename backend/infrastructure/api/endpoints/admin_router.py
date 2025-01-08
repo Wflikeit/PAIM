@@ -1,21 +1,11 @@
-from application.auth.auth import (
-    authenticate_user,
-    create_access_token,
-    is_admin,
-    generate_token_for_user,
-)
-from fastapi import APIRouter, HTTPException, status, Depends
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends
+
+from application.auth.auth import AuthService
 
 router = APIRouter()
 
 
-@router.get("/", dependencies=[Depends(is_admin)])
-async def admin_home():
-    return {"message": "Welcome to the Admin Page"}
-
-
-@router.get("/stats", dependencies=[Depends(is_admin)])
+@router.get("/stats", dependencies=[Depends(AuthService.is_admin)])
 async def admin_stats():
     stats = {"users": 100, "products": 50}
     return stats

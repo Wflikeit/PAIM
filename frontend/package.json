@@ -19,6 +19,7 @@
     "@types/axios": "^0.14.4",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.7.9",
+    "datetime": "^0.0.3",
     "eslint-config-prettier": "^9.1.0",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
@@ -26,7 +27,8 @@
     "react-query": "^3.39.3",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.0.2",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^6.0.0",
+    "typing": "^0.1.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
