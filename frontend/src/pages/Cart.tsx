@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store.ts";
@@ -8,7 +8,7 @@ import WestIcon from "@mui/icons-material/West";
 import CartItemsHeader from "../components/cart/CartItemsHeader.tsx";
 import CartItem from "../components/cart/CartItem.tsx";
 
-const CartPage: React.FC = () => {
+const CheckoutPage: React.FC = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items); // Access Redux state
   const dispatch = useDispatch();
   const currency: string = "zł";
@@ -90,16 +90,12 @@ const CartPage: React.FC = () => {
         >
           <WestIcon fontSize="small" /> Continue Shopping
         </Link>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => console.log("Proceeding to checkout...")}
-        >
+        <Link color="primary" to={"/checkout"}>
           Checkout
-        </Button>
+        </Link>
       </Box>
     </Box>
   );
 };
 
-export default CartPage;
+export default CheckoutPage;

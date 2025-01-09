@@ -53,7 +53,7 @@ const QuantityInput: React.FC<QuantityInputProps> = ({
             MozAppearance: "textfield",
           },
           "& input": {
-            padding: "8px", // Match the IconButton padding
+            padding: "8px",
             textAlign: "center",
           },
         }}

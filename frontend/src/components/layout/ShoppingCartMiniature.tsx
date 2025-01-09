@@ -27,12 +27,12 @@ const ShoppingCartMiniature = () => {
           }}
           sx={{
             "& .MuiBadge-badge": {
-              fontSize: "1rem", // Badge text size
-              height: "1.2rem", // Badge height
-              minWidth: "1.2rem", // Badge width
-              transform: "translate(-25%, 25%)", // Adjust position
-              backgroundColor: "#ea2323", // Badge background color
-              color: "white", // Badge text color
+              fontSize: "1rem",
+              height: "1.2rem",
+              minWidth: "1.2rem",
+              transform: "translate(-25%, 25%)",
+              backgroundColor: "#ea2323",
+              color: "white",
             },
           }}
         >

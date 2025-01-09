@@ -12,6 +12,7 @@ import { ProtectedRouteWrapper } from "./auth/ProtectedRouterWrapper.tsx";
 import { UserRole } from "./auth/UserRole.ts";
 import React from "react";
 import { EnsureAuth } from "./auth/EnsureAuth.tsx";
+import CheckoutPage from "./pages/Checkout.tsx";
 
 const App: React.FC = () => {
   return (
@@ -27,14 +28,13 @@ const App: React.FC = () => {
                 allowedRoles={[UserRole.ADMIN, UserRole.CLIENT]}
               >
                 <Routes>
-                  <Route path="/" element={<Home />} />
-
-                  <Route path="/checkout" element={<CartPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/admin" element={<Admin />} />
                 </Routes>
               </ProtectedRouteWrapper>
             }
           />
+          <Route path="/" element={<Home />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
