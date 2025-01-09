@@ -1,5 +1,5 @@
 import React from "react";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../components/product/ProductCard.tsx";
 import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";

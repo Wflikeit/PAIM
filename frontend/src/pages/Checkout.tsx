@@ -143,7 +143,7 @@ const CheckoutPage: React.FC = () => {
             <TextField
               fullWidth
               label="Full Name"
-              name="fullName"
+              name="full Name"
               value={shippingAddress.fullName}
               onChange={handleInputChange}
               error={!!errors.fullName}
@@ -205,7 +205,7 @@ const CheckoutPage: React.FC = () => {
             />
           </LocalizationProvider>
           {errors.deliveryDate && (
-            <Typography color="red">Select a valid delivery date</Typography>
+            <Typography color="red">Delivery date is required</Typography>
           )}
 
           <Typography variant="h6" sx={{ marginTop: "2rem", fontWeight: 600 }}>
