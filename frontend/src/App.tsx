@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Home from "./pages/ProductsList";
 import Login from "./pages/Login";
 import About from "./pages/About";
@@ -8,10 +8,10 @@ import CartPage from "./pages/Cart";
 import RegisterForm from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/layout/Layout";
-import { ProtectedRouteWrapper } from "./auth/ProtectedRouterWrapper.tsx";
-import { UserRole } from "./auth/UserRole.ts";
+import {ProtectedRouteWrapper} from "./auth/ProtectedRouterWrapper.tsx";
+import {UserRole} from "./auth/UserRole.ts";
 import React from "react";
-import { EnsureAuth } from "./auth/EnsureAuth.tsx";
+import {EnsureAuth} from "./auth/EnsureAuth.tsx";
 import CheckoutPage from "./pages/Checkout.tsx";
 
 const App: React.FC = () => {
@@ -29,7 +29,15 @@ const App: React.FC = () => {
               >
                 <Routes>
                   <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/admin" element={<Admin />} />
+                    <Route
+                        path="/*"
+                        element={
+                        <ProtectedRouteWrapper allowedRoles={[UserRole.ADMIN]} >
+                             <Routes>
+                                 <Route path="/admin" element={<Admin />} />
+                             </Routes>
+                        </ProtectedRouteWrapper>}>
+                     </Route>
                 </Routes>
               </ProtectedRouteWrapper>
             }
