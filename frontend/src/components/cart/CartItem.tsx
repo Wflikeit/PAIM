@@ -31,7 +31,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, handleQuantityChange }) => {
           height={100}
           style={{ objectFit: "cover", borderRadius: "8px" }} // Optional: Add styling
         />
-          <Typography>{item.name}</Typography>
+        <Typography>{item.name}</Typography>
       </div>
       <QuantityInput
         productID={item.id}

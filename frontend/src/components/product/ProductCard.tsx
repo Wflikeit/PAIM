@@ -6,7 +6,7 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
-import QuantityInput from "./cart/QuantityInput";
+import QuantityInput from "../cart/QuantityInput.tsx";
 
 interface ProductCardProps {
   id: string;
@@ -15,7 +15,6 @@ interface ProductCardProps {
   country_of_origin: string;
   description: string;
   fruit_or_vegetable: string;
-  imageId: string;
   expiry_date: string;
   imageUrl?: string;
   onAddToCart: (quantity: number) => void;
@@ -96,7 +95,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Typography>
 
         <div
-          style={{ display: "flex", alignItems: "center", marginTop: "16px", justifyContent: "space-evenly" }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: "16px",
+            justifyContent: "space-evenly",
+          }}
         >
           <QuantityInput
             quantity={localQuantity} // Pass localQuantity to QuantityInput

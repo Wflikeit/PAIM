@@ -9,7 +9,6 @@ export interface Product {
   fruit_or_vegetable: string;
   expiry_date: string;
   file: string;
-  imageId: string;
 }
 
 export const BACKEND_URL = "http://localhost:8002";
