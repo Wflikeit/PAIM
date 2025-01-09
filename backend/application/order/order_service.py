@@ -5,6 +5,7 @@ from application.order.order_repository import AbstractOrderRepository
 from application.responses import OrderResponse, WarehouseResponse
 from application.truck.truck_repository import AbstractTruckRepository
 from application.warehouse.warehouse_repository import AbstractWarehouseRepository
+from domain.exceptions import UnableToRealizeOrderError
 from domain.order import Order
 
 
@@ -91,10 +92,8 @@ class OrderService:
         order_id = order_from_db.model_dump()["id"]
         order_data["id"] = order_id
 
-        if not self._client_repo.add_order_to_client_db(order_id, order_data["email"]):
-            raise Exception("Failed to link order to client")
-        if self._truck_repo.add_order_to_trucks_db(order_id, trucks) != len(trucks):
-            raise Exception("Failed to link order to trucks")
+        self._client_repo.add_order_to_client_db(order_id, order_data["email"])
+        self._truck_repo.add_order_to_trucks_db(order_id, trucks)
 
         return OrderResponse(**order_data)
 
@@ -115,7 +114,7 @@ class OrderService:
             warehouse_products = warehouse[warehouse_id]
 
             trucks = self.assign_trucks_for_warehouse(
-                warehouse_id, remaining_products, warehouse_products
+                warehouse_id, remaining_products, delivery_date
             )
             if not trucks:
                 continue
@@ -127,13 +126,11 @@ class OrderService:
             )
             total_weight = calculate_total_weight(remaining_products)
 
-            if total_weight == 0:
+            if total_weight <= 0:
                 break
 
         if total_weight > 0:
-            raise Exception(
-                "Unable to fulfill order: insufficient warehouses or trucks"
-            )
+            raise UnableToRealizeOrderError()
 
         return assigned_warehouses, assigned_trucks
 

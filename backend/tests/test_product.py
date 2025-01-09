@@ -10,7 +10,7 @@ from starlette.testclient import TestClient
 from application.product.product_service import ProductService
 from application.responses import ProductResponse
 from domain.entities import Entity
-from domain.exceptions import EntityNotFoundError
+from domain.exceptions import EntityNotFoundError, InvalidDateType
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
@@ -173,6 +173,22 @@ def test_get_product_not_found(mocked_product_repository, test_client):
 
 
 @pytest.mark.asyncio
+async def test_get_product_invalid_date_type(test_client, test_container, mocked_product_repository):
+    """Test retrieving a product with invalid date type."""
+    product_id = "677fe80f0a34748487855a54"
+    date = "2025-01-07T14:23:45.123Z"
+    mocked_product_repository.get_product_by_id.side_effect = InvalidDateType(date, Entity.product.value)
+    response = test_client.get(f"/api/products/{product_id}")
+
+    assert response.status_code == 404
+    assert (
+        response.json()["error"]
+        == f"Date: {date} in {Entity.product.value} is in invalid"
+                         f"type: should be datetime, is {type(date).__name__}"
+    )
+
+
+@pytest.mark.asyncio
 async def test_get_product_success_end_to_end(
     mocked_product_data,
     binary_file_data,
@@ -247,7 +263,7 @@ async def test_upload_product_end_to_end(
 
 @pytest.mark.asyncio
 async def test_get_product_invalid_id(test_client, test_container):
-    """Test retrieving a client with invalid ID."""
+    """Test retrieving a product with invalid ID."""
     invalid_product_id = "not_a_valid_id"
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())

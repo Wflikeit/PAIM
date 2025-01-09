@@ -5,7 +5,7 @@ from application.client.client_repository import AbstractClientRepository
 from application.responses import ClientResponse
 from domain.client import Client
 from domain.entities import Entity
-from domain.exceptions import EntityNotFoundError, InvalidIdError
+from domain.exceptions import EntityNotFoundError, InvalidIdError, EntityLinkError
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 
@@ -30,11 +30,11 @@ class ClientRepositoryMongo(AbstractClientRepository):
         try:
             object_id = ObjectId(client_id)
         except Exception as err:
-            raise InvalidIdError(Entity.client.value, client_id, str(err))
+            raise InvalidIdError(Entity.client.value, str(err))
         client_data = self.client_collection.find_one({"_id": object_id})
 
         if not client_data:
-            raise EntityNotFoundError("Client", client_id)
+            raise EntityNotFoundError(Entity.client.value, client_id)
 
         client_data["id"] = str(client_data["_id"])
         client_data["delivery_address"] = str(client_data["delivery_address"])
@@ -44,9 +44,18 @@ class ClientRepositoryMongo(AbstractClientRepository):
             client_data["orders"] = []
         return ClientResponse(**client_data)
 
-    def add_order_to_client_db(self, order_id: str, email: EmailStr) -> str:
+    def add_order_to_client_db(self, order_id: str, email: EmailStr) -> bool:
+        try:
+            object_id = ObjectId(order_id)
+        except Exception as err:
+            raise InvalidIdError(Entity.order.value, str(err))
+
         orders = self.client_collection.update_one(
             {"email": email},
-            {"$addToSet": {"orders": ObjectId(order_id)}},
+            {"$addToSet": {"orders": object_id}},
         )
-        return str(orders.acknowledged)
+
+        if not orders.acknowledged:
+            raise EntityLinkError(Entity.order.value, Entity.client.value)
+
+        return orders.acknowledged

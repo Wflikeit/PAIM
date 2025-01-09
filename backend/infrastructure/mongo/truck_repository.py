@@ -5,7 +5,7 @@ from bson import ObjectId
 from application.responses import TruckResponse
 from application.truck.truck_repository import AbstractTruckRepository
 from domain.entities import Entity
-from domain.exceptions import InvalidIdError, EntityNotFoundError
+from domain.exceptions import InvalidIdError, EntityNotFoundError, EntityLinkError
 from domain.truck import Truck
 from infrastructure.mongo.mongo_client import MongoDBClient
 
@@ -23,11 +23,11 @@ class TruckRepositoryMongo(AbstractTruckRepository):
         try:
             object_id = ObjectId(truck_id)
         except Exception as err:
-            raise InvalidIdError(Entity.truck.value, truck_id, str(err))
+            raise InvalidIdError(Entity.truck.value, str(err))
         truck_data = self.truck_collection.find_one({"_id": object_id})
 
         if not truck_data:
-            raise EntityNotFoundError("Truck", truck_id)
+            raise EntityNotFoundError(Entity.truck.value, truck_id)
 
         truck_data["id"] = str(truck_data["_id"])
         return TruckResponse(**truck_data)
@@ -45,18 +45,20 @@ class TruckRepositoryMongo(AbstractTruckRepository):
         try:
             object_ids = [ObjectId(truck_id) for truck_id in truck_ids]
         except Exception as err:
-            raise InvalidIdError(Entity.order.value, order_id, str(err))
+            raise InvalidIdError(Entity.order.value, str(err))
 
         result = self.truck_collection.update_many(
             {"_id": {"$in": object_ids}}, {"$addToSet": {"active_orders": order_id}}
         )
+        if result.modified_count != len(truck_ids):
+            EntityLinkError(Entity.order.value, Entity.truck.value)
         return result.modified_count
 
     def delete_order_from_truck_db(self, order_id: str, truck_ids: List[str]) -> int:
         try:
             object_ids = [ObjectId(truck_id) for truck_id in truck_ids]
         except Exception as err:
-            raise InvalidIdError(Entity.order.value, order_id, str(err))
+            raise InvalidIdError(Entity.order.value, str(err))
         result = self.truck_collection.update_many(
             {"_id": {"$in": object_ids}}, {"$pull": {"active_orders": order_id}}
         )

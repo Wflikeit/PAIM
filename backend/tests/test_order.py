@@ -7,6 +7,8 @@ from starlette.testclient import TestClient
 
 from application.order.order_service import OrderService
 from application.responses import WarehouseResponse, OrderResponse, TruckResponse
+from domain.entities import Entity
+from domain.exceptions import InvalidDateType, EntityNotFoundError, EntityLinkError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
@@ -80,6 +82,25 @@ def order_data():
             {"product_id": "3", "quantity": 6.0},
             {"product_id": "4", "quantity": 7.0},
             {"product_id": "5", "quantity": 8.0},
+        ],
+        "delivery_address": "0123456789",
+        "order_status": "pending",
+        "email": "mocked@mail.com",
+        "route_length": 123,
+    }
+
+
+@pytest.fixture(scope="module")
+def other_order_data():
+    return {
+        "delivery_date": "2025-01-07T14:23:45.123000Z",
+        "amount": 600.5,
+        "products": [
+            {"product_id": "1", "quantity": 100.0},
+            {"product_id": "2", "quantity": 100.0},
+            {"product_id": "3", "quantity": 100.0},
+            {"product_id": "4", "quantity": 100.0},
+            {"product_id": "5", "quantity": 100.0}
         ],
         "delivery_address": "0123456789",
         "order_status": "pending",
@@ -283,7 +304,6 @@ async def test_set_order_as_complete(
 @pytest.mark.asyncio
 async def test_add_order_success(
     test_client,
-    test_container,
     order_data,
     mocked_order_response_data,
     mocked_order_repository,
@@ -307,61 +327,177 @@ async def test_add_order_success(
     mocked_order_repository.add_order.return_value = OrderResponse(
         **mocked_order_response_data
     )
-    mocked_client_repository.add_order_to_client_db.return_value = True
-    mocked_truck_repository.add_order_to_trucks_db.return_value = len(
-        mocked_another_order_response_data["trucks"]
-    )
     response = test_client.post("/api/purchase", json=order_data)
 
     assert response.status_code == 200
     response_json = response.json()
     await assert_order_response(mocked_another_order_response_data, response_json)
 
-
-# @pytest.mark.asyncio
-# async def test_add_order_success_end_to_end(
-#     test_client,
-#     test_container,
-#     order_data,
-#     mocked_order_response_data,
-# ):
-#     """End-to-end test the of the /purchase endpoint."""
-#     test_container.order_service.override(
-#         OrderService(
-#             order_repo=OrderRepositoryMongo(),
-#             client_repo=ClientRepositoryMongo(),
-#             warehouse_repo=WarehouseRepositoryMongo(),
-#             truck_repo=TruckRepositoryMongo(),
-#         )
-#     )
-#
-#     response = test_client.post("/api/purchase", json=order_data)
-#
-#     assert response.status_code == 200
-#     response_json = response.json()
-#     await assert_order_response(mocked_order_response_data, response_json)
+    mocked_truck_repository.get_trucks_by_warehouse.side_effect = None
 
 
-# @pytest.mark.asyncio
-# async def test_set_order_as_complete_end_to_end(
-#     test_client,
-#     test_container,
-#     order_data,
-#     mocked_order_response_data,
-# ):
-#     """End-to-end test the of the /purchase endpoint."""
-#     test_container.order_service.override(
-#         OrderService(
-#             order_repo=OrderRepositoryMongo(),
-#             client_repo=ClientRepositoryMongo(),
-#             warehouse_repo=WarehouseRepositoryMongo(),
-#             truck_repo=TruckRepositoryMongo(),
-#         )
-#     )
-#     order_id = "677dd5139fd32f7ca0cb07c1"
-#     mocked_order_response_data["order_status"] = "complete"
-#     response = test_client.get(f"/api/orders/{order_id}/complete")
-#
-#     assert response.status_code == 200
-#     response_json = response.json()["order"]
-#     await assert_order_response(mocked_order_response_data, response_json)
+@pytest.mark.asyncio
+async def test_add_order_not_enough_products_in_warehouse_fail(
+    test_client,
+    other_order_data,
+    mocked_order_response_data,
+    mocked_order_repository,
+    mocked_truck_repository,
+    mocked_active_orders_for_trucks,
+    mocked_truck_list_response,
+    mocked_warehouse_response,
+    mocked_warehouse_repository,
+    mocked_client_repository,
+    mocked_another_order_response_data,
+):
+    """Integration test for making orders."""
+
+    mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
+    # this is used in loop for each warehouse
+    mocked_truck_repository.get_trucks_by_warehouse.side_effect = (
+        mocked_truck_list_response
+    )
+    mocked_order_repository.get_order_by_id.return_value = (
+        mocked_active_orders_for_trucks
+    )
+    mocked_order_repository.add_order.return_value = OrderResponse(
+        **mocked_order_response_data
+    )
+
+    response = test_client.post("/api/purchase", json=other_order_data)
+
+    assert response.status_code == 409
+    assert response.json()["error"] == "Unable to realize order"
+
+    mocked_truck_repository.get_trucks_by_warehouse.side_effect = None
+
+
+@pytest.mark.asyncio
+async def test_order_link_to_client_failed(
+        test_client,
+        order_data,
+        mocked_warehouse_repository,
+        mocked_warehouse_response,
+        mocked_truck_repository,
+        mocked_truck_list_response,
+        mocked_order_repository,
+        mocked_active_orders_for_trucks,
+        mocked_order_response_data,
+        mocked_client_repository
+):
+    mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
+    # this is used in loop for each warehouse
+    mocked_truck_repository.get_trucks_by_warehouse.side_effect = (
+        mocked_truck_list_response
+    )
+    mocked_order_repository.get_order_by_id.return_value = (
+        mocked_active_orders_for_trucks
+    )
+    mocked_order_repository.add_order.return_value = OrderResponse(
+        **mocked_order_response_data
+    )
+    mocked_client_repository.add_order_to_client_db.side_effect = EntityLinkError(Entity.order.value, Entity.client.value)
+
+    response = test_client.post("/api/purchase", json=order_data)
+
+    assert response.status_code == 404
+    assert response.json()["error"] == f"Failed to link {Entity.order.value} to {Entity.client.value}"
+
+    mocked_client_repository.add_order_to_client_db.side_effect = None
+    mocked_truck_repository.get_trucks_by_warehouse.side_effect = None
+
+@pytest.mark.asyncio
+async def test_order_link_to_truck_failed(
+        test_client,
+        order_data,
+        mocked_warehouse_repository,
+        mocked_warehouse_response,
+        mocked_truck_repository,
+        mocked_truck_list_response,
+        mocked_order_repository,
+        mocked_active_orders_for_trucks,
+        mocked_order_response_data,
+):
+    mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
+
+    mocked_truck_repository.get_trucks_by_warehouse.side_effect = (
+        mocked_truck_list_response
+    )
+    mocked_order_repository.get_order_by_id.return_value = mocked_active_orders_for_trucks
+    mocked_order_repository.add_order.return_value = OrderResponse(
+        **mocked_order_response_data
+    )
+    mocked_truck_repository.add_order_to_trucks_db.side_effect = EntityLinkError(Entity.order.value, Entity.truck.value)
+    response = test_client.post("/api/purchase", json=order_data)
+    assert response.status_code == 404
+    assert response.json()["error"] == f"Failed to link {Entity.order.value} to {Entity.truck.value}"
+
+    mocked_truck_repository.add_order_to_trucks_db.side_effect = None
+    mocked_truck_repository.get_trucks_by_warehouse.side_effect = None
+
+@pytest.mark.asyncio
+async def test_get_product_invalid_date_type(test_client, test_container, mocked_order_repository):
+    """Test retrieving an order with invalid date type."""
+    order_id = "677fe80f0a34748487855a54"
+    date = "2025-01-07T14:23:45.123Z"
+    mocked_order_repository.get_order_by_id.side_effect = InvalidDateType(date, Entity.order.value)
+    response = test_client.get(f"/api/orders/{order_id}")
+
+    assert response.status_code == 404
+    assert (
+            response.json()["error"] == f"Date: {date} in {Entity.order.value} is in invalid"
+               f"type: should be datetime, is {type(date).__name__}"
+    )
+
+
+@pytest.mark.asyncio
+async def test_get_order_success_end_to_end(
+    test_client,
+    test_container,
+    order_data,
+):
+    """End-to-end test the of the /orders/{order_id} endpoint."""
+    test_container.order_service.override(
+        OrderService(
+            order_repo=OrderRepositoryMongo(),
+            client_repo=ClientRepositoryMongo(),
+            warehouse_repo=WarehouseRepositoryMongo(),
+            truck_repo=TruckRepositoryMongo(),
+        )
+    )
+    order_data["trucks"] = ["677d6e2a61785f2ad5066d84"]
+    order_data["warehouses"] = ["6779eba8536d018b5bbd8a50"]
+    order_id = order_data["id"] = "677dd5139fd32f7ca0cb07c1"
+
+    response = test_client.get(f"/api/orders/{order_id}")
+
+    assert response.status_code == 200
+    response_json = response.json()["order"]
+    await assert_order_response(order_data, response_json)
+
+
+@pytest.mark.asyncio
+async def test_get_order_success_end_to_end(
+    test_client,
+    test_container,
+    order_data,
+):
+    """End-to-end test the of the /orders endpoint."""
+    test_container.order_service.override(
+        OrderService(
+            order_repo=OrderRepositoryMongo(),
+            client_repo=ClientRepositoryMongo(),
+            warehouse_repo=WarehouseRepositoryMongo(),
+            truck_repo=TruckRepositoryMongo(),
+        )
+    )
+    order_data["trucks"] = ["677d6e2a61785f2ad5066d84"]
+    order_data["warehouses"] = ["6779eba8536d018b5bbd8a50"]
+    order_data["id"] = "677dd5139fd32f7ca0cb07c1"
+
+    response = test_client.get(f"/api/orders")
+
+    assert response.status_code == 200
+    response_json = response.json()["orders"]
+    assert order_data in response_json
+

@@ -6,7 +6,7 @@ from bson import ObjectId
 from application.product.product_repository import AbstractProductRepository
 from application.responses import ProductResponse
 from domain.entities import Entity
-from domain.exceptions import EntityNotFoundError, InvalidIdError
+from domain.exceptions import EntityNotFoundError, InvalidIdError, InvalidDateType
 from domain.product import Product
 from infrastructure.mongo.mongo_client import MongoDBClient
 
@@ -32,16 +32,19 @@ class ProductRepositoryMongo(AbstractProductRepository):
         try:
             object_id = ObjectId(product_id)
         except Exception as err:
-            raise InvalidIdError(Entity.product.value, product_id, str(err))
+            raise InvalidIdError(Entity.product.value, str(err))
         product = self.product_collection.find_one({"_id": object_id})
 
         if not product:
-            raise EntityNotFoundError("Product", product_id)
+            raise EntityNotFoundError(Entity.product.value, product_id)
 
         product["id"] = str(product["_id"])
-        product["expiry_date"] = product["expiry_date"].replace(
-            tzinfo=datetime.timezone.utc
-        )
+        if isinstance(product["expiry_date"], datetime.datetime):
+            product["expiry_date"] = product["expiry_date"].replace(
+                tzinfo=datetime.timezone.utc
+            )
+        else:
+            raise InvalidDateType(product["expiry_date"], Entity.product.value)
         product["file"] = (
             f"data:image/jpeg;base64,{base64.b64encode(product["file"]).decode('utf-8')}"
         )
@@ -54,9 +57,12 @@ class ProductRepositoryMongo(AbstractProductRepository):
         response_list = []
         for product in products:
             product["id"] = str(product["_id"])
-            product["expiry_date"] = product["expiry_date"].replace(
-                tzinfo=datetime.timezone.utc
-            )
+            if isinstance(product["expiry_date"], datetime.datetime):
+                product["expiry_date"] = product["expiry_date"].replace(
+                    tzinfo=datetime.timezone.utc
+                )
+            else:
+                raise InvalidDateType(product["expiry_date"], Entity.product.value)
             product["file"] = (
                 f"data:image/jpeg;base64,{base64.b64encode(product["file"]).decode('utf-8')}"
             )

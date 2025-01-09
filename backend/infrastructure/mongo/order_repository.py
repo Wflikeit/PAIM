@@ -7,7 +7,7 @@ from application.order.order_repository import AbstractOrderRepository
 from application.responses import OrderResponse
 from domain.entities import Entity
 from domain.order import Order
-from domain.exceptions import InvalidIdError, EntityNotFoundError
+from domain.exceptions import InvalidIdError, EntityNotFoundError, InvalidDateType
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 
@@ -24,16 +24,19 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         try:
             object_id = ObjectId(order_id)
         except Exception as err:
-            raise InvalidIdError(Entity.order.value, order_id, str(err))
+            raise InvalidIdError(Entity.order.value, str(err))
         order_data = self.order_collection.find_one({"_id": object_id})
 
         if not order_data:
             raise EntityNotFoundError(Entity.order.value, order_id)
 
         order_data["id"] = str(order_data["_id"])
-        order_data["delivery_date"] = order_data["delivery_date"].replace(
-            tzinfo=datetime.timezone.utc
-        )
+        if isinstance(order_data["delivery_date"], datetime.datetime):
+            order_data["delivery_date"] = order_data["delivery_date"].replace(
+                tzinfo=datetime.timezone.utc
+            )
+        else:
+            raise InvalidDateType(order_data["delivery_date"], Entity.order.value)
         return OrderResponse(**order_data)
 
     def get_all_orders(self) -> List[OrderResponse]:
@@ -42,9 +45,12 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         response_list = []
         for order in orders:
             order["id"] = str(order["_id"])
-            order["delivery_date"] = order["delivery_date"].replace(
-                tzinfo=datetime.timezone.utc
-            )
+            if isinstance(order["delivery_date"], datetime.datetime):
+                order["delivery_date"] = order["delivery_date"].replace(
+                    tzinfo=datetime.timezone.utc
+                )
+            else:
+                raise InvalidDateType(order["delivery_date"], Entity.order.value)
             response_list.append(OrderResponse(**order))
 
         return response_list
@@ -53,7 +59,7 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         try:
             object_id = ObjectId(order_id)
         except Exception as err:
-            raise InvalidIdError(Entity.order.value, order_id, str(err))
+            raise InvalidIdError(Entity.order.value, str(err))
         result = self.order_collection.update_one(
             {"_id": object_id},
             {"$set": {"order_status": status}},

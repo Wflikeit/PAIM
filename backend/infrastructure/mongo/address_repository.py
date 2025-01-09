@@ -28,7 +28,7 @@ class AddressRepositoryMongo(AbstractAddressRepository):
         try:
             object_id = ObjectId(address_id)
         except Exception as err:
-            raise InvalidIdError(Entity.address.value, address_id, str(err))
+            raise InvalidIdError(Entity.address.value, str(err))
         address_data = self.address_collection.find_one({"_id": object_id})
 
         if not address_data:
