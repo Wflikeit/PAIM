@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Home from "./pages/ProductsList";
 import Login from "./pages/Login";
 import About from "./pages/About";
@@ -15,7 +15,6 @@ import CheckoutPage from "./pages/Checkout.tsx";
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route
@@ -48,7 +47,6 @@ const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </BrowserRouter>
   );
 };
 
