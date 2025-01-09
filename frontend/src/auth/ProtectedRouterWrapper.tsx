@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, {useEffect, useMemo} from 'react';
 
 import { UserRole } from './UserRole';
-import { LoggedInUser, getUserFromToken } from './authService';
+import {LoggedInUser, getUserFromToken, checkTokenValidity} from './authService';
 import NotFound from "../pages/NotFound.tsx";
 import {useCustomNavigation} from "../hooks/useCustomNavigation.ts";
+import useUnauthorizedRedirect from "../hooks/useUnathorizedRedirect.tsx";
 
 type ProtectedRouteWrapperProps = {
   allowedRoles: UserRole[];
@@ -14,6 +15,17 @@ export const ProtectedRouteWrapper: React.FC<ProtectedRouteWrapperProps> = ({ al
   const user: LoggedInUser | undefined = useMemo(() => getUserFromToken(), []);
 
   const { navigateToLoginPage } = useCustomNavigation();
+
+  useEffect(() => {
+    // Start token validity checking loop.
+    console.log("checkTokenValidity(navigateToLoginPage)");
+    checkTokenValidity(navigateToLoginPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Add axios interceptor for 401 responses.
+  useUnauthorizedRedirect();
+
 
   const hasValidRole: boolean = useMemo(() => {
     if (!user) {
@@ -28,4 +40,8 @@ export const ProtectedRouteWrapper: React.FC<ProtectedRouteWrapperProps> = ({ al
   }
 
   return children;
+};
+
+export const EnsureAuth = () => {
+
 };

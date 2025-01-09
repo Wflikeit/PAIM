@@ -4,6 +4,7 @@ import HeaderLink from "./HeaderLink.tsx";
 import ShoppingCartMiniature from "./ShoppingCartMiniature.tsx";
 import ProfilePhotoWrapper from "./ProfilePhotoWrapper.tsx";
 import {LoggedInUser} from "../../auth/authService.ts";
+import {UserRole} from "../../auth/UserRole.ts";
 
 
 
@@ -23,8 +24,8 @@ const UserActionsWrapper: React.FC<UsersActionWrapperProps> = ({ user }) => {
           </>
         )}
 
-        {user && <ProfilePhotoWrapper user={user} />}
-        <ShoppingCartMiniature />
+          {user && <ProfilePhotoWrapper user={user} />}
+          {(!user || user.role !== UserRole.ADMIN) && <ShoppingCartMiniature />}
       </Box>
     </div>
   );

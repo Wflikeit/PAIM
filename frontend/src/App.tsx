@@ -11,37 +11,34 @@ import Layout from "./components/layout/Layout";
 import {ProtectedRouteWrapper} from "./auth/ProtectedRouterWrapper.tsx";
 import {UserRole} from "./auth/UserRole.ts";
 import React from "react";
-import {EnsureAuth} from "./auth/EnsureAuth.tsx";
 import CheckoutPage from "./pages/Checkout.tsx";
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <EnsureAuth />
-
       <Routes>
         <Route element={<Layout />}>
           <Route
-            path="/*"
             element={
               <ProtectedRouteWrapper
-                allowedRoles={[UserRole.ADMIN, UserRole.CLIENT]}
+                allowedRoles={[UserRole.CLIENT]}
               >
                 <Routes>
                   <Route path="/checkout" element={<CheckoutPage />} />
-                    <Route
-                        path="/*"
-                        element={
-                        <ProtectedRouteWrapper allowedRoles={[UserRole.ADMIN]} >
-                             <Routes>
-                                 <Route path="/admin" element={<Admin />} />
-                             </Routes>
-                        </ProtectedRouteWrapper>}>
-                     </Route>
+
                 </Routes>
               </ProtectedRouteWrapper>
             }
           />
+          <Route
+            path="/admin"
+            element={
+            <ProtectedRouteWrapper allowedRoles={[UserRole.ADMIN]} >
+              <Routes>
+                   <Route path="/admin" element={<Admin />} />
+              </Routes>
+            </ProtectedRouteWrapper>}>
+          </Route>
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/about" element={<About />} />

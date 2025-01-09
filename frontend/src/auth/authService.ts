@@ -2,6 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 import { UserRole } from "./UserRole";
+import {redirect} from "react-router-dom";
 
 type DecodedToken = {
   exp: number;
@@ -9,8 +10,9 @@ type DecodedToken = {
   fullname: string;
 };
 export const TOKEN_KEY = "access_token";
+
 export const checkTokenValidity = (unauthorizedCallback: () => void) => {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = localStorage.getItem(TOKEN_KEY)
   if (!token) {
     unauthorizedCallback();
     return;
