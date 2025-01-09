@@ -59,7 +59,6 @@ const ProductsList: React.FC = () => {
             fruit_or_vegetable={product.fruit_or_vegetable}
             expiry_date={product.expiry_date}
             imageUrl={product.file}
-            imageId={product.imageId}
             onAddToCart={(quantity) => handleAddToCart(product, quantity)}
           />
         );

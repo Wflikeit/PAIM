@@ -143,7 +143,7 @@ const CheckoutPage: React.FC = () => {
             <TextField
               fullWidth
               label="Full Name"
-              name="full Name"
+              name="fullName"
               value={shippingAddress.fullName}
               onChange={handleInputChange}
               error={!!errors.fullName}

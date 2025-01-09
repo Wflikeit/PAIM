@@ -1,5 +1,6 @@
 import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import "./styles/app.css";
 import { Provider } from "react-redux";
@@ -14,7 +15,9 @@ createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
       <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <Router>
+            <App />
+          </Router>
         </QueryClientProvider>
       </PersistGate>
     </Provider>

@@ -15,7 +15,6 @@ interface ProductCardProps {
   country_of_origin: string;
   description: string;
   fruit_or_vegetable: string;
-  imageId: string;
   expiry_date: string;
   imageUrl?: string;
   onAddToCart: (quantity: number) => void;
