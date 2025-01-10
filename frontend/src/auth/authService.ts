@@ -11,7 +11,7 @@ type DecodedToken = {
 export const TOKEN_KEY = "access_token";
 
 export const checkTokenValidity = (unauthorizedCallback: () => void) => {
-  const token = localStorage.getItem(TOKEN_KEY)
+  const token = localStorage.getItem(TOKEN_KEY);
   if (!token) {
     unauthorizedCallback();
     return;
@@ -59,4 +59,9 @@ const getDecodedToken = () => {
 };
 export const setAuthorizationHeader = (token: string) => {
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+};
+
+export const saveToken = (token: string) => {
+  localStorage.setItem(TOKEN_KEY, token); // Save the token to localStorage
+  setAuthorizationHeader(token); // Set the Authorization header for axios
 };
