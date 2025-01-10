@@ -52,7 +52,6 @@ class AuthService:
     def create_access_token(
         data: dict,
         role: Optional[str] = None,
-        fullname: Optional[str] = None,
         expires_delta: Optional[timedelta] = None,
     ) -> str:
         to_encode = data.copy()
@@ -62,8 +61,6 @@ class AuthService:
         to_encode.update({"exp": expire})
         if role:
             to_encode.update({"role": role})
-        if fullname:
-            to_encode.update({"fullname": fullname})
 
         return jwt.encode(
             to_encode, AuthService.secret_key, algorithm=AuthService.algorithm
@@ -78,7 +75,6 @@ class AuthService:
             return {
                 "email": admin_user["email"],
                 "role": "admin",
-                "fullname": admin_user["fullname"],
             }
 
         client_user = client_collection.find_one({"email": email})
@@ -88,7 +84,6 @@ class AuthService:
             return {
                 "email": client_user["email"],
                 "role": "client",
-                "fullname": client_user["fullname"],
             }
 
         return None
@@ -98,7 +93,6 @@ class AuthService:
         return AuthService.create_access_token(
             data={"sub": user["email"]},
             role=user.get("role"),
-            fullname=user.get("fullname"),
         )
 
     @staticmethod

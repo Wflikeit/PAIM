@@ -15,15 +15,14 @@ class ClientRepositoryMongo(AbstractClientRepository):
 
     def register_client_db(self, client: Client) -> ClientResponse:
         client_data = client.model_dump()
+        client_data["orders"] = []
         payment_address_data = client_data["payment_address"]
         delivery_address_data = client_data["delivery_address"]
         client_data["payment_address"] = payment_address_data["id"]
         client_data["delivery_address"] = delivery_address_data["id"]
-        client_data["orders"] = []
         client_data["id"] = str(
             self.client_collection.insert_one(client_data).inserted_id
         )
-
         return ClientResponse(**client_data)
 
     def get_client_db(self, client_id: str) -> ClientResponse:

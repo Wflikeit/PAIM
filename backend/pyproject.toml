@@ -24,6 +24,7 @@ python-jose = "^3.3.0"
 bcrypt = "^4.2.1"
 passlib = "^1.7.4"
 asyncio = "^3.4.3"
+pydantic = {extras = ["email"], version = "^2.10.5"}
 
 
 [tool.poetry.group.dev.dependencies]
