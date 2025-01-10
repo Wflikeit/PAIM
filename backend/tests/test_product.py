@@ -106,7 +106,7 @@ async def test_get_product_successful(
     response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
-    product = response.json()["products"]
+    product = response.json()["product"]
     await assert_product_response(mocked_product_data, product)
     assert product["file"] == mocked_product_data["file"]
 
@@ -184,7 +184,7 @@ async def test_get_product_success(
     response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
-    product = response.json()["products"]
+    product = response.json()["product"]
     await assert_product_response(product_data, product)
     assert product["file"] == mocked_product_data["file"]
 
@@ -196,6 +196,7 @@ async def test_get_all_products_success(
     test_client,
     product_data,
     test_container,
+    jwt_token
 ):
     """End-to-end test of the /products endpoint."""
     mocked_product_data["id"] = "6775934ed79a82364c118356"
@@ -203,7 +204,7 @@ async def test_get_all_products_success(
         ProductService(product_repo=ProductRepositoryMongo())
     )
 
-    response = test_client.get("/api/products")
+    response = test_client.get("/api/products", headers={"Authorization": f"Bearer {jwt_token}"})
 
     assert response.status_code == 200
     response_json = response.json()
@@ -228,23 +229,23 @@ async def test_upload_product_end_to_end(
     assert response.status_code == 200
     response_json = response.json()
 
-    response_get = test_client.get(f"/api/products/{response_json['id']}")
+    response_get = test_client.get(f"/api/products/{response_json['id']}", headers={"Authorization": f"Bearer {jwt_token}"})
     assert response_get.status_code == 200
-    product = response_get.json()["products"]
+    product = response_get.json()["product"]
 
     await assert_product_response(product, response_json)
     assert response_json["file"] == product["file"]
 
 
 @pytest.mark.asyncio
-async def test_get_product_invalid_id(test_client, test_container):
+async def test_get_product_invalid_id(test_client, test_container, jwt_token):
     """Test retrieving a client with invalid ID."""
     invalid_product_id = "not_a_valid_id"
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())
     )
 
-    response = test_client.get(f"/api/products/{invalid_product_id}")
+    response = test_client.get(f"/api/products/{invalid_product_id}", headers={"Authorization": f"Bearer {jwt_token}"})
 
     assert response.status_code == 404
     assert (

@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import os
 
+from fastapi import Security
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
@@ -8,10 +11,25 @@ from infrastructure.api.exception_handler import create_credentials_exception
 
 
 class AuthService:
-    secret_key = "your-secret-key"
+    secret_key = os.getenv("SECRET_KEY", "default-secret-key-for-tests")
     algorithm = "HS256"
     access_token_expire_minutes = 30
     pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+    security = HTTPBearer()  # HTTP Bearer scheme for token-based authentication
+
+    @staticmethod
+    def verify_jwt_token(
+            credentials: HTTPAuthorizationCredentials = Security(security),
+    ) -> dict:
+        try:
+            payload = jwt.decode(
+                credentials.credentials,
+                AuthService.secret_key,
+                algorithms=[AuthService.algorithm],
+            )
+            return payload  # Return the decoded payload if valid
+        except JWTError:
+            raise create_credentials_exception  # Handle invalid tokens
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
