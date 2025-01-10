@@ -5,17 +5,13 @@ interface Client {
   payment_address: string;
   delivery_address: string;
   nip: string;
-  orders: string;
   password: string;
   company_name: string;
 }
 
 const registerClients = () => {
   const addClient = async (clientData: Client): Promise<void> => {
-    console.log("Client data (Object):", clientData);
-
     const clientdata = JSON.stringify(clientData);
-    console.log("Client data (JSON):", clientdata);
 
     try {
       const response = await axios.post(

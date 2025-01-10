@@ -1,17 +1,24 @@
-import React, {useEffect, useMemo} from 'react';
+import React, { useEffect, useMemo } from "react";
 
-import { UserRole } from './UserRole';
-import {LoggedInUser, getUserFromToken, checkTokenValidity} from './authService';
-import NotFound from "../pages/NotFound.tsx";
-import {useCustomNavigation} from "../hooks/useCustomNavigation.ts";
+import { UserRole } from "./UserRole";
+import {
+  checkTokenValidity,
+  getUserFromToken,
+  LoggedInUser,
+} from "./authService";
+import { useCustomNavigation } from "../hooks/useCustomNavigation.ts";
 import useUnauthorizedRedirect from "../hooks/useUnathorizedRedirect.tsx";
+import Login from "../pages/Login.tsx";
 
 type ProtectedRouteWrapperProps = {
   allowedRoles: UserRole[];
   children: React.ReactElement;
 };
 
-export const ProtectedRouteWrapper: React.FC<ProtectedRouteWrapperProps> = ({ allowedRoles, children }) => {
+export const ProtectedRouteWrapper: React.FC<ProtectedRouteWrapperProps> = ({
+  allowedRoles,
+  children,
+}) => {
   const user: LoggedInUser | undefined = useMemo(() => getUserFromToken(), []);
 
   const { navigateToLoginPage } = useCustomNavigation();
@@ -26,7 +33,6 @@ export const ProtectedRouteWrapper: React.FC<ProtectedRouteWrapperProps> = ({ al
   // Add axios interceptor for 401 responses.
   useUnauthorizedRedirect();
 
-
   const hasValidRole: boolean = useMemo(() => {
     if (!user) {
       navigateToLoginPage();
@@ -36,12 +42,10 @@ export const ProtectedRouteWrapper: React.FC<ProtectedRouteWrapperProps> = ({ al
   }, [navigateToLoginPage, allowedRoles, user]);
 
   if (!hasValidRole) {
-    return <NotFound />;
+    return <Login />;
   }
 
   return children;
 };
 
-export const EnsureAuth = () => {
-
-};
+export const EnsureAuth = () => {};
