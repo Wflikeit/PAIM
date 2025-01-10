@@ -88,11 +88,11 @@ async def assert_product_response(mocked_product_data, response_json):
     assert response_json["name"] == mocked_product_data["name"]
     assert response_json["price"] == mocked_product_data["price"]
     assert (
-        response_json["country_of_origin"] == mocked_product_data["country_of_origin"]
+            response_json["country_of_origin"] == mocked_product_data["country_of_origin"]
     )
     assert response_json["description"] == mocked_product_data["description"]
     assert (
-        response_json["fruit_or_vegetable"] == mocked_product_data["fruit_or_vegetable"]
+            response_json["fruit_or_vegetable"] == mocked_product_data["fruit_or_vegetable"]
     )
     assert response_json["expiry_date"] == mocked_product_data["expiry_date"]
 
@@ -104,11 +104,10 @@ async def assert_product_response(mocked_product_data, response_json):
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
 async def test_get_product_successful(
-    mocked_product_data,
-    binary_file_data,
-    mocked_product_repository,
-    test_client,
-    jwt_token,
+        mocked_product_data,
+        binary_file_data,
+        mocked_product_repository,
+        test_client
 ):
     """Test the integration of the /products/{product_id} endpoint."""
     product_id = mocked_product_data["id"]
@@ -116,7 +115,7 @@ async def test_get_product_successful(
     mocked_product_repository.get_product_by_id.return_value = mocked_product_response
 
     response = test_client.get(
-        f"/api/products/{product_id}", headers={"Authorization": f"Bearer {jwt_token}"}
+        f"/api/products/{product_id}"
     )
 
     assert response.status_code == 200
@@ -132,12 +131,12 @@ async def test_get_product_successful(
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
 async def test_upload_product_success(
-    mocked_product_data,
-    binary_file_data,
-    mocked_product_repository,
-    test_client,
-    product_data,
-    jwt_token,
+        mocked_product_data,
+        binary_file_data,
+        mocked_product_repository,
+        test_client,
+        product_data,
+        jwt_token,
 ):
     """Test the full integration of the /upload endpoint."""
     mocked_product_response_data = ProductResponse(**mocked_product_data)
@@ -165,7 +164,7 @@ async def test_upload_product_success(
 # ┌───────────┐   ┌──────────┐   ┌────────────┐
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
-def test_get_product_not_found(mocked_product_repository, test_client, jwt_token):
+def test_get_product_not_found(mocked_product_repository, test_client):
     """Test retrieving a product that does not exist."""
     non_existent_product_id = str(ObjectId())
 
@@ -174,26 +173,24 @@ def test_get_product_not_found(mocked_product_repository, test_client, jwt_token
     )
 
     response = test_client.get(
-        f"/api/products/{non_existent_product_id}",
-        headers={"Authorization": f"Bearer {jwt_token}"},
+        f"/api/products/{non_existent_product_id}"
     )
 
     assert response.status_code == 404
     assert (
-        response.json()["error"]
-        == f"Product with ID {non_existent_product_id} not found"
+            response.json()["error"]
+            == f"Product with ID {non_existent_product_id} not found"
     )
 
 
 @pytest.mark.asyncio  # FAILED
 async def test_get_product_success(
-    mocked_product_data,
-    binary_file_data,
-    mocked_product_repository,
-    test_client,
-    product_data,
-    test_container,
-    jwt_token,
+        mocked_product_data,
+        binary_file_data,
+        mocked_product_repository,
+        test_client,
+        product_data,
+        test_container,
 ):
     """End-to-end test of the /products/{product_id} endpoint."""
     product_id = "6775934ed79a82364c118356"
@@ -202,7 +199,7 @@ async def test_get_product_success(
     )
 
     response = test_client.get(
-        f"/api/products/{product_id}", headers={"Authorization": f"Bearer {jwt_token}"}
+        f"/api/products/{product_id}"
     )
 
     assert response.status_code == 200
@@ -213,12 +210,11 @@ async def test_get_product_success(
 
 @pytest.mark.asyncio
 async def test_get_all_products_success(
-    mocked_product_data,
-    mocked_product_repository,
-    test_client,
-    product_data,
-    test_container,
-    jwt_token,
+        mocked_product_data,
+        mocked_product_repository,
+        test_client,
+        product_data,
+        test_container,
 ):
     """End-to-end test of the /products endpoint."""
     mocked_product_data["id"] = "6775934ed79a82364c118356"
@@ -227,7 +223,7 @@ async def test_get_all_products_success(
     )
 
     response = test_client.get(
-        "/api/products", headers={"Authorization": f"Bearer {jwt_token}"}
+        "/api/products"
     )
 
     assert response.status_code == 200
@@ -237,7 +233,7 @@ async def test_get_all_products_success(
 
 @pytest.mark.asyncio
 async def test_upload_product_end_to_end(
-    test_container, test_client, product_data, mocked_product_repository, jwt_token
+        test_container, test_client, product_data, mocked_product_repository, jwt_token
 ):
     """End-to-end test of the /upload endpoint."""
     test_container.product_service.override(
@@ -266,7 +262,7 @@ async def test_upload_product_end_to_end(
 
 
 @pytest.mark.asyncio
-async def test_get_product_invalid_id(test_client, test_container, jwt_token):
+async def test_get_product_invalid_id(test_client, test_container):
     """Test retrieving a client with invalid ID."""
     invalid_product_id = "not_a_valid_id"
     test_container.product_service.override(
@@ -275,11 +271,10 @@ async def test_get_product_invalid_id(test_client, test_container, jwt_token):
 
     response = test_client.get(
         f"/api/products/{invalid_product_id}",
-        headers={"Authorization": f"Bearer {jwt_token}"},
     )
 
     assert response.status_code == 404
     assert (
-        response.json()["error"]
-        == f"ID: {invalid_product_id} is invalid: '{invalid_product_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+            response.json()["error"]
+            == f"ID: {invalid_product_id} is invalid: '{invalid_product_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     )
