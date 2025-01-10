@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { getUserFromToken, TOKEN_KEY } from "../auth/authService.ts";
-import { useCustomNavigation } from "../hooks/useCustomNavigation.ts";
+import {useCustomNavigation} from "../../hooks/useCustomNavigation.ts";
+import {getUserFromToken, TOKEN_KEY} from "../../auth/authService.ts";
 
 const LoginForm = () => {
   const { navigateToHome } = useCustomNavigation();
