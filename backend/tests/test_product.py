@@ -154,7 +154,8 @@ async def test_upload_product_success(
 # ┌───────────┐   ┌──────────┐   ┌────────────┐
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
-def test_get_product_not_found(mocked_product_repository, test_client):
+@pytest.mark.asyncio
+async def test_get_product_not_found(mocked_product_repository, test_client):
     """Test retrieving a product that does not exist."""
     non_existent_product_id = str(ObjectId())
 
@@ -170,6 +171,7 @@ def test_get_product_not_found(mocked_product_repository, test_client):
         == f"Product with ID {non_existent_product_id} not found"
     )
 
+    mocked_product_repository.get_product_by_id.side_effect = None
 
 @pytest.mark.asyncio
 async def test_get_product_invalid_date_type(
@@ -189,6 +191,8 @@ async def test_get_product_invalid_date_type(
         == f"Date: {date} in {Entity.product.value} is in invalid"
         f"type: should be datetime, is {type(date).__name__}"
     )
+
+    mocked_product_repository.get_product_by_id.side_effect = None
 
 
 @pytest.mark.asyncio

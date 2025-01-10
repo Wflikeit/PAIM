@@ -180,6 +180,8 @@ async def test_get_client_not_found(mocked_client_repository, test_client):
         == f"{Entity.client.value} with ID {non_existent_client_id} not found"
     )
 
+    mocked_client_repository.get_client_db.side_effect = None
+
 
 @pytest.mark.asyncio
 async def test_get_client_invalid_id(
