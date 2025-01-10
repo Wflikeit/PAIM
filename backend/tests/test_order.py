@@ -580,4 +580,4 @@ async def test_get_list_of_unavailable_dates_end_to_end(test_client, test_contai
 
     assert response.status_code == 200
     unavailable_dates = response.json()["dates"]
-    assert unavailable_dates == ["2025-01-06"]
+    assert unavailable_dates == ["2025-01-06", "2025-01-08"]

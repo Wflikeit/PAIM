@@ -251,21 +251,21 @@ async def test_register_client_success_end_to_end(
     await assert_client_response(mock_client_data, response_json)
 
 
-# @pytest.mark.asyncio
-# async def test_get_client_success_end_to_end(
-#     mock_client_data, test_container, test_client, mock_client_response
-# ):
-#     """End-to-end test for getting client from /client/{client_id} endpoint."""
-#     client_id = "677c972e86b699c0b287008f"
-#     test_container.client_service.override(
-#         ClientService(
-#             client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo()
-#         ),
-#     )
-#
-#     response = test_client.get(f"/api/clients/{client_id}", headers={"Authorization": f"Bearer {jwt_token}"})
-#
-#     assert response.status_code == 200
-#     response_json = response.json()
-#     assert response_json["id"] == client_id
-#     await assert_client_response(mock_client_data, response_json)
+@pytest.mark.asyncio
+async def test_get_client_success_end_to_end(
+    mock_client_data, test_container, test_client, mock_client_response, jwt_token
+):
+    """End-to-end test for getting client from /client/{client_id} endpoint."""
+    client_id = "6781710ec05abea3effa75b3"
+    test_container.client_service.override(
+        ClientService(
+            client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo()
+        ),
+    )
+
+    response = test_client.get(f"/api/clients/{client_id}", headers={"Authorization": f"Bearer {jwt_token}"})
+
+    assert response.status_code == 200
+    response_json = response.json()
+    assert response_json["id"] == client_id
+    await assert_client_response(mock_client_data, response_json)
