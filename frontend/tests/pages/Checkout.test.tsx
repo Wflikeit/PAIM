@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -152,7 +151,6 @@ describe("CheckoutPage", () => {
       target: { value: "12345" },
     });
 
-    const deliveryDate = new Date(2025, 0, 26); // A valid date not in busyDays
     fireEvent.click(screen.getByText(/26/i)); // Simulate selecting the date in the calendar
 
     fireEvent.click(screen.getByText(/place order/i));

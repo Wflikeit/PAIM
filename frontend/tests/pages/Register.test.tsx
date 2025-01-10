@@ -1,5 +1,4 @@
-import React from "react";
-import {fireEvent, render, screen, waitFor} from "@testing-library/react";
+import {fireEvent, render, screen} from "@testing-library/react";
 import RegisterForm from "../../src/pages/Register";
 import registerClients from "../../src/hooks/registerClients";
 import {MemoryRouter, useNavigate} from "react-router-dom";
