@@ -167,8 +167,7 @@ class OrderService:
 
     def is_available_on_date(self, orders: List[str], delivery_date: str) -> bool:
         return all(
-            self.get_order_by_id(order).model_dump()["delivery_date"] != delivery_date
-            for order in orders
+            self.get_order_by_id(order).model_dump()["delivery_date"] != delivery_date for order in orders
         )
 
     def get_order_by_id(self, order_id: str) -> OrderResponse:
