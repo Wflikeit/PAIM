@@ -1,3 +1,5 @@
+from typing import List
+
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 
@@ -42,3 +44,11 @@ async def set_order_status_complete(
     order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> dict:
     return {"order": order_service.mark_order_as_complete(order_id)}
+
+
+@router.get("/checkout}", response_model=List[str])
+@inject
+async def get_unavailable_dates(
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+):
+    return {"dates": order_service.get_list_of_unavailable_dates()}

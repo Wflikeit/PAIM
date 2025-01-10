@@ -24,5 +24,9 @@ class AbstractTruckRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def get_trucks(self) -> List[TruckResponse]:
+        pass
+
+    @abc.abstractmethod
     def delete_order_from_truck_db(self, truck_id: str, truck_ids: List[str]) -> int:
         pass

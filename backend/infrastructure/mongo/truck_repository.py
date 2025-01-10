@@ -54,6 +54,15 @@ class TruckRepositoryMongo(AbstractTruckRepository):
             EntityLinkError(Entity.order.value, Entity.truck.value)
         return result.modified_count
 
+    def get_trucks(self) -> List[TruckResponse]:
+        trucks_data = self.truck_collection.find()
+
+        response = []
+        for truck in trucks_data:
+            truck["id"] = str(truck["_id"])
+            response.append(TruckResponse(**truck))
+        return response
+
     def delete_order_from_truck_db(self, order_id: str, truck_ids: List[str]) -> int:
         try:
             object_ids = [ObjectId(truck_id) for truck_id in truck_ids]
