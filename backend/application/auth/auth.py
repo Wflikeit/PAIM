@@ -19,7 +19,7 @@ class AuthService:
 
     @staticmethod
     def verify_jwt_token(
-            credentials: HTTPAuthorizationCredentials = Security(security),
+        credentials: HTTPAuthorizationCredentials = Security(security),
     ) -> dict:
         try:
             payload = jwt.decode(
@@ -37,14 +37,14 @@ class AuthService:
 
     @staticmethod
     def create_access_token(
-            data: dict,
-            role: Optional[str] = None,
-            fullname: Optional[str] = None,
-            expires_delta: Optional[timedelta] = None,
+        data: dict,
+        role: Optional[str] = None,
+        fullname: Optional[str] = None,
+        expires_delta: Optional[timedelta] = None,
     ) -> str:
         to_encode = data.copy()
         expire = datetime.now(timezone.utc) + (
-                expires_delta or timedelta(minutes=AuthService.access_token_expire_minutes)
+            expires_delta or timedelta(minutes=AuthService.access_token_expire_minutes)
         )
         to_encode.update({"exp": expire})
         if role:
@@ -52,10 +52,14 @@ class AuthService:
         if fullname:
             to_encode.update({"fullname": fullname})
 
-        return jwt.encode(to_encode, AuthService.secret_key, algorithm=AuthService.algorithm)
+        return jwt.encode(
+            to_encode, AuthService.secret_key, algorithm=AuthService.algorithm
+        )
 
     @staticmethod
-    def authenticate_user(email: str, password: str, admin_collection, client_collection):
+    def authenticate_user(
+        email: str, password: str, admin_collection, client_collection
+    ):
         admin_user = admin_collection.find_one({"email": email})
         if admin_user and AuthService.verify_password(password, admin_user["password"]):
             return {
@@ -65,7 +69,9 @@ class AuthService:
             }
 
         client_user = client_collection.find_one({"email": email})
-        if client_user and AuthService.verify_password(password, client_user["password"]):
+        if client_user and AuthService.verify_password(
+            password, client_user["password"]
+        ):
             return {
                 "email": client_user["email"],
                 "role": "client",
@@ -85,7 +91,9 @@ class AuthService:
     @staticmethod
     def is_admin(token: str):
         try:
-            payload = jwt.decode(token, AuthService.secret_key, algorithms=[AuthService.algorithm])
+            payload = jwt.decode(
+                token, AuthService.secret_key, algorithms=[AuthService.algorithm]
+            )
             role = payload.get("role")
             if role != "admin":
                 raise create_credentials_exception

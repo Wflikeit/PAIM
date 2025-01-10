@@ -7,6 +7,7 @@ const RegisterForm = () => {
   const [email, setEmail] = useState<string>("");
   const [payment_address, setPaymentAddress] = useState<string>("");
   const [delivery_address, setDeliveryAddress] = useState<string>("");
+  const [fullname, setFullName] = useState<string>("");
   const [nip, setNip] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [company_name, setCompanyName] = useState<string>("");
@@ -21,6 +22,7 @@ const RegisterForm = () => {
         !password ||
         !company_name ||
         !nip ||
+        !fullname ||
         !payment_address ||
         !delivery_address
     ) {
@@ -35,6 +37,7 @@ const RegisterForm = () => {
       payment_address,
       delivery_address,
       nip,
+      fullname,
       password,
       company_name,
       orders: orders || "[]", // Ensure orders field is provided as an empty array if not set
@@ -49,6 +52,7 @@ const RegisterForm = () => {
       setEmail("");
       setPaymentAddress("");
       setDeliveryAddress("");
+      setFullName("");
       setNip("");
       setPassword("");
       setCompanyName("");

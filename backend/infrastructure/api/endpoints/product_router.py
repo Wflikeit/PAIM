@@ -13,8 +13,8 @@ router = APIRouter()
 @router.post("/upload")
 @inject
 async def upload_product_endpoint(
-        request: Request,
-        product_service: ProductService = Depends(Provide[Container.product_service]),
+    request: Request,
+    product_service: ProductService = Depends(Provide[Container.product_service]),
 ) -> ProductResponse:
     data = await request.form()
     file = data["file"]
@@ -29,8 +29,8 @@ async def upload_product_endpoint(
 @router.get("/products/{product_id}", response_model=dict)
 @inject
 async def get_product(
-        product_id: str,
-        product_service: ProductService = Depends(Provide[Container.product_service]),
+    product_id: str,
+    product_service: ProductService = Depends(Provide[Container.product_service]),
 ) -> dict:
     return {"product": product_service.get_product(product_id)}
 
@@ -38,6 +38,6 @@ async def get_product(
 @router.get("/products", response_model=dict)
 @inject
 async def get_products(
-        product_service: ProductService = Depends(Provide[Container.product_service]),
+    product_service: ProductService = Depends(Provide[Container.product_service]),
 ) -> dict:
     return {"products": product_service.get_all_products()}

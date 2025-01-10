@@ -9,9 +9,12 @@ router = APIRouter()
 admin_collection = MongoDBClient.get_collection("admins")
 client_collection = MongoDBClient.get_collection("clients")
 
+
 @router.post("/token")
 async def login_for_access_token(email: str, password: str):
-    user = AuthService.authenticate_user(email, password, client_collection, admin_collection)
+    user = AuthService.authenticate_user(
+        email, password, client_collection, admin_collection
+    )
     if not user:
         raise create_credentials_exception
     # Generate token
@@ -21,7 +24,9 @@ async def login_for_access_token(email: str, password: str):
 
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = AuthService.authenticate_user(form_data.username, form_data.password, admin_collection, client_collection)
+    user = AuthService.authenticate_user(
+        form_data.username, form_data.password, admin_collection, client_collection
+    )
     if not user:
         raise create_credentials_exception
 
@@ -35,4 +40,4 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     fullname = user["fullname"]
     print(f"Generated access token: {access_token}")
 
-    return {"access_token": access_token, "token_type": "bearer", "fullname" : fullname}
+    return {"access_token": access_token, "token_type": "bearer", "fullname": fullname}
