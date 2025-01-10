@@ -2,12 +2,11 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 import { UserRole } from "./UserRole";
-import {redirect} from "react-router-dom";
 
 type DecodedToken = {
   exp: number;
   role: UserRole;
-  fullname: string;
+  email: string;
 };
 export const TOKEN_KEY = "access_token";
 
@@ -32,7 +31,7 @@ export const checkTokenValidity = (unauthorizedCallback: () => void) => {
 };
 
 export interface LoggedInUser {
-  fullname: string;
+  email: string;
   role: string;
 }
 
@@ -45,7 +44,7 @@ export const getUserFromToken = () => {
 
   return {
     role: decodedToken.role,
-    fullname: decodedToken.fullname,
+    email: decodedToken.email,
   } as LoggedInUser;
 };
 

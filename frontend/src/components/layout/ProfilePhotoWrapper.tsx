@@ -11,7 +11,6 @@ interface ProfilePhotoWrapperProps {
 const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const navigate = useNavigate();
-
   // Function to handle clicking the profile photo button
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -27,7 +26,6 @@ const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
     // Clear user data from localStorage
     localStorage.removeItem("access_token");
     localStorage.removeItem("user_role");
-    localStorage.removeItem("fullname");
 
     // Navigate to the login page
     navigate("/login");
@@ -35,7 +33,6 @@ const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
-  console.log(user.fullname);
   return (
     <>
       <button
@@ -56,12 +53,7 @@ const ProfilePhotoWrapper: React.FC<ProfilePhotoWrapperProps> = ({ user }) => {
         }}
         onClick={handleClick}
       >
-        {user.fullname
-          ? user.fullname
-              .split(" ")
-              .map((part) => part[0].toUpperCase())
-              .join("")
-          : "U"}
+        {user.email ? user.email[0].toUpperCase() : "U"}
       </button>
 
       <Popover

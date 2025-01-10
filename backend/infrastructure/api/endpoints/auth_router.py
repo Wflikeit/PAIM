@@ -32,7 +32,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
     access_token = AuthService.create_access_token(
         data={
-            "sub": user["email"],
+            "email": user["email"],
             "role": user.get("role"),
         }
     )
