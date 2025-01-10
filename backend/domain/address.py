@@ -5,7 +5,6 @@ from pydantic import BaseModel, field_validator
 
 class Address(BaseModel):
     voivodeship: str
-    country: str
     city: str
     street: str
     house_number: int
