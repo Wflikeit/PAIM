@@ -90,11 +90,11 @@ async def assert_client_response(mock_client_data, response_json):
 
 @pytest.mark.asyncio
 async def test_get_client_success(
-    mock_client_data,
-    mocked_client_repository,
-    test_client,
-    mock_client_response,
-    jwt_token,
+        mock_client_data,
+        mocked_client_repository,
+        test_client,
+        mock_client_response,
+        jwt_token,
 ):
     """Test the integration of the /clients/{client_id} endpoint."""
     client_id = mock_client_data["id"]
@@ -112,12 +112,11 @@ async def test_get_client_success(
 
 @pytest.mark.asyncio
 async def test_register_client_success(
-    mocked_client_repository,
-    test_client,
-    client_data,
-    mock_client_response,
-    mock_client_data,
-    jwt_token,
+        mocked_client_repository,
+        test_client,
+        client_data,
+        mock_client_response,
+        mock_client_data,
 ):
     """Test the integration of the /register endpoint."""
     mocked_client_repository.register_client_db.return_value = mock_client_response
@@ -125,7 +124,6 @@ async def test_register_client_success(
     response = test_client.post(
         "/api/register",
         json=client_data,
-        headers={"Authorization": f"Bearer {jwt_token}"},
     )
 
     assert response.status_code == 200
@@ -148,13 +146,13 @@ async def test_get_client_not_found(mocked_client_repository, test_client, jwt_t
 
     assert response.status_code == 404
     assert (
-        response.json()["error"] == f"Client with ID {non_existent_client_id} not found"
+            response.json()["error"] == f"Client with ID {non_existent_client_id} not found"
     )
 
 
 @pytest.mark.asyncio
 async def test_get_client_invalid_id(
-    mocked_client_repository, test_client, test_container, jwt_token
+        mocked_client_repository, test_client, test_container, jwt_token
 ):
     """Test retrieving a client with invalid ID."""
     invalid_client_id = "not_a_valid_id"
@@ -169,6 +167,6 @@ async def test_get_client_invalid_id(
 
     assert response.status_code == 404
     assert (
-        response.json()["error"]
-        == f"ID: {invalid_client_id} is invalid: '{invalid_client_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+            response.json()["error"]
+            == f"ID: {invalid_client_id} is invalid: '{invalid_client_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     )
