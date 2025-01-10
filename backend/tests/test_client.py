@@ -60,7 +60,7 @@ def client_data():
             "postal_code": "12-345",
             "city": "mock_city",
             "voivodeship": "Mock Voivodeship",
-            "county": "mock_county",
+            "country": "mock_county",
         },
         "delivery_address": {
             "street": "mock_street",
@@ -68,7 +68,7 @@ def client_data():
             "postal_code": "12-345",
             "city": "mock_city",
             "voivodeship": "Mock Voivodeship",
-            "county": "mock_county",
+            "country": "mock_county",
         },
         "nip": "0123456789",
         "password": "mock_password",
