@@ -1,3 +1,4 @@
+import copy
 import os
 from unittest.mock import AsyncMock
 
@@ -8,7 +9,7 @@ from starlette.testclient import TestClient
 from application.order.order_service import OrderService
 from application.responses import WarehouseResponse, OrderResponse, TruckResponse
 from domain.entities import Entity
-from domain.exceptions import InvalidDateType, EntityNotFoundError, EntityLinkError
+from domain.exceptions import InvalidDateType, EntityLinkError
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
@@ -91,22 +92,16 @@ def order_data():
 
 
 @pytest.fixture(scope="module")
-def order_data_high_product_quantity():
-    return {
-        "delivery_date": "2025-01-07T14:23:45.123000Z",
-        "amount": 600.5,
-        "products": [
-            {"product_id": "1", "quantity": 100.0},
-            {"product_id": "2", "quantity": 100.0},
-            {"product_id": "3", "quantity": 100.0},
-            {"product_id": "4", "quantity": 100.0},
-            {"product_id": "5", "quantity": 100.0}
-        ],
-        "delivery_address": "0123456789",
-        "order_status": "pending",
-        "email": "mocked@mail.com",
-        "route_length": 123,
-    }
+def order_data_high_product_quantity(order_data):
+    order_data_copy = copy.deepcopy(order_data)
+    order_data_copy["products"] = [
+        {"product_id": "1", "quantity": 100.0},
+        {"product_id": "2", "quantity": 100.0},
+        {"product_id": "3", "quantity": 100.0},
+        {"product_id": "4", "quantity": 100.0},
+        {"product_id": "5", "quantity": 100.0},
+    ]
+    return order_data_copy
 
 
 @pytest.fixture(scope="module")
@@ -239,25 +234,11 @@ def mocked_truck_list_response(mocked_truck_data):
 
 
 @pytest.fixture(scope="module")
-def mocked_another_order_response_data():
-    return {
-        "id": "677d74d59da405a637925a42",
-        "delivery_date": "2025-01-07T14:23:45.123000Z",
-        "amount": 600.5,
-        "products": [
-            {"product_id": "1", "quantity": 4.0},
-            {"product_id": "2", "quantity": 5.0},
-            {"product_id": "3", "quantity": 6.0},
-            {"product_id": "4", "quantity": 7.0},
-            {"product_id": "5", "quantity": 8.0},
-        ],
-        "delivery_address": "0123456789",
-        "order_status": "pending",
-        "email": "mocked@mail.com",
-        "trucks": ["2", "3"],
-        "warehouses": ["1", "2"],
-        "route_length": 123.0,
-    }
+def mocked_another_order_response_data(mocked_order_response_data):
+    order_response_data_copy = copy.deepcopy(mocked_order_response_data)
+    order_response_data_copy["trucks"] = ["2", "3"]
+    order_response_data_copy["warehouses"] = ["1", "2"]
+    return order_response_data_copy
 
 
 @pytest.fixture(scope="module")
@@ -289,16 +270,17 @@ async def test_set_order_as_complete(
     """Integration test the of the /purchase endpoint."""
     order_id = mocked_order_response_data
     mocked_order_repository.update_order_status_db.return_value = True
-    mocked_order_response_data["order_status"] = "complete"
+    mocked_order_response_data_copy = copy.deepcopy(mocked_order_response_data)
+    mocked_order_response_data_copy["order_status"] = "complete"
     mocked_order_repository.get_order_by_id.return_value = OrderResponse(
-        **mocked_order_response_data
+        **mocked_order_response_data_copy
     )
     mocked_truck_repository.delete_order_from_truck_db.return_value = 1
     response = test_client.get(f"/api/orders/{order_id}/complete")
 
     assert response.status_code == 200
     response_json = response.json()["order"]
-    await assert_order_response(mocked_order_response_data, response_json)
+    await assert_order_response(mocked_order_response_data_copy, response_json)
 
 
 @pytest.mark.asyncio
@@ -339,7 +321,7 @@ async def test_add_order_success(
 @pytest.mark.asyncio
 async def test_add_order_not_enough_products_in_warehouse_fail(
     test_client,
-        order_data_high_product_quantity,
+    order_data_high_product_quantity,
     mocked_order_response_data,
     mocked_order_repository,
     mocked_truck_repository,
@@ -374,16 +356,16 @@ async def test_add_order_not_enough_products_in_warehouse_fail(
 
 @pytest.mark.asyncio
 async def test_order_link_to_client_failed(
-        test_client,
-        order_data,
-        mocked_warehouse_repository,
-        mocked_warehouse_response,
-        mocked_truck_repository,
-        mocked_truck_list_response,
-        mocked_order_repository,
-        mocked_active_orders_for_trucks,
-        mocked_order_response_data,
-        mocked_client_repository
+    test_client,
+    order_data,
+    mocked_warehouse_repository,
+    mocked_warehouse_response,
+    mocked_truck_repository,
+    mocked_truck_list_response,
+    mocked_order_repository,
+    mocked_active_orders_for_trucks,
+    mocked_order_response_data,
+    mocked_client_repository,
 ):
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
     # this is used in loop for each warehouse
@@ -396,58 +378,105 @@ async def test_order_link_to_client_failed(
     mocked_order_repository.add_order.return_value = OrderResponse(
         **mocked_order_response_data
     )
-    mocked_client_repository.add_order_to_client_db.side_effect = EntityLinkError(Entity.order.value, Entity.client.value)
+    mocked_client_repository.add_order_to_client_db.side_effect = EntityLinkError(
+        Entity.order.value, Entity.client.value
+    )
 
     response = test_client.post("/api/purchase", json=order_data)
 
     assert response.status_code == 404
-    assert response.json()["error"] == f"Failed to link {Entity.order.value} to {Entity.client.value}"
+    assert (
+        response.json()["error"]
+        == f"Failed to link {Entity.order.value} to {Entity.client.value}"
+    )
 
     mocked_client_repository.add_order_to_client_db.side_effect = None
     mocked_truck_repository.get_trucks_by_warehouse.side_effect = None
 
+
 @pytest.mark.asyncio
 async def test_order_link_to_truck_failed(
-        test_client,
-        order_data,
-        mocked_warehouse_repository,
-        mocked_warehouse_response,
-        mocked_truck_repository,
-        mocked_truck_list_response,
-        mocked_order_repository,
-        mocked_active_orders_for_trucks,
-        mocked_order_response_data,
+    test_client,
+    order_data,
+    mocked_warehouse_repository,
+    mocked_warehouse_response,
+    mocked_truck_repository,
+    mocked_truck_list_response,
+    mocked_order_repository,
+    mocked_active_orders_for_trucks,
+    mocked_order_response_data,
 ):
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
 
     mocked_truck_repository.get_trucks_by_warehouse.side_effect = (
         mocked_truck_list_response
     )
-    mocked_order_repository.get_order_by_id.return_value = mocked_active_orders_for_trucks
+    mocked_order_repository.get_order_by_id.return_value = (
+        mocked_active_orders_for_trucks
+    )
     mocked_order_repository.add_order.return_value = OrderResponse(
         **mocked_order_response_data
     )
-    mocked_truck_repository.add_order_to_trucks_db.side_effect = EntityLinkError(Entity.order.value, Entity.truck.value)
+    mocked_truck_repository.add_order_to_trucks_db.side_effect = EntityLinkError(
+        Entity.order.value, Entity.truck.value
+    )
     response = test_client.post("/api/purchase", json=order_data)
     assert response.status_code == 404
-    assert response.json()["error"] == f"Failed to link {Entity.order.value} to {Entity.truck.value}"
+    assert (
+        response.json()["error"]
+        == f"Failed to link {Entity.order.value} to {Entity.truck.value}"
+    )
 
     mocked_truck_repository.add_order_to_trucks_db.side_effect = None
     mocked_truck_repository.get_trucks_by_warehouse.side_effect = None
 
+
 @pytest.mark.asyncio
-async def test_get_product_invalid_date_type(test_client, test_container, mocked_order_repository):
+async def test_get_product_invalid_date_type(
+    test_client, test_container, mocked_order_repository
+):
     """Test retrieving an order with invalid date type."""
     order_id = "677fe80f0a34748487855a54"
     date = "2025-01-07T14:23:45.123Z"
-    mocked_order_repository.get_order_by_id.side_effect = InvalidDateType(date, Entity.order.value)
+    mocked_order_repository.get_order_by_id.side_effect = InvalidDateType(
+        date, Entity.order.value
+    )
     response = test_client.get(f"/api/orders/{order_id}")
 
     assert response.status_code == 404
     assert (
-            response.json()["error"] == f"Date: {date} in {Entity.order.value} is in invalid"
-               f"type: should be datetime, is {type(date).__name__}"
+        response.json()["error"]
+        == f"Date: {date} in {Entity.order.value} is in invalid"
+        f"type: should be datetime, is {type(date).__name__}"
     )
+
+    mocked_order_repository.get_order_by_id.side_effect = None
+
+
+@pytest.mark.asyncio
+async def test_get_list_of_unavailable_dates(
+    test_client,
+    test_container,
+    mocked_truck_data,
+    mocked_truck_repository,
+    mocked_order_response_data,
+    mocked_order_repository,
+):
+    truck_data = copy.deepcopy(mocked_truck_data)
+    mocked_truck_list = []
+    for truck in truck_data:
+        truck["active_orders"] = ["1"]
+        mocked_truck_list.append(TruckResponse(**truck))
+    mocked_truck_repository.get_trucks.return_value = mocked_truck_list
+    mocked_order_repository.get_order_by_id.return_value = OrderResponse(
+        **mocked_order_response_data
+    )
+
+    response = test_client.get("/api/checkout")
+
+    assert response.status_code == 200
+    unavailable_dates = response.json()["dates"]
+    assert unavailable_dates == ["2025-01-07"]
 
 
 @pytest.mark.asyncio
@@ -477,7 +506,7 @@ async def test_get_order_success_end_to_end(
 
 
 @pytest.mark.asyncio
-async def test_get_order_success_end_to_end(
+async def test_get_orders_success_end_to_end(
     test_client,
     test_container,
     order_data,
@@ -491,15 +520,16 @@ async def test_get_order_success_end_to_end(
             truck_repo=TruckRepositoryMongo(),
         )
     )
-    order_data["trucks"] = ["677d6e2a61785f2ad5066d84"]
-    order_data["warehouses"] = ["6779eba8536d018b5bbd8a50"]
-    order_data["id"] = "677dd5139fd32f7ca0cb07c1"
+    order_data_copy = copy.deepcopy(order_data)
+    order_data_copy["trucks"] = ["677d6e2a61785f2ad5066d84"]
+    order_data_copy["warehouses"] = ["6779eba8536d018b5bbd8a50"]
+    order_data_copy["id"] = "677dd5139fd32f7ca0cb07c1"
 
-    response = test_client.get(f"/api/orders")
+    response = test_client.get("/api/orders")
 
     assert response.status_code == 200
     response_json = response.json()["orders"]
-    assert order_data in response_json
+    assert order_data_copy in response_json
 
 
 @pytest.mark.asyncio
@@ -517,14 +547,37 @@ async def test_add_order_success_end_to_end(
             truck_repo=TruckRepositoryMongo(),
         )
     )
-    response = test_client.post("/api/purchase", json=order_data)
+    order_data_copy = copy.deepcopy(order_data)
+    order_data_copy["warehouses"] = [
+        "6779eba8536d018b5bbd8a50",
+        "6779eb5d536d018b5bbd8a4c",
+    ]
+    order_data_copy["trucks"] = ["677b2e6e58135031873da9db", "677d6df261785f2ad5066d83"]
+    response = test_client.post("/api/purchase", json=order_data_copy)
 
     assert response.status_code == 200
     response_json = response.json()
 
     response = test_client.get(f"/api/orders/{response_json['id']}")
     order = response.json()["order"]
-    # await assert_order_response(order, response_json)
+    await assert_order_response(order, order_data_copy)
 
     test_client.get(f"/api/orders/{order['id']}/complete")
 
+
+@pytest.mark.asyncio
+async def test_get_list_of_unavailable_dates_end_to_end(test_client, test_container):
+    test_container.order_service.override(
+        OrderService(
+            order_repo=OrderRepositoryMongo(),
+            client_repo=ClientRepositoryMongo(),
+            warehouse_repo=WarehouseRepositoryMongo(),
+            truck_repo=TruckRepositoryMongo(),
+        )
+    )
+
+    response = test_client.get("/api/checkout")
+
+    assert response.status_code == 200
+    unavailable_dates = response.json()["dates"]
+    assert unavailable_dates == ["2025-01-06"]

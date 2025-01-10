@@ -177,7 +177,6 @@ class OrderService:
     def get_orders(self) -> List[OrderResponse]:
         return self._order_repo.get_all_orders()
 
-
     def get_list_of_unavailable_dates(self) -> List[str]:
         trucks = self._truck_repo.get_trucks()
         number_of_trucks = len(trucks)
@@ -188,7 +187,7 @@ class OrderService:
             for order_id in order_id_list:
                 order_data = self._order_repo.get_order_by_id(order_id).model_dump()
                 delivery_date = order_data["delivery_date"]
-                formatted_delivery_date = delivery_date.strftime('%Y-%m-%d')
+                formatted_delivery_date = delivery_date.strftime("%Y-%m-%d")
                 if formatted_delivery_date in unavailable_dates:
                     unavailable_dates[formatted_delivery_date] += 1
                 else:
@@ -199,8 +198,7 @@ class OrderService:
             if unavailable_dates[date] == number_of_trucks:
                 unavailable_dates_list.append(date)
 
-        return unavailable_dates_list
-
+        return sorted(unavailable_dates_list)
 
     def mark_order_as_complete(self, order_id: str) -> OrderResponse:
         if not self._order_repo.update_order_status_db(order_id, "complete"):

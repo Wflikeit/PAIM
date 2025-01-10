@@ -62,7 +62,6 @@ def binary_file_data():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(current_dir, "test_images", "kartofel.jpeg")
 
-    # Open and read the binary file
     with open(file_path, "rb") as file:
         return file.read()
 
@@ -173,18 +172,22 @@ def test_get_product_not_found(mocked_product_repository, test_client):
 
 
 @pytest.mark.asyncio
-async def test_get_product_invalid_date_type(test_client, test_container, mocked_product_repository):
+async def test_get_product_invalid_date_type(
+    test_client, test_container, mocked_product_repository
+):
     """Test retrieving a product with invalid date type."""
     product_id = "677fe80f0a34748487855a54"
     date = "2025-01-07T14:23:45.123Z"
-    mocked_product_repository.get_product_by_id.side_effect = InvalidDateType(date, Entity.product.value)
+    mocked_product_repository.get_product_by_id.side_effect = InvalidDateType(
+        date, Entity.product.value
+    )
     response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 404
     assert (
         response.json()["error"]
         == f"Date: {date} in {Entity.product.value} is in invalid"
-                         f"type: should be datetime, is {type(date).__name__}"
+        f"type: should be datetime, is {type(date).__name__}"
     )
 
 
