@@ -1,7 +1,7 @@
 import base64
 from io import BytesIO
 from unittest.mock import AsyncMock
-
+import os
 import pytest
 from bson import ObjectId
 from starlette.testclient import TestClient
@@ -56,7 +56,9 @@ def product_data():
 @pytest.fixture(scope="module")
 def binary_file_data():
     """Fixture returning sample binary data."""
-    with open("test_images/kartofel.jpeg", "rb") as file:
+    curr_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(curr_dir, "test_images/kartofel.jpeg")
+    with open(file_path, "rb") as file:
         return file.read()
 
 
@@ -233,19 +235,20 @@ async def test_get_all_products_success(
 
 @pytest.mark.asyncio
 async def test_upload_product_end_to_end(
-        test_container, test_client, product_data, mocked_product_repository, jwt_token
+        test_container, test_client, product_data, mocked_product_repository, jwt_token,
+        binary_file_data
 ):
     """End-to-end test of the /upload endpoint."""
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())
     )
-    with open("test_images/kartofel.jpeg", "rb") as image_file:
-        response = test_client.post(
-            "/api/upload",
-            data=product_data,
-            files={"file": ("xxx.jpeg", image_file, "image/jpeg")},
-            headers={"Authorization": f"Bearer {jwt_token}"},
-        )
+
+    response = test_client.post(
+        "/api/upload",
+        data=product_data,
+        files={"file": ("xxx.jpeg", binary_file_data, "image/jpeg")},
+        headers={"Authorization": f"Bearer {jwt_token}"},
+    )
 
     assert response.status_code == 200
     response_json = response.json()
