@@ -18,14 +18,14 @@ const App: React.FC = () => {
       <Routes>
         <Route element={<Layout />}>
           <Route
+            path="/checkout"
             element={
               <ProtectedRouteWrapper
                 allowedRoles={[UserRole.CLIENT]}
               >
-                <Routes>
-                  <Route path="/checkout" element={<CheckoutPage />} />
+                {/*<Routes>*/}<CheckoutPage />
 
-                </Routes>
+                {/*</Routes>*/}
               </ProtectedRouteWrapper>
             }
           />

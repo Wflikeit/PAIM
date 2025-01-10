@@ -40,15 +40,11 @@ class ProductRepositoryMongo(AbstractProductRepository):
             raise EntityNotFoundError(Entity.product.value, product_id)
 
         product["id"] = str(product["_id"])
-        if isinstance(product["expiry_date"], datetime.datetime):
-            product["expiry_date"] = product["expiry_date"].replace(
-                tzinfo=datetime.timezone.utc
-            )
-        else:
-            raise InvalidDateType(product["expiry_date"], Entity.product.value)
         product["file"] = (
             f"data:image/jpeg;base64,{base64.b64encode(product["file"]).decode('utf-8')}"
         )
+
+        product["expiry_date"] = product["expiry_date"].strftime("%Y-%m-%d")
 
         return ProductResponse(**product)
 
@@ -58,15 +54,12 @@ class ProductRepositoryMongo(AbstractProductRepository):
         response_list = []
         for product in products:
             product["id"] = str(product["_id"])
-            if isinstance(product["expiry_date"], datetime.datetime):
-                product["expiry_date"] = product["expiry_date"].replace(
-                    tzinfo=datetime.timezone.utc
-                )
-            else:
-                raise InvalidDateType(product["expiry_date"], Entity.product.value)
             product["file"] = (
                 f"data:image/jpeg;base64,{base64.b64encode(product["file"]).decode('utf-8')}"
             )
+
+            
+            product["expiry_date"] = product["expiry_date"].strftime("%Y-%m-%d")
             response_list.append(ProductResponse(**product))
 
         return response_list

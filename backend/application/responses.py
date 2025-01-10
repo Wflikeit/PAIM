@@ -26,6 +26,16 @@ class ClientResponse(BaseModel):
     company_name: Optional[str] = ""
 
 
+class SuccessfullRegisterClientResponse(BaseModel):
+    id: str
+    email: EmailStr
+    payment_address: str
+    delivery_address: str
+    nip: Optional[str] = ""
+    orders: Optional[List[str]] = Field(default_factory=list)
+    company_name: Optional[str] = ""
+    access_token: str
+
 class AddressResponse(BaseModel):
     id: str
     voivodeship: str

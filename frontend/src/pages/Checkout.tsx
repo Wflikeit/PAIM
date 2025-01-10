@@ -47,11 +47,18 @@ const CheckoutPage: React.FC = () => {
   };
 
   const validateFields = () => {
+    const postalCodeRegex = /^[0-9]{2}-[0-9]{3}$/;
+
+
     const newErrors = {
       fullName: shippingAddress.fullName ? "" : "Full name is required",
       address: shippingAddress.address ? "" : "Address is required",
       city: shippingAddress.city ? "" : "City is required",
-      postalCode: shippingAddress.postalCode ? "" : "Postal code is required",
+      postalCode: shippingAddress.postalCode
+        ? postalCodeRegex.test(shippingAddress.postalCode)
+        ? ""
+        : "Invalid postal code format (e.g., 12-345)"
+      : "Postal code is required",
       country: shippingAddress.country ? "" : "Country is required",
       deliveryDate: deliveryDate ? "" : "Delivery date is required",
     };

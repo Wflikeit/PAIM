@@ -60,7 +60,7 @@ const RegisterForm = () => {
       !password ||
       !company_name
     ) {
-      setError("Proszę wypełnić wszystkie pola");
+      setError("Please fill all of the fields");
       return;
     }
 
@@ -87,12 +87,8 @@ const RegisterForm = () => {
       company_name,
     };
 
-    console.log("Form data to be sent:", newClient);
-
     try {
       await addClient(newClient);
-      console.log("Zarejestrowano:", newClient);
-
       setEmail("");
       setDeliveryAddressCity("");
       setDeliveryAddressPostalCode("");
@@ -109,7 +105,7 @@ const RegisterForm = () => {
       setCompanyName("");
       navigate("/checkout"); // Navigate back to the previous URL
     } catch (error) {
-      setError("Wystąpił błąd podczas rejestracji klienta: " + error);
+      setError("There was an error while registering a client: " + error);
     }
   };
 
@@ -154,7 +150,7 @@ const RegisterForm = () => {
               />
 
               <TextField
-                label="Nazwa firmy"
+                label="Company Name"
                 variant="outlined"
                 fullWidth
                 value={company_name}
@@ -291,7 +287,7 @@ const RegisterForm = () => {
               </Accordion>
 
               <TextField
-                label="Hasło"
+                label="Password"
                 type="password"
                 variant="outlined"
                 fullWidth

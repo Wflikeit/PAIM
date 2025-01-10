@@ -2,9 +2,9 @@ export interface Client {
     email: string;
     payment_address: Address;
     delivery_address: Address;
-    nip;
-    password;
-    company_name;
+    nip:string;
+    password:string;
+    company_name:string;
 }
 
 export interface Address {
