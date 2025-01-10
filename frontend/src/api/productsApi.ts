@@ -4,7 +4,7 @@ export interface Product {
   price: number;
   description: string;
   country_of_origin: string;
-  is_vegetable: boolean;
+  fruit_or_vegetable: string;
   expiry_date: string;
   file: string;
 }

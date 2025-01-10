@@ -5,13 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useProducts } from "../hooks/useProducts.ts";
 import { addToCart } from "../model/cardItem";
+import { Product } from "../api/productsApi.ts";
 
 const ProductsList: React.FC = () => {
   const { filters } = useSelector((state: RootState) => state.products);
   const { data: products = [], isLoading, error } = useProducts();
   const dispatch = useDispatch();
 
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = products.filter((product: Product) => {
     const matchesFruitOrVegetable =
       filters.fruitOrVegetable.length === 0 ||
       filters.fruitOrVegetable.includes(product.fruit_or_vegetable);

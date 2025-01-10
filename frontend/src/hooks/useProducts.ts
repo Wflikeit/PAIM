@@ -11,7 +11,10 @@ const fetchProductsFromApi = async (): Promise<Product[]> => {
   if (!response.data.products) {
     throw new Error("Products not found in the response");
   }
-  return response.data.products;
+  return response.data.products.map((product) => ({
+    ...product,
+    fruit_or_vegetable: product["is_vegetable"] ? "Vegetable" : "Fruit",
+  }));
 };
 
 export const useProducts = () => {

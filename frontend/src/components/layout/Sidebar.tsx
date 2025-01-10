@@ -36,8 +36,8 @@ const Sidebar: React.FC = () => {
   }[] = [
     {
       title: "Category",
-      options: ["Warzywa", "Owoce"],
-      filterValues: ["Warzywo", "Owoc"],
+      options: ["Vegetable", "Fruit"],
+      filterValues: ["Vegetable", "Fruit"],
       filterKey: "fruitOrVegetable",
       filterAction: setFruitOrVegetableFilter,
     },
