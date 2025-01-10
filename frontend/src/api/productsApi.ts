@@ -1,12 +1,10 @@
-import axios from "axios";
-
 export interface Product {
   id: string;
   name: string;
   price: number;
   description: string;
   country_of_origin: string;
-  fruit_or_vegetable: string;
+  is_vegetable: boolean;
   expiry_date: string;
   file: string;
 }

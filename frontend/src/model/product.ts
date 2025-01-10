@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ProductsState {
   filters: {
-    fruitOrVegetable: string[];
+    fruitOrVegetable: boolean[];
     countryOfOrigin: string[];
   };
 }
