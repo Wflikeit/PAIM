@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import Optional, Dict
 import os
 
-from fastapi import Security
+from fastapi import Security, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from starlette import status
 
 from infrastructure.api.exception_handler import create_credentials_exception
 
@@ -27,9 +28,21 @@ class AuthService:
                 AuthService.secret_key,
                 algorithms=[AuthService.algorithm],
             )
-            return payload  # Return the decoded payload if valid
+            if payload.get("role") not in {"admin", "client"}:
+                raise create_credentials_exception
+
+            # Expiry validation
+            exp = payload.get("exp")
+            if exp and datetime.fromtimestamp(exp, tz=timezone.utc) < datetime.now(timezone.utc):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Token has expired",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
+            return payload
         except JWTError:
-            raise create_credentials_exception  # Handle invalid tokens
+            raise create_credentials_exception
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -89,14 +102,20 @@ class AuthService:
         )
 
     @staticmethod
-    def is_admin(token: str):
-        try:
-            payload = jwt.decode(
-                token, AuthService.secret_key, algorithms=[AuthService.algorithm]
-            )
-            role = payload.get("role")
-            if role != "admin":
-                raise create_credentials_exception
-            return payload
-        except JWTError:
+    def is_admin(token: str) -> Dict:
+        """
+        Checks if a user is an admin by verifying their JWT token.
+
+        Args:
+            token (str): JWT token.
+
+        Returns:
+            dict: Decoded payload if the user is an admin.
+
+        Raises:
+            HTTPException: If the user is not an admin or the token is invalid.
+        """
+        payload = AuthService.verify_jwt_token(token=token)
+        if payload.get("role") != "admin":
             raise create_credentials_exception
+        return payload
