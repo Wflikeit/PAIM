@@ -35,19 +35,17 @@ app.include_router(
     product_router,
     prefix="/api",
     tags=["products"],
-    dependencies=[Depends(AuthService.verify_jwt_token)],
 )
 app.include_router(
     client_router,
     prefix="/api",
     tags=["clients"],
-    dependencies=[Depends(AuthService.verify_jwt_token)],
 )
 app.include_router(
     admin_router,
     prefix="/admin",
     tags=["admin"],
-    dependencies=[Depends(AuthService.verify_jwt_token)],
+    dependencies=[Depends(AuthService.is_admin)],
 )
 app.include_router(auth_router, prefix="/auth", tags=["admin"])
 

@@ -1,7 +1,9 @@
 from dependency_injector.wiring import inject, Provide
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Security
+from fastapi.security import HTTPAuthorizationCredentials
 from passlib.context import CryptContext
 
+from application.auth.auth import AuthService
 from application.client.client_service import ClientService
 from application.responses import ClientResponse
 from domain.client import Client
@@ -29,5 +31,10 @@ async def upload_client(
 async def get_client(
     client_id: str,
     client_service: ClientService = Depends(Provide[Container.client_service]),
+    credentials: HTTPAuthorizationCredentials = Security(AuthService.security),  # Add JWT authentication
 ) -> ClientResponse:
+    # Validate that the user is an admin
+    AuthService.is_admin(credentials=credentials)
+
+    # Proceed to get client details
     return client_service.get_client(client_id)

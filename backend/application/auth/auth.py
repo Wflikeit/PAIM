@@ -102,7 +102,7 @@ class AuthService:
         )
 
     @staticmethod
-    def is_admin(token: str) -> Dict:
+    def is_admin(credentials: HTTPAuthorizationCredentials = Security(security)) -> Dict:
         """
         Checks if a user is an admin by verifying their JWT token.
 
@@ -115,7 +115,7 @@ class AuthService:
         Raises:
             HTTPException: If the user is not an admin or the token is invalid.
         """
-        payload = AuthService.verify_jwt_token(token=token)
+        payload = AuthService.verify_jwt_token(credentials=credentials)
         if payload.get("role") != "admin":
             raise create_credentials_exception
         return payload
