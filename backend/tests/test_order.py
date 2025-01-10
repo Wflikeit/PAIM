@@ -91,7 +91,7 @@ def order_data():
 
 
 @pytest.fixture(scope="module")
-def other_order_data():
+def order_data_high_product_quantity():
     return {
         "delivery_date": "2025-01-07T14:23:45.123000Z",
         "amount": 600.5,
@@ -339,7 +339,7 @@ async def test_add_order_success(
 @pytest.mark.asyncio
 async def test_add_order_not_enough_products_in_warehouse_fail(
     test_client,
-    other_order_data,
+        order_data_high_product_quantity,
     mocked_order_response_data,
     mocked_order_repository,
     mocked_truck_repository,
@@ -364,7 +364,7 @@ async def test_add_order_not_enough_products_in_warehouse_fail(
         **mocked_order_response_data
     )
 
-    response = test_client.post("/api/purchase", json=other_order_data)
+    response = test_client.post("/api/purchase", json=order_data_high_product_quantity)
 
     assert response.status_code == 409
     assert response.json()["error"] == "Unable to realize order"
@@ -500,4 +500,31 @@ async def test_get_order_success_end_to_end(
     assert response.status_code == 200
     response_json = response.json()["orders"]
     assert order_data in response_json
+
+
+@pytest.mark.asyncio
+async def test_add_order_success_end_to_end(
+    test_client,
+    order_data,
+    test_container,
+):
+    """Integration test for making orders."""
+    test_container.order_service.override(
+        OrderService(
+            order_repo=OrderRepositoryMongo(),
+            client_repo=ClientRepositoryMongo(),
+            warehouse_repo=WarehouseRepositoryMongo(),
+            truck_repo=TruckRepositoryMongo(),
+        )
+    )
+    response = test_client.post("/api/purchase", json=order_data)
+
+    assert response.status_code == 200
+    response_json = response.json()
+
+    response = test_client.get(f"/api/orders/{response_json['id']}")
+    order = response.json()["order"]
+    # await assert_order_response(order, response_json)
+
+    test_client.get(f"/api/orders/{order['id']}/complete")
 
