@@ -36,6 +36,7 @@ class SuccessfullRegisterClientResponse(BaseModel):
     company_name: Optional[str] = ""
     access_token: str
 
+
 class AddressResponse(BaseModel):
     id: str
     voivodeship: str

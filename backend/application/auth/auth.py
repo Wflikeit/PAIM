@@ -33,7 +33,9 @@ class AuthService:
 
             # Expiry validation
             exp = payload.get("exp")
-            if not exp or datetime.fromtimestamp(exp, tz=timezone.utc) < datetime.now(timezone.utc):
+            if not exp or datetime.fromtimestamp(exp, tz=timezone.utc) < datetime.now(
+                timezone.utc
+            ):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Token has expired",
@@ -96,7 +98,9 @@ class AuthService:
         )
 
     @staticmethod
-    def is_admin(credentials: HTTPAuthorizationCredentials = Security(security)) -> Dict:
+    def is_admin(
+        credentials: HTTPAuthorizationCredentials = Security(security),
+    ) -> Dict:
         """
         Checks if a user is an admin by verifying their JWT token.
 

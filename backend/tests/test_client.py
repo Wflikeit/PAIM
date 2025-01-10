@@ -125,11 +125,11 @@ async def assert_client_response(mock_client_data, response_json):
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
 async def test_get_client_success(
-        mock_client_data,
-        mocked_client_repository,
-        test_client,
-        mock_client_response,
-        jwt_token,
+    mock_client_data,
+    mocked_client_repository,
+    test_client,
+    mock_client_response,
+    jwt_token,
 ):
     """Test the integration of the /clients/{client_id} endpoint."""
     client_id = mock_client_data["id"]
@@ -233,7 +233,7 @@ async def test_register_client_success_end_to_end(
     client_data,
     mock_client_response,
     mock_client_data,
-    jwt_token
+    jwt_token,
 ):
     """End-to-end test for registering client."""
     test_container.client_service.override(
@@ -242,7 +242,11 @@ async def test_register_client_success_end_to_end(
         ),
     )
 
-    response = test_client.post("/api/register", json=client_data, headers={"Authorization": f"Bearer {jwt_token}"})
+    response = test_client.post(
+        "/api/register",
+        json=client_data,
+        headers={"Authorization": f"Bearer {jwt_token}"},
+    )
     assert response.status_code == 200
     response_json = response.json()
 
@@ -261,7 +265,9 @@ async def test_get_client_success_end_to_end(
         ),
     )
 
-    response = test_client.get(f"/api/clients/{client_id}", headers={"Authorization": f"Bearer {jwt_token}"})
+    response = test_client.get(
+        f"/api/clients/{client_id}", headers={"Authorization": f"Bearer {jwt_token}"}
+    )
 
     assert response.status_code == 200
     response_json = response.json()

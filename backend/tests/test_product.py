@@ -108,19 +108,14 @@ async def assert_product_response(mocked_product_data, response_json):
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
 async def test_get_product_successful(
-        mocked_product_data,
-        binary_file_data,
-        mocked_product_repository,
-        test_client
+    mocked_product_data, binary_file_data, mocked_product_repository, test_client
 ):
     """Test the integration of the /products/{product_id} endpoint."""
     product_id = mocked_product_data["id"]
     mocked_product_response = ProductResponse(**mocked_product_data)
     mocked_product_repository.get_product_by_id.return_value = mocked_product_response
 
-    response = test_client.get(
-        f"/api/products/{product_id}"
-    )
+    response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
     product = response.json()["product"]
@@ -135,12 +130,12 @@ async def test_get_product_successful(
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
 async def test_upload_product_success(
-        mocked_product_data,
-        binary_file_data,
-        mocked_product_repository,
-        test_client,
-        product_data,
-        jwt_token,
+    mocked_product_data,
+    binary_file_data,
+    mocked_product_repository,
+    test_client,
+    product_data,
+    jwt_token,
 ):
     """Test the full integration of the /upload endpoint."""
     mocked_product_response_data = ProductResponse(**mocked_product_data)
@@ -177,9 +172,7 @@ async def test_get_product_not_found(mocked_product_repository, test_client):
         Entity.product.value, non_existent_product_id
     )
 
-    response = test_client.get(
-        f"/api/products/{non_existent_product_id}"
-    )
+    response = test_client.get(f"/api/products/{non_existent_product_id}")
 
     assert response.status_code == 404
     assert (
@@ -188,6 +181,7 @@ async def test_get_product_not_found(mocked_product_repository, test_client):
     )
 
     mocked_product_repository.get_product_by_id.side_effect = None
+
 
 @pytest.mark.asyncio
 async def test_get_product_invalid_date_type(
@@ -226,9 +220,7 @@ async def test_get_product_success_end_to_end(
         ProductService(product_repo=ProductRepositoryMongo())
     )
 
-    response = test_client.get(
-        f"/api/products/{product_id}"
-    )
+    response = test_client.get(f"/api/products/{product_id}")
 
     assert response.status_code == 200
     product = response.json()["product"]
@@ -250,9 +242,7 @@ async def test_get_all_products_success_end_to_end(
         ProductService(product_repo=ProductRepositoryMongo())
     )
 
-    response = test_client.get(
-        "/api/products"
-    )
+    response = test_client.get("/api/products")
 
     assert response.status_code == 200
     response_json = response.json()
@@ -266,7 +256,7 @@ async def test_upload_product_end_to_end(
     product_data,
     mocked_product_repository,
     binary_file_data,
-    jwt_token
+    jwt_token,
 ):
     """End-to-end test of the /upload endpoint."""
     test_container.product_service.override(

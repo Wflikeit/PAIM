@@ -39,9 +39,12 @@ app.add_middleware(
 app.include_router(product_router, prefix="/api", tags=["products"])
 app.include_router(client_router, prefix="/api", tags=["clients"])
 app.include_router(order_router, prefix="/api", tags=["orders"])
-app.include_router(admin_router, prefix="/admin",
+app.include_router(
+    admin_router,
+    prefix="/admin",
     tags=["admin"],
-    dependencies=[Depends(AuthService.is_admin)])
+    dependencies=[Depends(AuthService.is_admin)],
+)
 app.include_router(auth_router, prefix="/auth", tags=["admin"])
 app.add_exception_handler(RepositoryError, repository_exception_handler)
 app.add_exception_handler(BusinessLogicError, business_logic_exception_handler)

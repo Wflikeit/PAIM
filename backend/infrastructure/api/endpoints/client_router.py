@@ -45,7 +45,9 @@ async def upload_client(
 async def get_client(
     client_id: str,
     client_service: ClientService = Depends(Provide[Container.client_service]),
-    credentials: HTTPAuthorizationCredentials = Security(AuthService.security),  # Add JWT authentication
+    credentials: HTTPAuthorizationCredentials = Security(
+        AuthService.security
+    ),  # Add JWT authentication
 ) -> ClientResponse:
     # Validate that the user is an admin
     AuthService.is_admin(credentials=credentials)
