@@ -1,4 +1,5 @@
 from dependency_injector.wiring import inject, Provide
+from fastapi import APIRouter, Depends
 from fastapi import APIRouter, Depends, Security
 from fastapi.security import HTTPAuthorizationCredentials
 from passlib.context import CryptContext
@@ -18,12 +19,12 @@ pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 @router.post("/register", response_model=ClientResponse)
 @inject
 async def upload_client(
-    request: Client,
+    client: Client,
     client_service: ClientService = Depends(Provide[Container.client_service]),
 ) -> ClientResponse:
-    request.password = pwd_context.hash(request.password)
+    client.password = pwd_context.hash(client.password)
 
-    return client_service.register_client(request)
+    return client_service.register_client(client)
 
 
 @router.get("/clients/{client_id}", response_model=ClientResponse)

@@ -1,18 +1,21 @@
 import base64
+import os
 from io import BytesIO
 from unittest.mock import AsyncMock
-import os
 import pytest
 from bson import ObjectId
 from starlette.testclient import TestClient
 
 from application.product.product_service import ProductService
 from application.responses import ProductResponse
-from domain.exceptions import ProductNotFoundError
+from domain.entities import Entity
+from domain.exceptions import EntityNotFoundError, InvalidDateType
 from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.product_repository import ProductRepositoryMongo
 from application.auth.auth import AuthService
+
+os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
 
 @pytest.fixture(scope="module")
@@ -48,16 +51,17 @@ def product_data():
         "price": 100.0,
         "country_of_origin": "Poland",
         "description": "Ziemniaczek",
-        "fruit_or_vegetable": "Warzywo",
-        "expiry_date": "10.12.2025",
+        "is_vegetable": True,
+        "expiry_date": "2025-01-07T14:23:45.123000Z",
     }
 
 
 @pytest.fixture(scope="module")
 def binary_file_data():
     """Fixture returning sample binary data."""
-    curr_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(curr_dir, "test_images/kartofel.jpeg")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, "test_images", "kartofel.jpeg")
+
     with open(file_path, "rb") as file:
         return file.read()
 
@@ -73,8 +77,8 @@ def mocked_product_data(binary_file_data):
         "price": 100.0,
         "country_of_origin": "Poland",
         "description": "Ziemniaczek",
-        "fruit_or_vegetable": "Warzywo",
-        "expiry_date": "10.12.2025",
+        "is_vegetable": True,
+        "expiry_date": "2025-01-07T14:23:45.123000Z",
         "file": f"data:image/jpeg;base64,{base64_file_data}",
     }
 
@@ -90,12 +94,10 @@ async def assert_product_response(mocked_product_data, response_json):
     assert response_json["name"] == mocked_product_data["name"]
     assert response_json["price"] == mocked_product_data["price"]
     assert (
-            response_json["country_of_origin"] == mocked_product_data["country_of_origin"]
+        response_json["country_of_origin"] == mocked_product_data["country_of_origin"]
     )
     assert response_json["description"] == mocked_product_data["description"]
-    assert (
-            response_json["fruit_or_vegetable"] == mocked_product_data["fruit_or_vegetable"]
-    )
+    assert response_json["is_vegetable"] == mocked_product_data["is_vegetable"]
     assert response_json["expiry_date"] == mocked_product_data["expiry_date"]
 
 
@@ -166,12 +168,13 @@ async def test_upload_product_success(
 # ┌───────────┐   ┌──────────┐   ┌────────────┐
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
-def test_get_product_not_found(mocked_product_repository, test_client):
+@pytest.mark.asyncio
+async def test_get_product_not_found(mocked_product_repository, test_client):
     """Test retrieving a product that does not exist."""
     non_existent_product_id = str(ObjectId())
 
-    mocked_product_repository.get_product_by_id.side_effect = ProductNotFoundError(
-        non_existent_product_id
+    mocked_product_repository.get_product_by_id.side_effect = EntityNotFoundError(
+        Entity.product.value, non_existent_product_id
     )
 
     response = test_client.get(
@@ -180,19 +183,42 @@ def test_get_product_not_found(mocked_product_repository, test_client):
 
     assert response.status_code == 404
     assert (
-            response.json()["error"]
-            == f"Product with ID {non_existent_product_id} not found"
+        response.json()["error"]
+        == f"Product with ID {non_existent_product_id} not found"
     )
 
+    mocked_product_repository.get_product_by_id.side_effect = None
 
-@pytest.mark.asyncio  # FAILED
-async def test_get_product_success(
-        mocked_product_data,
-        binary_file_data,
-        mocked_product_repository,
-        test_client,
-        product_data,
-        test_container,
+@pytest.mark.asyncio
+async def test_get_product_invalid_date_type(
+    test_client, test_container, mocked_product_repository
+):
+    """Test retrieving a product with invalid date type."""
+    product_id = "677fe80f0a34748487855a54"
+    date = "2025-01-07T14:23:45.123Z"
+    mocked_product_repository.get_product_by_id.side_effect = InvalidDateType(
+        date, Entity.product.value
+    )
+    response = test_client.get(f"/api/products/{product_id}")
+
+    assert response.status_code == 404
+    assert (
+        response.json()["error"]
+        == f"Date: {date} in {Entity.product.value} is in invalid"
+        f"type: should be datetime, is {type(date).__name__}"
+    )
+
+    mocked_product_repository.get_product_by_id.side_effect = None
+
+
+@pytest.mark.asyncio
+async def test_get_product_success_end_to_end(
+    mocked_product_data,
+    binary_file_data,
+    mocked_product_repository,
+    test_client,
+    product_data,
+    test_container,
 ):
     """End-to-end test of the /products/{product_id} endpoint."""
     product_id = "6775934ed79a82364c118356"
@@ -211,12 +237,12 @@ async def test_get_product_success(
 
 
 @pytest.mark.asyncio
-async def test_get_all_products_success(
-        mocked_product_data,
-        mocked_product_repository,
-        test_client,
-        product_data,
-        test_container,
+async def test_get_all_products_success_end_to_end(
+    mocked_product_data,
+    mocked_product_repository,
+    test_client,
+    product_data,
+    test_container,
 ):
     """End-to-end test of the /products endpoint."""
     mocked_product_data["id"] = "6775934ed79a82364c118356"
@@ -235,8 +261,12 @@ async def test_get_all_products_success(
 
 @pytest.mark.asyncio
 async def test_upload_product_end_to_end(
-        test_container, test_client, product_data, mocked_product_repository, jwt_token,
-        binary_file_data
+    test_container,
+    test_client,
+    product_data,
+    mocked_product_repository,
+    binary_file_data,
+    jwt_token
 ):
     """End-to-end test of the /upload endpoint."""
     test_container.product_service.override(
@@ -266,7 +296,7 @@ async def test_upload_product_end_to_end(
 
 @pytest.mark.asyncio
 async def test_get_product_invalid_id(test_client, test_container):
-    """Test retrieving a client with invalid ID."""
+    """Test retrieving a product with invalid ID."""
     invalid_product_id = "not_a_valid_id"
     test_container.product_service.override(
         ProductService(product_repo=ProductRepositoryMongo())
@@ -278,6 +308,7 @@ async def test_get_product_invalid_id(test_client, test_container):
 
     assert response.status_code == 404
     assert (
-            response.json()["error"]
-            == f"ID: {invalid_product_id} is invalid: '{invalid_product_id}' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+        response.json()["error"]
+        == f"ID of {Entity.product.value} is invalid: '{invalid_product_id}' "
+        "is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     )

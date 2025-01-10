@@ -1,5 +1,6 @@
 import os
 import threading
+
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -28,7 +29,7 @@ class MongoDBClient:
 
     @staticmethod
     def get_database():
-        load_dotenv()
+        load_dotenv(override=False)
         mongo_database = os.getenv("MONGO_DATABASE")
         if not mongo_database:
             raise ValueError("MONGO_DATABASE is not set in .env file")
