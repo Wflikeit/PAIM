@@ -46,7 +46,6 @@ def client_data():
         "orders": "mock_orders",
         "password": "mock_password",
         "company_name": "mock_company_name",
-        "fullname": "Mock fullname",
     }
 
 
@@ -58,7 +57,6 @@ def mock_client_data():
         "email": "test@mail.com",
         "payment_address": "mock_payment_address",
         "delivery_address": "mock_delivery_address",
-        "fullname": "Mock fullname",
         "nip": "0123456789",
         "orders": "mock_orders",
         "password": "mock_password",

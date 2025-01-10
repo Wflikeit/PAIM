@@ -56,75 +56,75 @@ const RegisterForm = () => {
   };
 
   return (
-    <Box
-      sx={{
-        padding: "16px",
-        color: "black",
-        margin: "5dvh auto",
-        maxWidth: "30rem",
-        minWidth: "20rem",
-      }}
-    >
-      <Box>
-        <form onSubmit={handleSubmit}>
-          <Typography
-            variant="h3"
-            gutterBottom
-            style={{ color: "black", textAlign: "center" }}
-            sx={{ paddingTop: "60px" }}
-          >
-            Create account
-          </Typography>
+      <Box
+          sx={{
+            padding: "16px",
+            color: "black",
+            margin: "5dvh auto",
+            maxWidth: "30rem",
+            minWidth: "20rem",
+          }}
+      >
+        <Box>
+          <form onSubmit={handleSubmit}>
+            <Typography
+                variant="h3"
+                gutterBottom
+                style={{ color: "black", textAlign: "center" }}
+                sx={{ paddingTop: "60px" }}
+            >
+              Create account
+            </Typography>
 
-          <TextField
-            label="Email"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            size="small"
-          />
+            <TextField
+                label="Email"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                size="small"
+            />
 
-          <TextField
-            label="NIP"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={nip}
-            onChange={(e) => setNip(e.target.value)}
-            size="small"
-          />
+            <TextField
+                label="NIP"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={nip}
+                onChange={(e) => setNip(e.target.value)}
+                size="small"
+            />
 
-          <TextField
-            label="Nazwa firmy"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={company_name}
-            onChange={(e) => setCompanyName(e.target.value)}
-            size="small"
-          />
+            <TextField
+                label="Nazwa firmy"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={company_name}
+                onChange={(e) => setCompanyName(e.target.value)}
+                size="small"
+            />
 
-          <TextField
-            label="Adres płatności (oddziel przecinkami)"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={payment_address}
-            onChange={(e) => setPaymentAddress(e.target.value)}
-            size="small"
-          />
+            <TextField
+                label="Adres płatności (oddziel przecinkami)"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={payment_address}
+                onChange={(e) => setPaymentAddress(e.target.value)}
+                size="small"
+            />
 
-          <TextField
-            label="Adres dostawy (oddziel przecinkami)"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={delivery_address}
-            onChange={(e) => setDeliveryAddress(e.target.value)}
-            size="small"
-          />
+            <TextField
+                label="Adres dostawy (oddziel przecinkami)"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={delivery_address}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                size="small"
+            />
 
           <TextField
             label="Hasło"
@@ -137,24 +137,24 @@ const RegisterForm = () => {
             size="small"
           />
 
-          {error && (
-            <Typography variant="body2" color="error" gutterBottom>
-              {error}
-            </Typography>
-          )}
+            {error && (
+                <Typography variant="body2" color="error" gutterBottom>
+                  {error}
+                </Typography>
+            )}
 
-          <Button
-            type="submit"
-            className="register"
-            variant="contained"
-            sx={{ backgroundColor: "#388e3c", marginTop: "1rem" }}
-            fullWidth
-          >
-            Register
-          </Button>
-        </form>
+            <Button
+                type="submit"
+                className="register"
+                variant="contained"
+                sx={{ backgroundColor: "#388e3c", marginTop: "1rem" }}
+                fullWidth
+            >
+              Register
+            </Button>
+          </form>
+        </Box>
       </Box>
-    </Box>
   );
 };
 
