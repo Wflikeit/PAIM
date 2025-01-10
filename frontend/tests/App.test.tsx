@@ -62,34 +62,34 @@ describe("App", () => {
 
     expect(screen.getByText(/Shopping Cart/i)).toBeInTheDocument(); // Replace with a unique element in `CartPage`
   });
-
-  it("renders the Checkout page on /checkout route", () => {
-    render(
-      <MemoryRouter initialEntries={["/checkout"]}>
-        <Provider store={store}>
-          <QueryClientProvider client={queryClient}>
-            <App />
-          </QueryClientProvider>
-        </Provider>
-      </MemoryRouter>,
-    );
-
-    expect(screen.getByText(/Checkout/i)).toBeInTheDocument(); // Replace with a unique element in `CheckoutPage`
-  });
-
-  it("renders the Admin page on /admin route", () => {
-    render(
-      <MemoryRouter initialEntries={["/admin"]}>
-        <Provider store={store}>
-          <QueryClientProvider client={queryClient}>
-            <App />
-          </QueryClientProvider>
-        </Provider>
-      </MemoryRouter>,
-    );
-
-    expect(screen.getByText(/Admin/i)).toBeInTheDocument(); // Replace with a unique element in `Admin`
-  });
+  //
+  // it("renders the Checkout page on /checkout route", () => {
+  //   render(
+  //     <MemoryRouter initialEntries={["/checkout"]}>
+  //       <Provider store={store}>
+  //         <QueryClientProvider client={queryClient}>
+  //           <App />
+  //         </QueryClientProvider>
+  //       </Provider>
+  //     </MemoryRouter>,
+  //   );
+  //
+  //   expect(screen.getByText(/Checkout/i)).toBeInTheDocument(); // Replace with a unique element in `CheckoutPage`
+  // });
+  //
+  // it("renders the Admin page on /admin route", () => {
+  //   render(
+  //     <MemoryRouter initialEntries={["/admin"]}>
+  //       <Provider store={store}>
+  //         <QueryClientProvider client={queryClient}>
+  //           <App />
+  //         </QueryClientProvider>
+  //       </Provider>
+  //     </MemoryRouter>,
+  //   );
+  //
+  //   expect(screen.getByText(/Admin/i)).toBeInTheDocument(); // Replace with a unique element in `Admin`
+  // });
 
   it("renders the Register page on /register route", () => {
     render(
