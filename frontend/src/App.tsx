@@ -23,9 +23,9 @@ const App: React.FC = () => {
               <ProtectedRouteWrapper
                 allowedRoles={[UserRole.CLIENT]}
               >
-                {/*<Routes>*/}<CheckoutPage />
+                <CheckoutPage />
 
-                {/*</Routes>*/}
+
               </ProtectedRouteWrapper>
             }
           />
