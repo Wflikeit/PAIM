@@ -1,32 +1,24 @@
 import axios, { AxiosError } from "axios";
-
-interface Client {
-  email: string;
-  payment_address: string;
-  delivery_address: string;
-  nip: string;
-  orders: string;
-  password: string;
-  company_name: string;
-}
+import { Client } from "../model/client.ts";
+import { saveToken } from "../auth/authService.ts";
 
 const registerClients = () => {
   const addClient = async (clientData: Client): Promise<void> => {
-    console.log("Client data (Object):", clientData);
-
-    const clientdata = JSON.stringify(clientData);
-    console.log("Client data (JSON):", clientdata);
-
+    console.log("Registering client:", clientData);
     try {
       const response = await axios.post(
         "http://localhost:8002/api/register",
-        clientdata,
+        JSON.stringify(clientData),
         {
           headers: {
             "Content-Type": "application/json",
           },
         },
       );
+      const token = response.data.token; // Assuming the token is returned in `response.data.token`
+      if (token) {
+        saveToken(token); // Save the token and set it for subsequent requests
+      }
       console.log("Client registered successfully:", response.data);
     } catch (error) {
       if (error instanceof AxiosError) {

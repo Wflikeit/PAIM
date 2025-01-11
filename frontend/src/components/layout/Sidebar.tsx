@@ -9,16 +9,22 @@ import {
   setCountryOfOriginFilter,
   setFruitOrVegetableFilter,
 } from "../../model/product";
+import {useProducts} from "../../hooks/useProducts.ts";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const { data: products = [], isLoading, error } = useProducts();
   const { filters } = useSelector((state: RootState) => state.products);
 
   // Only render the sidebar on the root path
   if (location.pathname !== "/") {
     return null;
   }
+
+  const countryOptions = Array.from(
+    new Set(products.map((product: any) => product.country_of_origin))
+  );
 
   // Define filter categories with explicit typing for filterKey
   const categories: {
@@ -30,15 +36,15 @@ const Sidebar: React.FC = () => {
   }[] = [
     {
       title: "Category",
-      options: ["Warzywa", "Owoce"],
-      filterValues: ["Warzywo", "Owoc"],
+      options: ["Vegetable", "Fruit"],
+      filterValues: ["Vegetable", "Fruit"],
       filterKey: "fruitOrVegetable",
       filterAction: setFruitOrVegetableFilter,
     },
     {
       title: "Country of origin",
-      options: ["Polska", "Hiszpania"],
-      filterValues: ["Polska", "Hiszpania"],
+      options: countryOptions,
+      filterValues: countryOptions,
       filterKey: "countryOfOrigin",
       filterAction: setCountryOfOriginFilter,
     },

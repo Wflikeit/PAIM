@@ -7,11 +7,13 @@ import { removeFromCart, updateCartItemQuantity } from "../model/cardItem.ts";
 import WestIcon from "@mui/icons-material/West";
 import CartItemsHeader from "../components/cart/CartItemsHeader.tsx";
 import CartItem from "../components/cart/CartItem.tsx";
+import {TOKEN_KEY} from "../auth/authService.ts";
 
 const CheckoutPage: React.FC = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items); // Access Redux state
   const dispatch = useDispatch();
   const currency: string = "zł";
+
 
   const handleQuantityChange = (id: string, quantity: number) => {
     if (quantity > 0) {
@@ -19,6 +21,7 @@ const CheckoutPage: React.FC = () => {
     }
     return dispatch(removeFromCart(id));
   };
+
 
   // Calculate the total price from the Redux cart items
   const totalPrice = cartItems.reduce(
@@ -90,7 +93,7 @@ const CheckoutPage: React.FC = () => {
         >
           <WestIcon fontSize="small" /> Continue Shopping
         </Link>
-        <Link color="primary" to={"/checkout"}>
+        <Link color="primary" to={ localStorage.getItem(TOKEN_KEY) ? "/checkout" : "/login"} >
           Checkout
         </Link>
       </Box>

@@ -21,22 +21,17 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<CartItemModel>) => {
-      console.log(
-        "Before adding item:",
-        JSON.parse(JSON.stringify(state.items)),
-      );
       const existingItem = state.items.find(
         (item) => item.id === action.payload.id,
       );
       if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity += action.payload.quantity;
       } else {
-        state.items.push({ ...action.payload, quantity: 1 });
+        state.items.push({
+          ...action.payload,
+          quantity: action.payload.quantity,
+        });
       }
-      console.log(
-        "After adding item:",
-        JSON.parse(JSON.stringify(state.items)),
-      );
     },
 
     removeFromCart: (state, action: PayloadAction<string>) => {

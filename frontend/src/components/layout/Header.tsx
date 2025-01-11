@@ -1,9 +1,15 @@
+import React, { useEffect, useMemo } from "react";
 import UserActionsWrapper from "./UserActionsWrapper.tsx";
 import Logo from "./Logo.tsx";
-import React from "react";
 import HeaderLink from "./HeaderLink.tsx";
+import { getUserFromToken } from "../../auth/authService.ts";
 
-const Header = () => {
+const Header: React.FC = () => {
+  const user = useMemo(() => getUserFromToken(), []);
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
   return (
     <header className="layout__header">
       <Logo />
@@ -20,7 +26,7 @@ const Header = () => {
         <HeaderLink to="/about" text="About" />
         <HeaderLink to="/" text="Products" />
       </div>
-      <UserActionsWrapper user={undefined} />
+      <UserActionsWrapper user={user} />
     </header>
   );
 };

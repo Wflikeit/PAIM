@@ -1,21 +1,25 @@
 from dependency_injector.wiring import inject, Provide
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi.security import HTTPAuthorizationCredentials
 from starlette.requests import Request
 
+from application.auth.auth_service import AuthService
 from application.product.product_service import ProductService
 from application.responses import ProductResponse
 from domain.product import Product
 from infrastructure.containers import Container
 
-router = APIRouter()
+product_router = APIRouter()
 
 
-@router.post("/upload", response_model=ProductResponse)
+@product_router.post("/upload")
 @inject
 async def upload_product_endpoint(
     request: Request,
     product_service: ProductService = Depends(Provide[Container.product_service]),
+    credentials: HTTPAuthorizationCredentials = Security(AuthService.security),
 ) -> ProductResponse:
+    AuthService.is_admin(credentials=credentials)
     data = await request.form()
     file = data["file"]
 
@@ -26,7 +30,7 @@ async def upload_product_endpoint(
     return await product_service.upload_product(product)
 
 
-@router.get("/products/{product_id}", response_model=dict)
+@product_router.get("/products/{product_id}", response_model=dict)
 @inject
 async def get_product(
     product_id: str,
@@ -35,7 +39,7 @@ async def get_product(
     return {"product": product_service.get_product(product_id)}
 
 
-@router.get("/products", response_model=dict)
+@product_router.get("/products", response_model=dict)
 @inject
 async def get_products(
     product_service: ProductService = Depends(Provide[Container.product_service]),

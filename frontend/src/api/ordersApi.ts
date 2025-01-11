@@ -1,5 +1,5 @@
 import axios from "axios";
-import {BACKEND_URL} from "./productsApi.ts";
+import {BACKEND_URL} from "../hooks/useProducts.ts";
 
 export const placeOrder = (orderDetails: any) => {
   return axios.post(BACKEND_URL + "/api/order", orderDetails);
