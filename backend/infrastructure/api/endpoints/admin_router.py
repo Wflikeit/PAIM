@@ -1,11 +1,12 @@
+from datetime import datetime
+
+from dependency_injector.wiring import Provide
 from fastapi import APIRouter, Depends
 
 from application.auth.auth_service import AuthService
+from application.order.order_service import OrderService
+from infrastructure.containers import Container
 
 admin_router = APIRouter()
 
 
-@admin_router.get("/stats", dependencies=[Depends(AuthService.is_admin)])
-async def admin_stats():
-    stats = {"users": 100, "products": 50}
-    return stats
