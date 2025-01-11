@@ -1,15 +1,14 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr
-
-from application.responses import AddressResponse
-from domain.address import Address
+from pydantic.v1 import Field
 
 
 class Client(BaseModel):
     email: EmailStr
-    payment_address: Address | AddressResponse
-    delivery_address: Address | AddressResponse
-    nip: Optional[str] = ""
+    payment_address: Optional[str] = ""
+    delivery_address: Optional[str] = ""
+    nip: str
+    orders: Optional[List[str]] = Field(default_factory=list)
     password: str
-    company_name: Optional[str] = ""
+    company_name: str

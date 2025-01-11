@@ -21,19 +21,19 @@ class ClientResponse(BaseModel):
     email: EmailStr
     payment_address: str
     delivery_address: str
-    nip: Optional[str] = ""
-    orders: Optional[List[str]] = Field(default_factory=list)
-    company_name: Optional[str] = ""
+    nip: str
+    orders: List[str]
+    company_name: str
 
 
-class SuccessfullRegisterClientResponse(BaseModel):
+class SuccessfulRegisterClientResponse(BaseModel):
     id: str
     email: EmailStr
     payment_address: str
     delivery_address: str
-    nip: Optional[str] = ""
-    orders: Optional[List[str]] = Field(default_factory=list)
-    company_name: Optional[str] = ""
+    nip: str
+    orders: List[str]
+    company_name: str
     access_token: str
 
 

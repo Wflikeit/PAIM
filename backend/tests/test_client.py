@@ -1,4 +1,5 @@
 import os
+import uuid
 from unittest.mock import AsyncMock
 
 import pytest
@@ -53,7 +54,7 @@ def mocked_address_repository():
 def client_data():
     """Fixture returning data for a test client."""
     return {
-        "email": "test2@mail.com",
+        "email": f"{uuid.uuid4()}@mail.com",
         "payment_address": {
             "street": "mock_street",
             "house_number": 1,
@@ -75,11 +76,12 @@ def client_data():
 
 
 @pytest.fixture(scope="module")
-def mock_client_data():
+def mock_client_data(client_data):
     """Fixture returning mock client data from the database."""
+    email = client_data["email"]
     return {
         "id": str(ObjectId()),
-        "email": "test2@mail.com",
+        "email": email,
         "payment_address": "677c93c830eee19537733a61",
         "delivery_address": "677c93c830eee19537733a61",
         "nip": "0123456789",
@@ -258,7 +260,9 @@ async def test_get_client_success_end_to_end(
     mock_client_data, test_container, test_client, mock_client_response, jwt_token
 ):
     """End-to-end test for getting client from /client/{client_id} endpoint."""
-    client_id = "6781710ec05abea3effa75b3"
+    client_id = "6782df91e0d7d9413cfc6886"
+    mock_client_data["email"] = "fb77ad42-efc2-4fc6-8785-c4639304eba1@mail.com"
+
     test_container.client_service.override(
         ClientService(
             client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo()

@@ -1,5 +1,7 @@
 from typing import Any
 
+from pydantic import EmailStr
+
 
 class RepositoryError(Exception):
     def __init__(self, message: str):
@@ -28,9 +30,14 @@ class InvalidDateType(RepositoryError):
         )
 
 
-class EntityLinkError(RepositoryError):
-    def __init__(self, entity1: str, entity2: str):
-        super().__init__(f"Failed to link {entity1} to {entity2}")
+class FailedToUpdateError(RepositoryError):
+    def __init__(self, field: str, entity: str):
+        super().__init__(f"Failed to update {field} in {entity}")
+
+
+class EmailNotUniqueError(RepositoryError):
+    def __init__(self, email: EmailStr):
+        super().__init__(f"E-mail: {email} is already in use")
 
 
 class BusinessLogicError(Exception):
