@@ -43,3 +43,8 @@ export const useGetOrders = (startDate: Date | null, endDate: Date | null) => {
     },
   );
 };
+
+export const fetchUnavailableDates = async (): Promise<{ dates: string[] }> => {
+  const response = await axios.get(BACKEND_URL + "/api/checkout");
+  return response.data;
+};

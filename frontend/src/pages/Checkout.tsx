@@ -6,9 +6,9 @@ import { RootState } from "../redux/store.ts";
 import WestIcon from "@mui/icons-material/West";
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { useMutation } from "react-query";
-import { placeOrder } from "../api/ordersApi.ts";
-import { getUserFromToken, LoggedInUser } from "../auth/authService.ts";
+import { useMutation, useQuery } from "react-query";
+import { fetchUnavailableDates, placeOrder } from "../api/ordersApi.ts";
+import { getUserFromToken } from "../auth/authService.ts";
 
 const CheckoutPage: React.FC = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -32,11 +32,12 @@ const CheckoutPage: React.FC = () => {
     deliveryDate: "",
   });
 
-  const busyDays = [
-    new Date(2025, 0, 10),
-    new Date(2025, 0, 15),
-    new Date(2025, 0, 20),
-  ];
+  const { data: busyDaysData } = useQuery("busyDays", fetchUnavailableDates, {
+    staleTime: 60000,
+  });
+
+  const busyDays =
+    busyDaysData?.dates?.map((dateStr: string) => new Date(dateStr)) || [];
 
   const isDayDisabled = (date: Date) => {
     return busyDays.some(
@@ -115,7 +116,7 @@ const CheckoutPage: React.FC = () => {
       products: mappedCartItems,
       delivery_address: mappedShippingAddress,
       order_status: "pending",
-      email: user.email,
+      email: user?.email || "No Email",
       route_length: "1000",
     };
 
