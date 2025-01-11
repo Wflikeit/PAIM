@@ -1,36 +1,41 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi import Request
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 
-router = APIRouter()
+from application.auth.auth_service import AuthService
+from infrastructure.api.exception_handler import create_credentials_exception
+from infrastructure.mongo.mongo_client import MongoDBClient
 
-fake_users_db = {"admin@gmail.com": {"email": "admin@gmail.com", "role": "admin"}}
-
-
-def get_current_user(request: Request):
-    user_email = request.headers.get("X-User-Email")
-    if not user_email or user_email not in fake_users_db:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: unauthorized user",
-        )
-    return fake_users_db[user_email]
+auth_router = APIRouter()
+admin_collection = MongoDBClient.get_collection("admins")
+client_collection = MongoDBClient.get_collection("clients")
 
 
-def is_admin(user: dict = Depends(get_current_user)):
-    if user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: user is not an admin",
-        )
-    return user
+@auth_router.post("/token")
+async def login_for_access_token(email: str, password: str):
+    user = AuthService.authenticate_user(
+        email, password, client_collection, admin_collection
+    )
+    if not user:
+        raise create_credentials_exception
+    # Generate token
+    access_token = AuthService.generate_token_for_user(user)
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/")
-async def admin_home(user: dict = Depends(is_admin)):
-    return {"message": "Welcome to the Admin Page"}
+@auth_router.post("/login")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = AuthService.authenticate_user(
+        form_data.username, form_data.password, admin_collection, client_collection
+    )
+    if not user:
+        raise create_credentials_exception
 
+    access_token = AuthService.create_access_token(
+        data={
+            "email": user["email"],
+            "role": user.get("role"),
+        }
+    )
+    print(f"Generated access token: {access_token}")
 
-@router.get("/stats")
-async def admin_stats(user: dict = Depends(is_admin)):
-    stats = {"users": 100, "products": 50}
-    return stats
+    return {"access_token": access_token, "token_type": "bearer"}

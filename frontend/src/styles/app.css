@@ -74,6 +74,20 @@ button:focus-visible {
 }
 
 
+.photo__wrapper {
+  background-color: #f44336; /* Replace with red[500] equivalent */
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px; /* Adjust as needed */
+  height: 50px; /* Adjust as needed */
+  border-radius: 50%; /* Makes it circular */
+  font-size: 18px; /* Adjust font size as needed */
+  color: white; /* Text color */
+  border: none; /* Removes border */
+  cursor: pointer; /* Adds a pointer on hover */
+}
 
 button.delete {
     background-color: #f44336;
@@ -188,12 +202,18 @@ button.login {
         margin: auto 0;
 
         .photo__wrapper {
+            border-radius: 50%;
+            background-color: #f44336;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 22px;
             border: none;
-            border-radius: 5rem;
-            color: rgb(255, 255, 255);
             cursor: pointer;
-            height: 40px;
-            width: 40px;
 
             &:hover {
                 background-color: #bdbdbd;
@@ -207,6 +227,7 @@ button.login {
     background: white;
     border: none;
     cursor: pointer;
+    color: #1a1a1a;
     font-weight: normal;
     height: 4.5rem;
     padding: 1rem 7rem 1rem 1rem;

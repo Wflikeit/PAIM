@@ -3,13 +3,17 @@ import { Box } from "@mui/material";
 import HeaderLink from "./HeaderLink.tsx";
 import ShoppingCartMiniature from "./ShoppingCartMiniature.tsx";
 import ProfilePhotoWrapper from "./ProfilePhotoWrapper.tsx";
+import {LoggedInUser} from "../../auth/authService.ts";
+import {UserRole} from "../../auth/UserRole.ts";
 
-export interface LoggedInUser {
-  email: string;
-  role: string;
+
+
+interface UsersActionWrapperProps {
+  user?: LoggedInUser;
 }
 
-export default function UserActionsWrapper({ user }: { user?: LoggedInUser }) {
+const UserActionsWrapper: React.FC<UsersActionWrapperProps> = ({ user }) => {
+
   return (
     <div className="icon__wrapper">
       <Box sx={{ display: "flex", gap: 2, height: "3rem" }}>
@@ -20,9 +24,11 @@ export default function UserActionsWrapper({ user }: { user?: LoggedInUser }) {
           </>
         )}
 
-        {user && <ProfilePhotoWrapper user={user}/>}
-        <ShoppingCartMiniature />
+          {user && <ProfilePhotoWrapper user={user} />}
+          {(!user || user.role !== UserRole.ADMIN) && <ShoppingCartMiniature />}
       </Box>
     </div>
   );
-}
+};
+
+export default UserActionsWrapper;

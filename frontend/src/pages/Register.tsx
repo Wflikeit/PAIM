@@ -1,173 +1,321 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import registerClients from "../hooks/registerClients";
+import { Client } from "../model/client.ts";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
   const { addClient } = registerClients();
+  const navigate = useNavigate(); // React Router hook for navigation
+
   const [email, setEmail] = useState<string>("");
-  const [payment_address, setPaymentAddress] = useState<string>("");
-  const [delivery_address, setDeliveryAddress] = useState<string>("");
+  const [paymentAddressVoivodeship, setPaymentAddressVoivodeship] =
+    useState<string>("");
+  const [paymentAddressCity, setPaymentAddressCity] = useState<string>("");
+  const [paymentAddressStreet, setPaymentAddressStreet] = useState<string>("");
+  const [paymentAddressStreetNumber, setPaymentAddressStreetNumber] =
+    useState<string>("");
+  const [paymentAddressPostalCode, setPaymentAddressPostalCode] =
+    useState<string>("");
+  const [deliveryAddressVoivodeship, setDeliveryAddressVoivodeship] =
+    useState<string>("");
+  const [deliveryAddressCity, setDeliveryAddressCity] = useState<string>("");
+  const [deliveryAddressStreet, setDeliveryAddressStreet] =
+    useState<string>("");
+  const [deliveryAddressStreetNumber, setDeliveryAddressStreetNumber] =
+    useState<string>("");
+  const [deliveryAddressPostalCode, setDeliveryAddressPostalCode] =
+    useState<string>("");
   const [nip, setNip] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [company_name, setCompanyName] = useState<string>("");
-  const [orders, setOrders] = useState<string>(""); // Added orders state
   const [error, setError] = useState<string>("");
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (
-        !email ||
-        !password ||
-        !company_name ||
-        !nip ||
-        !payment_address ||
-        !delivery_address
+      !email ||
+      !paymentAddressVoivodeship ||
+      !paymentAddressCity ||
+      !paymentAddressStreet ||
+      !paymentAddressStreetNumber ||
+      !paymentAddressPostalCode ||
+      !deliveryAddressVoivodeship ||
+      !deliveryAddressCity ||
+      !deliveryAddressStreet ||
+      !deliveryAddressStreetNumber ||
+      !deliveryAddressPostalCode ||
+      !nip ||
+      !password ||
+      !company_name
     ) {
-      setError("Proszę wypełnić wszystkie pola");
+      setError("Please fill all of the fields");
       return;
     }
 
     setError("");
 
-    const newClient = {
+    const newClient: Client = {
       email,
-      payment_address,
-      delivery_address,
+      payment_address: {
+        voivodeship: paymentAddressVoivodeship,
+        city: paymentAddressCity,
+        street: paymentAddressStreet,
+        postal_code: paymentAddressPostalCode,
+        house_number: paymentAddressStreetNumber,
+      },
+      delivery_address: {
+        voivodeship: deliveryAddressVoivodeship,
+        city: deliveryAddressCity,
+        street: deliveryAddressStreet,
+        postal_code: deliveryAddressPostalCode,
+        house_number: deliveryAddressStreetNumber,
+      },
       nip,
       password,
       company_name,
-      orders: orders || "[]", // Ensure orders field is provided as an empty array if not set
     };
-
-    console.log("Form data to be sent:", newClient);
 
     try {
       await addClient(newClient);
-      console.log("Zarejestrowano:", newClient);
-
       setEmail("");
-      setPaymentAddress("");
-      setDeliveryAddress("");
+      setDeliveryAddressCity("");
+      setDeliveryAddressPostalCode("");
+      setDeliveryAddressStreet("");
+      setDeliveryAddressStreetNumber("");
+      setDeliveryAddressVoivodeship("");
+      setPaymentAddressCity("");
+      setPaymentAddressPostalCode("");
+      setPaymentAddressStreet("");
+      setPaymentAddressStreetNumber("");
+      setPaymentAddressVoivodeship("");
       setNip("");
       setPassword("");
       setCompanyName("");
-      setOrders(""); // Reset orders
+      navigate("/checkout"); // Navigate back to the previous URL
     } catch (error) {
-      setError("Wystąpił błąd podczas rejestracji klienta: " + error);
+      setError("There was an error while registering a client: " + error);
     }
   };
 
   return (
+    <main style={{ overflowY: "scroll" }}>
       <Box
-          sx={{
-            padding: "16px",
-            color: "black",
-            margin: "5dvh auto",
-            maxWidth: "30rem",
-            minWidth: "20rem",
-          }}
+        style={{
+          padding: "16px",
+          color: "black",
+          margin: "5dvh auto",
+          maxWidth: "30rem",
+          minWidth: "20rem",
+        }}
       >
         <Box>
           <form onSubmit={handleSubmit}>
             <Typography
-                variant="h3"
-                gutterBottom
-                style={{ color: "black", textAlign: "center" }}
-                sx={{ paddingTop: "60px" }}
+              variant="h3"
+              gutterBottom
+              style={{ color: "black", textAlign: "center" }}
+              sx={{ paddingTop: "60px", marginBottom: "4rem" }}
             >
               Create account
             </Typography>
-
-            <TextField
+            <Stack spacing={3}>
+              <TextField
                 label="Email"
                 variant="outlined"
                 fullWidth
-                margin="normal"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 size="small"
-            />
+              />
 
-            <TextField
+              <TextField
                 label="NIP"
                 variant="outlined"
                 fullWidth
-                margin="normal"
                 value={nip}
                 onChange={(e) => setNip(e.target.value)}
                 size="small"
-            />
+              />
 
-            <TextField
-                label="Nazwa firmy"
+              <TextField
+                label="Company Name"
                 variant="outlined"
                 fullWidth
-                margin="normal"
                 value={company_name}
                 onChange={(e) => setCompanyName(e.target.value)}
                 size="small"
-            />
+              />
+              <Accordion sx={{ marginTop: "1.2rem", borderRadius: ".25rem" }}>
+                <AccordionSummary
+                  expandIcon={<ArrowDownwardIcon />}
+                  aria-controls="panel1-content"
+                  id="panel1a-header"
+                >
+                  Payment Address
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Stack spacing={2}>
+                  <TextField
+                    label="Voivodeship"
+                    variant="outlined"
+                    fullWidth
+                    value={paymentAddressVoivodeship}
+                    onChange={(e) =>
+                      setPaymentAddressVoivodeship(e.target.value)
+                    }
+                    size="small"
+                  />
+                  <TextField
+                    label="City"
+                    variant="outlined"
+                    fullWidth
+                    value={paymentAddressCity}
+                    onChange={(e) => setPaymentAddressCity(e.target.value)}
+                    size="small"
+                  />
+                  <TextField
+                    label="Street"
+                    variant="outlined"
+                    fullWidth
+                    value={paymentAddressStreet}
+                    onChange={(e) => setPaymentAddressStreet(e.target.value)}
+                    size="small"
+                  />
+                  <TextField
+                    label="Building Number"
+                    variant="outlined"
+                    fullWidth
+                    value={paymentAddressStreetNumber}
+                    onChange={(e) =>
+                      setPaymentAddressStreetNumber(e.target.value)
+                    }
+                    size="small"
+                  />
 
-            <TextField
-                label="Adres płatności (oddziel przecinkami)"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={payment_address}
-                onChange={(e) => setPaymentAddress(e.target.value)}
-                size="small"
-            />
+                  <TextField
+                    label="Postal Code"
+                    variant="outlined"
+                    fullWidth
+                    value={paymentAddressPostalCode}
+                    onChange={(e) =>
+                      setPaymentAddressPostalCode(e.target.value)
+                    }
+                    size="small"
+                  />
+                    </Stack>
+                </AccordionDetails>
+              </Accordion>
 
-            <TextField
-                label="Adres dostawy (oddziel przecinkami)"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={delivery_address}
-                onChange={(e) => setDeliveryAddress(e.target.value)}
-                size="small"
-            />
+              <Accordion
+                sx={{
+                  marginTop: "1.9rem",
+                  borderRadius: ".25rem",
+                  marginBottom: ".8rem",
+                }}
+              >
+                <AccordionSummary
+                  expandIcon={<ArrowDownwardIcon />}
+                  aria-controls="panel1-content"
+                  id="panel1a-header"
+                >
+                  Delivery Address
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Stack spacing={2}>
 
-            <TextField
-                label="Hasło"
+                  <TextField
+                    label="Voivodeship"
+                    variant="outlined"
+                    fullWidth
+                    value={deliveryAddressVoivodeship}
+                    onChange={(e) =>
+                      setDeliveryAddressVoivodeship(e.target.value)
+                    }
+                    size="small"
+                  />
+                  <TextField
+                    label="City"
+                    variant="outlined"
+                    fullWidth
+                    value={deliveryAddressCity}
+                    onChange={(e) => setDeliveryAddressCity(e.target.value)}
+                    size="small"
+                  />
+                  <TextField
+                    label="Street"
+                    variant="outlined"
+                    fullWidth
+                    value={deliveryAddressStreet}
+                    onChange={(e) => setDeliveryAddressStreet(e.target.value)}
+                    size="small"
+                  />
+                  <TextField
+                    label="Building Number"
+                    variant="outlined"
+                    fullWidth
+                    value={deliveryAddressStreetNumber}
+                    onChange={(e) =>
+                      setDeliveryAddressStreetNumber(e.target.value)
+                    }
+                    size="small"
+                  />
+
+                  <TextField
+                    label="Postal Code"
+                    variant="outlined"
+                    fullWidth
+                    value={deliveryAddressPostalCode}
+                    onChange={(e) =>
+                      setDeliveryAddressPostalCode(e.target.value)
+                    }
+                    size="small"
+                  />
+                    </Stack>
+                </AccordionDetails>
+              </Accordion>
+
+              <TextField
+                label="Password"
                 type="password"
                 variant="outlined"
                 fullWidth
-                margin="normal"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 size="small"
-            />
+              />
 
-            <TextField
-                label="Zamówienia (opcjonalne)"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={orders}
-                onChange={(e) => setOrders(e.target.value)}
-                size="small"
-            />
-
-            {error && (
+              {error && (
                 <Typography variant="body2" color="error" gutterBottom>
                   {error}
                 </Typography>
-            )}
+              )}
 
-            <Button
+              <Button
                 type="submit"
                 className="register"
                 variant="contained"
                 sx={{ backgroundColor: "#388e3c", marginTop: "1rem" }}
                 fullWidth
-            >
-              Register
-            </Button>
+              >
+                Register
+              </Button>
+            </Stack>
           </form>
         </Box>
       </Box>
+    </main>
   );
 };
 

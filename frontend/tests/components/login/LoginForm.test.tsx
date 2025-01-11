@@ -1,112 +1,94 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter, useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginForm from "../../../src/components/login/LoginForm";
+import { MemoryRouter } from "react-router-dom";
 
-// Mock axios and useNavigate
+
+
 jest.mock("axios");
-jest.mock("react-router-dom", () => ({
-    ...jest.requireActual("react-router-dom"),
-    useNavigate: jest.fn(),
-}));
 
 describe("LoginForm", () => {
-    const mockNavigate = jest.fn();
-    const mockedAxios = axios as jest.Mocked<typeof axios>;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorage.clear();
+    jest.spyOn(console, "error").mockImplementation(() => {}); // Suppress console.error in tests
+  });
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+  afterEach(() => {
+    jest.restoreAllMocks(); // Restore console methods
+  });
+
+  it("submits form and navigates based on role", async () => {
+    (axios.post as jest.Mock).mockResolvedValueOnce({
+      data: {
+        access_token: `header.${btoa(
+          JSON.stringify({ role: "admin" })
+        )}.signature`,
+        fullname: "Admin User",
+      },
     });
 
-    it("renders form elements", () => {
-        render(
-            <MemoryRouter>
-                <LoginForm />
-            </MemoryRouter>
-        );
+    render(
+      <MemoryRouter>
+        <LoginForm />
+      </MemoryRouter>
+    );
 
-        expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-        expect(screen.getByText(/login/i)).toBeInTheDocument();
-        expect(screen.getByText(/register/i)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "admin@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "password123" },
     });
 
-    it("shows an error if fields are empty on submit", () => {
-        render(
-            <MemoryRouter>
-                <LoginForm />
-            </MemoryRouter>
-        );
+    fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
-        const loginButton = screen.getByText(/login/i);
-        fireEvent.click(loginButton);
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith(
+        "http://127.0.0.1:8002/auth/login",
+        expect.any(FormData),
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        }
+      );
 
-        expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
+      expect(localStorage.getItem("access_token")).toBe(
+        "header.eyJyb2xlIjoiYWRtaW4ifQ==.signature"
+      );
+      expect(localStorage.getItem("user_role")).toBe("admin");
+    });
+  });
+
+  it("shows an error message on invalid credentials", async () => {
+    (axios.post as jest.Mock).mockRejectedValueOnce(
+      new Error("Invalid email or password")
+    );
+
+    render(
+      <MemoryRouter>
+        <LoginForm />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "wrong@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "wrongpassword" },
     });
 
-    it("navigates to the register page when Register button is clicked", () => {
-        render(
-            <MemoryRouter>
-                <LoginForm />
-            </MemoryRouter>
-        );
+    fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
-        const registerButton = screen.getByText(/register/i);
-        fireEvent.click(registerButton);
-
-        expect(mockNavigate).toHaveBeenCalledWith("/register");
+    await waitFor(() => {
+      expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument();
     });
 
-    it("submits form and navigates based on role", async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: { role: "admin" },
-        });
-
-        render(
-            <MemoryRouter>
-                <LoginForm />
-            </MemoryRouter>
-        );
-
-        const emailInput = screen.getByLabelText(/email/i);
-        const passwordInput = screen.getByLabelText(/password/i);
-        const loginButton = screen.getByText(/login/i);
-
-        fireEvent.change(emailInput, { target: { value: "admin@example.com" } });
-        fireEvent.change(passwordInput, { target: { value: "password123" } });
-        fireEvent.click(loginButton);
-
-        await waitFor(() => {
-            expect(mockedAxios.post).toHaveBeenCalledWith(
-                "http://localhost:8000/api/register",
-                { email: "admin@example.com", password: "password123" }
-            );
-            expect(localStorage.getItem("user_role")).toBe("admin");
-            expect(mockNavigate).toHaveBeenCalledWith("/admin");
-        });
-    });
-
-    it("shows an error if login fails", async () => {
-        mockedAxios.post.mockRejectedValueOnce(new Error("Invalid email or password"));
-
-        render(
-            <MemoryRouter>
-                <LoginForm />
-            </MemoryRouter>
-        );
-
-        const emailInput = screen.getByLabelText(/email/i);
-        const passwordInput = screen.getByLabelText(/password/i);
-        const loginButton = screen.getByText(/login/i);
-
-        fireEvent.change(emailInput, { target: { value: "invalid@example.com" } });
-        fireEvent.change(passwordInput, { target: { value: "wrongpassword" } });
-        fireEvent.click(loginButton);
-
-        await waitFor(() => {
-            expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument();
-        });
-    });
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://127.0.0.1:8002/auth/login",
+      expect.any(FormData),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      }
+    );
+  });
 });

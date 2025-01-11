@@ -88,7 +88,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           Type: {fruit_or_vegetable}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Expiration date: {expiry_date}
+          Expiration date: {new Date(expiry_date).toLocaleDateString()}
         </Typography>
         <Typography variant="h6" color="text.primary">
           Price: {price} zł/kg

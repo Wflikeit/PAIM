@@ -32,10 +32,6 @@ const cartSlice = createSlice({
           quantity: action.payload.quantity,
         });
       }
-      // console.log(
-      //   "After adding item:",
-      //   JSON.parse(JSON.stringify(state.items)),
-      // );
     },
 
     removeFromCart: (state, action: PayloadAction<string>) => {
