@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import List
-from xmlrpc.client import DateTime
 
 from application.client.client_repository import AbstractClientRepository
 from application.order.order_repository import AbstractOrderRepository

@@ -1,13 +1,11 @@
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from domain.exceptions import RepositoryError, BusinessLogicError
-from infrastructure.api.endpoints.order_router import order_router
-
-from application.auth.auth_service import AuthService
 from infrastructure.api.endpoints.auth_router import auth_router
 from infrastructure.api.endpoints.client_router import client_router
+from infrastructure.api.endpoints.order_router import order_router
 from infrastructure.api.endpoints.product_router import product_router
 from infrastructure.api.exception_handler import (
     repository_exception_handler,
