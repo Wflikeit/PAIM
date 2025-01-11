@@ -59,6 +59,12 @@ class OrderResponse(BaseModel):
     route_length: float
 
 
+class OrderSummaryForRegionResponse(BaseModel):
+    amount: float
+    region: str
+    order_count: int
+
+
 class WarehouseResponse(BaseModel):
     id: str
     address: str

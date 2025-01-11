@@ -1,8 +1,12 @@
+from datetime import datetime
+from typing import List
+
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 
+from application.auth.auth_service import AuthService
 from application.order.order_service import OrderService
-from application.responses import OrderResponse
+from application.responses import OrderResponse, OrderSummaryForRegionResponse
 from domain.order import Order
 from infrastructure.containers import Container
 
@@ -16,6 +20,20 @@ async def add_order_endpoint(
     order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> OrderResponse:
     return order_service.add_order(order)
+
+
+@order_router.get(
+    "/orders/stats",
+    dependencies=[Depends(AuthService.is_admin)],
+    response_model=List[OrderSummaryForRegionResponse],
+)
+@inject
+async def admin_stats(
+    start_date: datetime,
+    end_date: datetime,
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+) -> List[OrderSummaryForRegionResponse]:
+    return order_service.get_orders_report_for_period(start_date, end_date)
 
 
 @order_router.get("/orders/{order_id}", response_model=dict)
