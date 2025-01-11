@@ -59,11 +59,7 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         self, start_date: datetime, end_date: datetime
     ) -> List[OrderSummaryForRegionResponse]:
         pipeline = [
-            {
-                "$match": {
-                    "delivery_date": {"$gte": start_date, "$lte": end_date}
-                }
-            },
+            {"$match": {"delivery_date": {"$gte": start_date, "$lte": end_date}}},
             {
                 "$group": {
                     "_id": "$delivery_address",  # Grupujemy po delivery_address
@@ -76,12 +72,12 @@ class OrderRepositoryMongo(AbstractOrderRepository):
                     "_id": 0,
                     "region": "$_id",  # Nazwa klucza, pod którą zwrócimy delivery_address
                     "amount": "$total_amount",  # Suma kwot (z pola amount)
-                    "order_count": 1  # Liczba zamówień
+                    "order_count": 1,  # Liczba zamówień
                 }
-            }
+            },
         ]
 
-        result =  list(self.order_collection.aggregate(pipeline))
+        result = list(self.order_collection.aggregate(pipeline))
         return [OrderSummaryForRegionResponse(**doc) for doc in result]
 
     def update_order_status_db(self, order_id: str, status: str) -> bool:

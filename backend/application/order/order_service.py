@@ -4,7 +4,11 @@ from xmlrpc.client import DateTime
 
 from application.client.client_repository import AbstractClientRepository
 from application.order.order_repository import AbstractOrderRepository
-from application.responses import OrderResponse, WarehouseResponse, OrderSummaryForRegionResponse
+from application.responses import (
+    OrderResponse,
+    WarehouseResponse,
+    OrderSummaryForRegionResponse,
+)
 from application.truck.truck_repository import AbstractTruckRepository
 from application.warehouse.warehouse_repository import AbstractWarehouseRepository
 from domain.exceptions import UnableToRealizeOrderError
@@ -215,6 +219,7 @@ class OrderService:
             raise Exception("Failed to mark order as complete")
         return OrderResponse(**order_data)
 
-    def get_orders_report_for_period(self, start_date: datetime, end_date: datetime ) -> List[OrderSummaryForRegionResponse]:
+    def get_orders_report_for_period(
+        self, start_date: datetime, end_date: datetime
+    ) -> List[OrderSummaryForRegionResponse]:
         return self._order_repo.get_orders_summary_by_region(start_date, end_date)
-

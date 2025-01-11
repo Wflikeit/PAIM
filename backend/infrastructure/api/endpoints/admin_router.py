@@ -8,5 +8,3 @@ from application.order.order_service import OrderService
 from infrastructure.containers import Container
 
 admin_router = APIRouter()
-
-
