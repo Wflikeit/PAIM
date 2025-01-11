@@ -37,14 +37,12 @@ const Admin = () => {
     endDate: null,
   });
 
-  // data is inferred as OrderReportItem[]
   const {
     data = [],
     isLoading,
     isError,
   } = useGetOrders(filters.startDate, filters.endDate);
 
-  // Build chart data
   const transportBarChartData = {
     labels: data.map((row: OrderReportItem) => row.region),
     datasets: [
@@ -69,6 +67,7 @@ const Admin = () => {
 
   const chartOptions: ChartOptions<"bar"> = {
     responsive: true,
+
     plugins: {
       legend: {
         position: "top",
@@ -82,7 +81,7 @@ const Admin = () => {
 
   return (
     <Box sx={{ padding: "16px" }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" color={"black"} sx={{marginBottom:"2rem", marginTop:"1rem", textAlign:"center"}}>
         Admin Panel - Reports
       </Typography>
 
@@ -113,11 +112,9 @@ const Admin = () => {
         </LocalizationProvider>
       </Box>
 
-      {/* Loading / Error states */}
       {isLoading && <Typography>Loading data...</Typography>}
       {isError && <Typography color="error">Error fetching data</Typography>}
 
-      {/* Charts */}
       <Box sx={{ display: "flex", gap: "24px", marginBottom: "24px" }}>
         <Box sx={{ flex: 1, height: "400px" }}>
           <Bar data={transportBarChartData} options={chartOptions} />
@@ -127,7 +124,6 @@ const Admin = () => {
         </Box>
       </Box>
 
-      {/* Table */}
       <TableContainer component={Paper} sx={{ marginTop: "3rem" }}>
         <Table>
           <TableHead>
