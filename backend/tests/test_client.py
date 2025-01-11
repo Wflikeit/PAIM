@@ -13,7 +13,7 @@ from infrastructure.api.main import app
 from infrastructure.containers import Container
 from infrastructure.mongo.address_repository import AddressRepositoryMongo
 from infrastructure.mongo.client_repository import ClientRepositoryMongo
-from application.auth.auth import AuthService  # Import AuthService
+from application.auth.auth_service import AuthService  # Import AuthService
 
 os.environ["MONGO_DATABASE"] = "shop_db_dev"
 

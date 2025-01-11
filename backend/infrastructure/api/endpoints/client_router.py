@@ -1,23 +1,21 @@
 from dependency_injector.wiring import inject, Provide
-from fastapi import APIRouter, Depends
 from fastapi import APIRouter, Depends, Security
 from fastapi.security import HTTPAuthorizationCredentials
 from passlib.context import CryptContext
 
-from application.auth.auth import AuthService
+from application.auth.auth_service import AuthService
 from application.client.client_service import ClientService
 from application.responses import ClientResponse, SuccessfullRegisterClientResponse
 from domain.client import Client
-from infrastructure.api.endpoints.auth_router import admin_collection, client_collection
 from infrastructure.containers import Container
 
-router = APIRouter()
+client_router = APIRouter()
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
-@router.post("/register", response_model=SuccessfullRegisterClientResponse)
+@client_router.post("/register", response_model=SuccessfullRegisterClientResponse)
 @inject
 async def upload_client(
     client: Client,
@@ -40,7 +38,7 @@ async def upload_client(
     return SuccessfullRegisterClientResponse(**registered_client)
 
 
-@router.get("/clients/{client_id}", response_model=ClientResponse)
+@client_router.get("/clients/{client_id}", response_model=ClientResponse)
 @inject
 async def get_client(
     client_id: str,

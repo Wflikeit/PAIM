@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from application.auth.auth import AuthService
+from application.auth.auth_service import AuthService
 
-router = APIRouter()
+admin_router = APIRouter()
 
 
-@router.get("/stats", dependencies=[Depends(AuthService.is_admin)])
+@admin_router.get("/stats", dependencies=[Depends(AuthService.is_admin)])
 async def admin_stats():
     stats = {"users": 100, "products": 50}
     return stats

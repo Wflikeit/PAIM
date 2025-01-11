@@ -3,14 +3,13 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from domain.exceptions import RepositoryError, BusinessLogicError
-from infrastructure.api.endpoints.order_router import router as order_router
-from infrastructure.api.endpoints.auth_router import router as admin_router
-from application.auth.auth import AuthService
-from domain.exceptions import RepositoryError
-from infrastructure.api.endpoints.admin_router import router as admin_router
-from infrastructure.api.endpoints.auth_router import router as auth_router
-from infrastructure.api.endpoints.client_router import router as client_router
-from infrastructure.api.endpoints.product_router import router as product_router
+from infrastructure.api.endpoints.order_router import order_router
+
+from application.auth.auth_service import AuthService
+from infrastructure.api.endpoints.admin_router import admin_router
+from infrastructure.api.endpoints.auth_router import auth_router
+from infrastructure.api.endpoints.client_router import client_router
+from infrastructure.api.endpoints.product_router import product_router
 from infrastructure.api.exception_handler import (
     repository_exception_handler,
     business_logic_exception_handler,

@@ -1,16 +1,16 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
-from application.auth.auth import AuthService
+from application.auth.auth_service import AuthService
 from infrastructure.api.exception_handler import create_credentials_exception
 from infrastructure.mongo.mongo_client import MongoDBClient
 
-router = APIRouter()
+auth_router = APIRouter()
 admin_collection = MongoDBClient.get_collection("admins")
 client_collection = MongoDBClient.get_collection("clients")
 
 
-@router.post("/token")
+@auth_router.post("/token")
 async def login_for_access_token(email: str, password: str):
     user = AuthService.authenticate_user(
         email, password, client_collection, admin_collection
@@ -22,7 +22,7 @@ async def login_for_access_token(email: str, password: str):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/login")
+@auth_router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = AuthService.authenticate_user(
         form_data.username, form_data.password, admin_collection, client_collection
