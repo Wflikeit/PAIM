@@ -6,8 +6,8 @@ from bson import ObjectId
 from application.order.order_repository import AbstractOrderRepository
 from application.responses import OrderResponse, OrderSummaryForRegionResponse
 from domain.entities import Entity
-from domain.order import Order
 from domain.exceptions import InvalidIdError, EntityNotFoundError, InvalidDateType
+from domain.order import Order
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 
@@ -56,7 +56,7 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         return response_list
 
     def get_orders_summary_by_region(
-        self, start_date: datetime, end_date: datetime
+            self, start_date: datetime, end_date: datetime
     ) -> List[OrderSummaryForRegionResponse]:
         pipeline = [
             {"$match": {"delivery_date": {"$gte": start_date, "$lte": end_date}}},
@@ -70,9 +70,9 @@ class OrderRepositoryMongo(AbstractOrderRepository):
             {
                 "$project": {
                     "_id": 0,
-                    "region": "$_id",  # Nazwa klucza, pod którą zwrócimy delivery_address
-                    "amount": "$total_amount",  # Suma kwot (z pola amount)
-                    "order_count": 1,  # Liczba zamówień
+                    "region": "$_id",
+                    "amount": "$total_amount",
+                    "order_count": 1,
                 }
             },
         ]

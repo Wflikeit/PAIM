@@ -1,7 +1,7 @@
+// src/pages/Admin.tsx
 import React, { useState } from "react";
 import {
   Box,
-  Button,
   Paper,
   Table,
   TableBody,
@@ -24,6 +24,8 @@ import {
   Tooltip,
 } from "chart.js";
 
+import { OrderReportItem, useGetOrders } from "../api/ordersApi.ts"; // <-- import interface
+
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const Admin = () => {
@@ -34,59 +36,32 @@ const Admin = () => {
     startDate: null,
     endDate: null,
   });
-  const [data, setData] = useState([
-    {
-      numberOfTransports: 10,
-      transportValue: 5000,
-      destinationRegion: "Region A",
-      destinationDistrict: "District 1",
-    },
-    {
-      numberOfTransports: 15,
-      transportValue: 7500,
-      destinationRegion: "Region B",
-      destinationDistrict: "District 2",
-    },
-    {
-      numberOfTransports: 20,
-      transportValue: 10000,
-      destinationRegion: "Region C",
-      destinationDistrict: "District 3",
-    },
-  ]);
 
-  const fetchReports = async () => {
-    try {
-      // const response = await axios.get(`/api/orders/stats`, {
-      //   params: {
-      //     startDate: filters.startDate ? filters.startDate.toISOString() : undefined,
-      //     endDate: filters.endDate ? filters.endDate.toISOString() : undefined,
-      //   },
-      // });
-      // setData(response.data);
-      console.log("Fetching reports for filters:", filters);
-    } catch (error) {
-      console.error("Error fetching reports:", error);
-    }
-  };
+  // data is inferred as OrderReportItem[]
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useGetOrders(filters.startDate, filters.endDate);
 
+  // Build chart data
   const transportBarChartData = {
-    labels: data.map((row) => row.destinationRegion),
+    labels: data.map((row: OrderReportItem) => row.region),
     datasets: [
       {
-        label: "Number of Transports",
-        data: data.map((row) => row.numberOfTransports),
+        label: "Order Count",
+        data: data.map((row: OrderReportItem) => row.order_count),
         backgroundColor: "rgba(75, 192, 192, 0.6)",
       },
     ],
   };
 
   const valueBarChartData = {
-    labels: data.map((row) => row.destinationRegion),
+    labels: data.map((row: OrderReportItem) => row.region),
     datasets: [
       {
-        label: "Transport Value",
-        data: data.map((row) => row.transportValue),
+        label: "Income",
+        data: data.map((row: OrderReportItem) => row.amount),
         backgroundColor: "rgba(153, 102, 255, 0.6)",
       },
     ],
@@ -111,6 +86,7 @@ const Admin = () => {
         Admin Panel - Reports
       </Typography>
 
+      {/* Date pickers */}
       <Box
         sx={{
           display: "flex",
@@ -135,49 +111,38 @@ const Admin = () => {
             }
           />
         </LocalizationProvider>
-
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: "#177c1b" }}
-          onClick={fetchReports}
-        >
-          Generate Report
-        </Button>
       </Box>
 
+      {/* Loading / Error states */}
+      {isLoading && <Typography>Loading data...</Typography>}
+      {isError && <Typography color="error">Error fetching data</Typography>}
+
+      {/* Charts */}
       <Box sx={{ display: "flex", gap: "24px", marginBottom: "24px" }}>
         <Box sx={{ flex: 1, height: "400px" }}>
-          <Typography variant="h6" gutterBottom>
-            Number of Transports (Bar Chart)
-          </Typography>
           <Bar data={transportBarChartData} options={chartOptions} />
         </Box>
-
         <Box sx={{ flex: 1, height: "400px" }}>
-          <Typography variant="h6" gutterBottom>
-            Transport Value (Bar Chart)
-          </Typography>
           <Bar data={valueBarChartData} options={chartOptions} />
         </Box>
       </Box>
 
-      <TableContainer component={Paper}>
+      {/* Table */}
+      <TableContainer component={Paper} sx={{ marginTop: "3rem" }}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Number of Transports</TableCell>
               <TableCell>Transport Value</TableCell>
               <TableCell>Destination Region</TableCell>
-              <TableCell>Destination District</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row, index) => (
+            {data.map((row: OrderReportItem, index: number) => (
               <TableRow key={index}>
-                <TableCell>{row.numberOfTransports}</TableCell>
-                <TableCell>{row.transportValue}</TableCell>
-                <TableCell>{row.destinationRegion}</TableCell>
-                <TableCell>{row.destinationDistrict}</TableCell>
+                <TableCell>{row.order_count}</TableCell>
+                <TableCell>{row.amount}</TableCell>
+                <TableCell>{row.region}</TableCell>
               </TableRow>
             ))}
           </TableBody>
