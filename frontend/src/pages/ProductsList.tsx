@@ -3,9 +3,8 @@ import ProductCard from "../components/product/ProductCard.tsx";
 import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { useProducts } from "../hooks/useProducts.ts";
+import { useProducts, Product } from "../hooks/useProducts.ts";
 import { addToCart } from "../model/cardItem";
-import { Product } from "../api/productsApi.ts";
 
 const ProductsList: React.FC = () => {
   const { filters } = useSelector((state: RootState) => state.products);
