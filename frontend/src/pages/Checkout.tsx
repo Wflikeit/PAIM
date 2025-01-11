@@ -8,26 +8,27 @@ import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useMutation } from "react-query";
 import { placeOrder } from "../api/ordersApi.ts";
+import { getUserFromToken, LoggedInUser } from "../auth/authService.ts";
 
 const CheckoutPage: React.FC = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const currency: string = "zł";
 
   const [shippingAddress, setShippingAddress] = useState({
-    fullName: "",
-    address: "",
+    voivodeship: "",
     city: "",
+    street: "",
+    houseNumber: "",
     postalCode: "",
-    country: "",
   });
 
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
   const [errors, setErrors] = useState({
-    fullName: "",
-    address: "",
+    voivodeship: "",
     city: "",
+    street: "",
+    houseNumber: "",
     postalCode: "",
-    country: "",
     deliveryDate: "",
   });
 
@@ -49,17 +50,18 @@ const CheckoutPage: React.FC = () => {
   const validateFields = () => {
     const postalCodeRegex = /^[0-9]{2}-[0-9]{3}$/;
 
-
     const newErrors = {
-      fullName: shippingAddress.fullName ? "" : "Full name is required",
-      address: shippingAddress.address ? "" : "Address is required",
+      voivodeship: shippingAddress.voivodeship ? "" : "Full name is required",
+      street: shippingAddress.street ? "" : "Address is required",
       city: shippingAddress.city ? "" : "City is required",
       postalCode: shippingAddress.postalCode
         ? postalCodeRegex.test(shippingAddress.postalCode)
+          ? ""
+          : "Invalid postal code format (e.g., 12-345)"
+        : "Postal code is required",
+      houseNumber: shippingAddress.houseNumber
         ? ""
-        : "Invalid postal code format (e.g., 12-345)"
-      : "Postal code is required",
-      country: shippingAddress.country ? "" : "Country is required",
+        : "House number is required",
       deliveryDate: deliveryDate ? "" : "Delivery date is required",
     };
     setErrors(newErrors);
@@ -91,10 +93,30 @@ const CheckoutPage: React.FC = () => {
       return;
     }
 
+    const mappedCartItems = cartItems.map((item) => ({
+      product_id: item.id,
+      price: item.price,
+      quantity: item.quantity,
+    }));
+
+    const mappedShippingAddress = {
+      voivodeship: shippingAddress.voivodeship,
+      street: shippingAddress.street,
+      city: shippingAddress.city,
+      postal_code: shippingAddress.postalCode,
+      house_number: shippingAddress.houseNumber,
+    };
+
+    const user = getUserFromToken();
+
     const orderDetails = {
-      cartItems,
-      shippingAddress,
-      deliveryDate,
+      delivery_date: deliveryDate,
+      amount: totalPrice.toFixed(2),
+      products: mappedCartItems,
+      delivery_address: mappedShippingAddress,
+      order_status: "pending",
+      email: user.email,
+      route_length: "1000",
     };
 
     placeOrderMutation(orderDetails);
@@ -149,21 +171,21 @@ const CheckoutPage: React.FC = () => {
           <Stack spacing={2}>
             <TextField
               fullWidth
-              label="Full Name"
-              name="fullName"
-              value={shippingAddress.fullName}
+              label="Voivodeship"
+              name="voivodeship"
+              value={shippingAddress.voivodeship}
               onChange={handleInputChange}
-              error={!!errors.fullName}
-              helperText={errors.fullName}
+              error={!!errors.voivodeship}
+              helperText={errors.voivodeship}
             />
             <TextField
               fullWidth
-              label="Address"
-              name="address"
-              value={shippingAddress.address}
+              label="Street"
+              name="street"
+              value={shippingAddress.street}
               onChange={handleInputChange}
-              error={!!errors.address}
-              helperText={errors.address}
+              error={!!errors.street}
+              helperText={errors.street}
             />
             <Stack direction="row" spacing={2}>
               <TextField
@@ -187,12 +209,12 @@ const CheckoutPage: React.FC = () => {
             </Stack>
             <TextField
               fullWidth
-              label="Country"
-              name="country"
-              value={shippingAddress.country}
+              label="House Number"
+              name="houseNumber"
+              value={shippingAddress.houseNumber}
               onChange={handleInputChange}
-              error={!!errors.country}
-              helperText={errors.country}
+              error={!!errors.houseNumber}
+              helperText={errors.houseNumber}
             />
           </Stack>
 
