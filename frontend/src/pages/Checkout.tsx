@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store.ts";
 import WestIcon from "@mui/icons-material/West";
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
@@ -9,20 +9,39 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useMutation, useQuery } from "react-query";
 import { fetchUnavailableDates, placeOrder } from "../api/ordersApi.ts";
 import { getUserFromToken } from "../auth/authService.ts";
-
+import {
+  CheckoutFormModel,
+  updateCheckoutFormData,
+} from "../model/checkoutFormData.ts";
 const CheckoutPage: React.FC = () => {
+  const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const currency: string = "zł";
 
+  // Load shippingAddress and deliveryDate from localStorage if available
+  const savedShippingAddress = JSON.parse(
+    localStorage.getItem("shippingAddress") || "{}",
+  );
+  const savedDeliveryDate = localStorage.getItem("deliveryDate")
+    ? new Date(localStorage.getItem("deliveryDate")!)
+    : null;
+
+  const handleFormSubmit = (formData: CheckoutFormModel) => {
+    dispatch(updateCheckoutFormData(formData)); // Save form data to the Redux store
+  };
+
   const [shippingAddress, setShippingAddress] = useState({
-    voivodeship: "",
-    city: "",
-    street: "",
-    houseNumber: "",
-    postalCode: "",
+    voivodeship: savedShippingAddress.voivodeship || "",
+    city: savedShippingAddress.city || "",
+    street: savedShippingAddress.street || "",
+    houseNumber: savedShippingAddress.houseNumber || "",
+    postalCode: savedShippingAddress.postalCode || "",
   });
 
-  const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
+  const [deliveryDate, setDeliveryDate] = useState<Date | null>(
+    savedDeliveryDate,
+  );
+
   const [errors, setErrors] = useState({
     voivodeship: "",
     city: "",
@@ -73,16 +92,14 @@ const CheckoutPage: React.FC = () => {
     const { name, value } = e.target;
     setShippingAddress({ ...shippingAddress, [name]: value });
   };
+
   const [orderError, setOrderError] = useState<string | null>(null);
-  const {
-    mutate: placeOrderMutation,
-    isLoading,
-    isError,
-    isSuccess,
-  } = useMutation(placeOrder, {
+  const { mutate: placeOrderMutation, isLoading } = useMutation(placeOrder, {
     onSuccess: (data) => {
       console.log("Order placed successfully:", data);
       setOrderError(null);
+      localStorage.removeItem("shippingAddress");
+      localStorage.removeItem("deliveryDate");
     },
     onError: (error) => {
       console.error("Error placing order:", error);
@@ -122,8 +139,10 @@ const CheckoutPage: React.FC = () => {
       route_length: "1000",
     };
 
+    handleFormSubmit(orderDetails);
     placeOrderMutation(orderDetails);
   };
+
   const totalPrice = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
@@ -263,6 +282,11 @@ const CheckoutPage: React.FC = () => {
             >
               <WestIcon fontSize="small" /> Continue Shopping
             </Link>
+            {orderError && (
+              <Typography color="error" sx={{ marginTop: "1rem" }}>
+                {orderError}
+              </Typography>
+            )}
             <Button
               variant="contained"
               color="primary"
@@ -271,11 +295,6 @@ const CheckoutPage: React.FC = () => {
             >
               {isLoading ? "Placing Order..." : "Place Order"}
             </Button>
-            {orderError && (
-              <Typography color="error" sx={{ marginTop: "1rem" }}>
-                {orderError}
-              </Typography>
-            )}
           </Box>
         </Box>
       )}
