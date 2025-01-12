@@ -52,8 +52,8 @@ const CheckoutPage: React.FC = () => {
     const postalCodeRegex = /^[0-9]{2}-[0-9]{3}$/;
 
     const newErrors = {
-      voivodeship: shippingAddress.voivodeship ? "" : "Full name is required",
-      street: shippingAddress.street ? "" : "Address is required",
+      voivodeship: shippingAddress.voivodeship ? "" : "Voivodeship is required",
+      street: shippingAddress.street ? "" : "Street is required",
       city: shippingAddress.city ? "" : "City is required",
       postalCode: shippingAddress.postalCode
         ? postalCodeRegex.test(shippingAddress.postalCode)
@@ -73,7 +73,7 @@ const CheckoutPage: React.FC = () => {
     const { name, value } = e.target;
     setShippingAddress({ ...shippingAddress, [name]: value });
   };
-
+  const [orderError, setOrderError] = useState<string | null>(null);
   const {
     mutate: placeOrderMutation,
     isLoading,
@@ -82,9 +82,11 @@ const CheckoutPage: React.FC = () => {
   } = useMutation(placeOrder, {
     onSuccess: (data) => {
       console.log("Order placed successfully:", data);
+      setOrderError(null);
     },
     onError: (error) => {
       console.error("Error placing order:", error);
+      setOrderError("Failed to place order. Please try again.");
     },
   });
 
@@ -181,22 +183,31 @@ const CheckoutPage: React.FC = () => {
             />
             <TextField
               fullWidth
-              label="Street"
-              name="street"
-              value={shippingAddress.street}
+              label="City"
+              name="city"
+              value={shippingAddress.city}
               onChange={handleInputChange}
-              error={!!errors.street}
-              helperText={errors.street}
+              error={!!errors.city}
+              helperText={errors.city}
             />
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={3}>
               <TextField
                 fullWidth
-                label="City"
-                name="city"
-                value={shippingAddress.city}
+                label="Street"
+                name="street"
+                value={shippingAddress.street}
                 onChange={handleInputChange}
-                error={!!errors.city}
-                helperText={errors.city}
+                error={!!errors.street}
+                helperText={errors.street}
+              />
+              <TextField
+                fullWidth
+                label="House Number"
+                name="houseNumber"
+                value={shippingAddress.houseNumber}
+                onChange={handleInputChange}
+                error={!!errors.houseNumber}
+                helperText={errors.houseNumber}
               />
               <TextField
                 fullWidth
@@ -208,15 +219,6 @@ const CheckoutPage: React.FC = () => {
                 helperText={errors.postalCode}
               />
             </Stack>
-            <TextField
-              fullWidth
-              label="House Number"
-              name="houseNumber"
-              value={shippingAddress.houseNumber}
-              onChange={handleInputChange}
-              error={!!errors.houseNumber}
-              helperText={errors.houseNumber}
-            />
           </Stack>
 
           <Typography
@@ -269,6 +271,11 @@ const CheckoutPage: React.FC = () => {
             >
               {isLoading ? "Placing Order..." : "Place Order"}
             </Button>
+            {orderError && (
+              <Typography color="error" sx={{ marginTop: "1rem" }}>
+                {orderError}
+              </Typography>
+            )}
           </Box>
         </Box>
       )}
