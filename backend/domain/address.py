@@ -7,7 +7,7 @@ class Address(BaseModel):
     voivodeship: str
     city: str
     street: str
-    house_number: int
+    house_number: str
     postal_code: str
 
     @field_validator("postal_code")

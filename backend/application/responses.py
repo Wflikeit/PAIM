@@ -44,7 +44,7 @@ class AddressResponse(BaseModel):
     voivodeship: str
     city: str
     street: str
-    house_number: int
+    house_number: str
     postal_code: str
 
 

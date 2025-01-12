@@ -111,8 +111,8 @@ class OrderService:
 
         total_weight = calculate_total_weight(products)
         total_charge = calculate_total_charge(products)
-        if total_charge != order_data["amount"]:
-            raise WrongAmountOfMoneyError()
+        if round(total_charge, 2) != round(order_data["amount"], 2):
+            raise WrongAmountOfMoneyError(total_charge, order_data["amount"])
 
         warehouses, trucks = self.assign_warehouses_and_trucks(
             products, total_weight, delivery_date
