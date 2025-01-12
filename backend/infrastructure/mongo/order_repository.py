@@ -1,13 +1,13 @@
-import datetime
+from datetime import datetime, timezone
 from typing import List
 
 from bson import ObjectId
 
 from application.order.order_repository import AbstractOrderRepository
-from application.responses import OrderResponse
+from application.responses import OrderResponse, OrderSummaryForRegionResponse
 from domain.entities import Entity
-from domain.order import Order
 from domain.exceptions import InvalidIdError, EntityNotFoundError, InvalidDateType
+from domain.order import Order
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 
@@ -33,9 +33,9 @@ class OrderRepositoryMongo(AbstractOrderRepository):
             raise EntityNotFoundError(Entity.order.value, order_id)
 
         order_data["id"] = str(order_data["_id"])
-        if isinstance(order_data["delivery_date"], datetime.datetime):
+        if isinstance(order_data["delivery_date"], datetime):
             order_data["delivery_date"] = order_data["delivery_date"].replace(
-                tzinfo=datetime.timezone.utc
+                tzinfo=timezone.utc
             )
         else:
             raise InvalidDateType(order_data["delivery_date"], Entity.order.value)
@@ -47,15 +47,40 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         response_list = []
         for order in orders:
             order["id"] = str(order["_id"])
-            if isinstance(order["delivery_date"], datetime.datetime):
+            if isinstance(order["delivery_date"], datetime):
                 order["delivery_date"] = order["delivery_date"].replace(
-                    tzinfo=datetime.timezone.utc
+                    tzinfo=timezone.utc
                 )
             else:
                 raise InvalidDateType(order["delivery_date"], Entity.order.value)
             response_list.append(OrderResponse(**order))
 
         return response_list
+
+    def get_orders_summary_by_region(
+            self, start_date: datetime, end_date: datetime
+    ) -> List[OrderSummaryForRegionResponse]:
+        pipeline = [
+            {"$match": {"delivery_date": {"$gte": start_date, "$lte": end_date}}},
+            {
+                "$group": {
+                    "_id": "$delivery_address",  # Grupujemy po delivery_address
+                    "total_amount": {"$sum": "$amount"},
+                    "order_count": {"$sum": 1},
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "region": "$_id",
+                    "amount": "$total_amount",
+                    "order_count": 1,
+                }
+            },
+        ]
+
+        result = list(self.order_collection.aggregate(pipeline))
+        return [OrderSummaryForRegionResponse(**doc) for doc in result]
 
     def update_order_status_db(self, order_id: str, status: str) -> bool:
         try:

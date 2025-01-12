@@ -1,14 +1,11 @@
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from domain.exceptions import RepositoryError, BusinessLogicError
-from infrastructure.api.endpoints.order_router import order_router
-
-from application.auth.auth_service import AuthService
-from infrastructure.api.endpoints.admin_router import admin_router
 from infrastructure.api.endpoints.auth_router import auth_router
 from infrastructure.api.endpoints.client_router import client_router
+from infrastructure.api.endpoints.order_router import order_router
 from infrastructure.api.endpoints.product_router import product_router
 from infrastructure.api.exception_handler import (
     repository_exception_handler,
@@ -38,12 +35,6 @@ app.add_middleware(
 app.include_router(product_router, prefix="/api", tags=["products"])
 app.include_router(client_router, prefix="/api", tags=["clients"])
 app.include_router(order_router, prefix="/api", tags=["orders"])
-app.include_router(
-    admin_router,
-    prefix="/admin",
-    tags=["admin"],
-    dependencies=[Depends(AuthService.is_admin)],
-)
 app.include_router(auth_router, prefix="/auth", tags=["admin"])
 app.add_exception_handler(RepositoryError, repository_exception_handler)
 app.add_exception_handler(BusinessLogicError, business_logic_exception_handler)

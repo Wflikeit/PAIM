@@ -5,7 +5,7 @@ from application.address.address_repository import AbstractAddressRepository
 from application.client.client_repository import AbstractClientRepository
 from application.order.order_repository import AbstractOrderRepository
 from application.requests import OrderRequest
-from application.responses import OrderResponse, WarehouseResponse
+from application.responses import OrderResponse, WarehouseResponse, OrderSummaryForRegionResponse
 from application.truck.truck_repository import AbstractTruckRepository
 from application.warehouse.warehouse_repository import AbstractWarehouseRepository
 from domain.address import Address
@@ -24,8 +24,10 @@ def calculate_total_charge(products: List[dict]) -> float:
 def get_warehouses_with_available_products(
     warehouses: List[WarehouseResponse], order_products: List[dict]
 ) -> List[dict]:
+    """
+    Find warehouses that can supply the demanded products.
+    """
     warehouse_availability = []
-
     for warehouse in warehouses:
         available_products = {}
         warehouse_data = warehouse.model_dump()
@@ -248,3 +250,8 @@ class OrderService:
         if modified_trucks != len(truck_ids):
             raise Exception("Failed to mark order as complete")
         return OrderResponse(**order_data)
+
+    def get_orders_report_for_period(
+        self, start_date: datetime, end_date: datetime
+    ) -> List[OrderSummaryForRegionResponse]:
+        return self._order_repo.get_orders_summary_by_region(start_date, end_date)
