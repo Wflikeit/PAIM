@@ -56,10 +56,7 @@ async def add_order_endpoint(
         raise HTTPException(status_code=400, detail=str(e))
 
     # Save the order in your system
-    if checkout_session.url == SUCCESS_URL:
-        order_response = order_service.add_order(order)
-    else:
-        order_response = {}
+    order_response = order_service.add_order(order)
     # Redirect to the checkout session URL
     return {"url": checkout_session.url, "order": order_response}
 

@@ -65,14 +65,24 @@ const CheckoutPage: React.FC = () => {
   const busyDays =
     busyDaysData?.dates?.map((dateStr: string) => new Date(dateStr)) || [];
 
-  const isDayDisabled = (date: Date) => {
+  const isDayDisabled = (date: Date): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of today to ignore the time component
+
+    // Disable past dates
+    if (date < today) {
+      return true;
+    }
+
+    // Disable busy days
     return busyDays.some(
-      (busyDay) =>
-        busyDay.getDate() === date.getDate() &&
-        busyDay.getMonth() === date.getMonth() &&
-        busyDay.getFullYear() === date.getFullYear(),
+        (busyDay) =>
+            busyDay.getDate() === date.getDate() &&
+            busyDay.getMonth() === date.getMonth() &&
+            busyDay.getFullYear() === date.getFullYear()
     );
   };
+
 
   const validateFields = () => {
     const postalCodeRegex = /^[0-9]{2}-[0-9]{3}$/;
