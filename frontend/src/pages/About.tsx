@@ -1,29 +1,15 @@
 import React from "react";
-import { Box, Typography, GlobalStyles } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 const About: React.FC = () => {
   return (
     <>
-      {/* GlobalStyles to completely disable scrolling */}
-      <GlobalStyles
-        styles={{
-          "body, html": {
-            margin: 0, // Remove any default margin
-            padding: 0, // Remove any default padding
-            overflow: "hidden", // Disable scrolling
-            height: "100%", // Ensure full height is covered
-          },
-          "#root": {
-            height: "100%", // Ensure the root element covers full height
-          },
-        }}
-      />
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "100vh",
+          minHeight: "calc(100vh - 6rem)",
           backgroundColor: "#e8f5e9",
         }}
       >
