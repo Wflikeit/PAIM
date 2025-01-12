@@ -57,14 +57,14 @@ def client_data():
         "email": f"{uuid.uuid4()}@mail.com",
         "payment_address": {
             "street": "mock_street",
-            "house_number": 1,
+            "house_number": "1",
             "postal_code": "12-345",
             "city": "mock_city",
             "voivodeship": "Mock Voivodeship",
         },
         "delivery_address": {
             "street": "mock_street",
-            "house_number": 1,
+            "house_number": "1",
             "postal_code": "12-345",
             "city": "mock_city",
             "voivodeship": "Mock Voivodeship",

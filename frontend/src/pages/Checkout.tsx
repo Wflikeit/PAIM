@@ -55,6 +55,7 @@ const CheckoutPage: React.FC = () => {
     houseNumber: "",
     postalCode: "",
     deliveryDate: "",
+    amount_err: "",
   });
 
   const { data: busyDaysData } = useQuery("busyDays", fetchUnavailableDates, {
@@ -89,7 +90,7 @@ const CheckoutPage: React.FC = () => {
         ? ""
         : "House number is required",
       deliveryDate: deliveryDate ? "" : "Delivery date is required",
-      amount: totalPrice >= 50 ? "" : "Total price must be at least 50 zł",
+      amount_err: totalPrice >= 50 ? "" : "Total price must be at least 50 zł",
     };
     setErrors(newErrors);
     return Object.values(newErrors).every((error) => !error);
@@ -284,9 +285,9 @@ const CheckoutPage: React.FC = () => {
           <Typography variant="h6" sx={{ marginTop: "2rem", fontWeight: 600 }}>
             Total Price: {totalPrice.toFixed(2)} {currency}
           </Typography>
-          {errors.amount && (
+          {errors.amount_err && (
             <Typography color="red" sx={{ marginTop: "0.5rem" }}>
-              {errors.amount}
+              {errors.amount_err}
             </Typography>
           )}
           <Box
