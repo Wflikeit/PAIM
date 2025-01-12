@@ -17,6 +17,7 @@ export const placeOrder = async (orderDetails: any) => {
         });
 
         // Check for the `Location` header in the response
+        console.log("Response:", response.data);
         const redirectUrl = response.data["url"];
         if (redirectUrl) {
             // Redirect the user to the Stripe payment session URL

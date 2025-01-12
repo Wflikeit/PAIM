@@ -11,7 +11,7 @@ const Main = () => {
         gridRow: "2/3",
         height: "100%",
         overflowY: "scroll",
-        maxHeight: "85dvh",
+        maxHeight: "100%",
       }}
     >
       <Outlet />

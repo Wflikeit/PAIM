@@ -47,7 +47,7 @@ async def add_order_endpoint(
             line_items=line_items,
             mode="payment",
             success_url=f"{FRONTEND_URL}/success",
-            cancel_url=f"{FRONTEND_URL}/cancel",
+            cancel_url=f"{FRONTEND_URL}/checkout",
             customer_email=order.email,
         )
 
