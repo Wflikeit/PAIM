@@ -30,11 +30,14 @@ const CheckoutPage: React.FC = () => {
   return (
     <Box
       sx={{
-        padding: "16px",
+        minHeight: "calc(70vh - 6rem)",
+        padding: "50px",
         color: "black",
-        margin: "10dvh auto",
+        margin: "8dvh auto",
         maxWidth: "50rem",
         minWidth: "30rem",
+        backgroundColor: "#ffffff",
+        borderRadius: "8px",
       }}
     >
       <div
