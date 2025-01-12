@@ -1,13 +1,13 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 // Checkout form data model
 export interface CheckoutFormModel {
-  voivodeship: string;
+  voivodeship: string; // Changed to string, as voivodeship names are not numbers
   city: string;
   street: string; // Changed to string, as street names are not numbers
-  houseNumber: string; // Changed to string to accommodate formats like "12A"
-  postalCode: string;
-  deliveryDate: Date;
+  house_number: number; // Changed to string to accommodate formats like "12A"
+  postal_code: string;
+  delivery_date: Date | null;
 }
 
 // State for storing checkout form data

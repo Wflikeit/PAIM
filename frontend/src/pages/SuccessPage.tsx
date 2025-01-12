@@ -1,16 +1,10 @@
 import React, { useEffect } from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Typography,
-} from "@mui/material";
+import { Box, Card, CardActions, CardContent, Typography } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { clearCart } from "../model/cardItem.ts"; // Adjust the import path to your cartSlice
+import { clearCart } from "../model/cardItem.ts";
+import { clearCheckoutFormData } from "../model/checkoutFormData.ts"; // Adjust the import path to your cartSlice
 
 const SuccessPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -18,6 +12,7 @@ const SuccessPage: React.FC = () => {
   // Clear the cart on mount
   useEffect(() => {
     dispatch(clearCart());
+    dispatch(clearCheckoutFormData());
   }, [dispatch]);
 
   return (

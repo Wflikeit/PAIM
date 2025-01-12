@@ -167,54 +167,54 @@ const RegisterForm = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                   <Stack spacing={2}>
-                  <TextField
-                    label="Voivodeship"
-                    variant="outlined"
-                    fullWidth
-                    value={paymentAddressVoivodeship}
-                    onChange={(e) =>
-                      setPaymentAddressVoivodeship(e.target.value)
-                    }
-                    size="small"
-                  />
-                  <TextField
-                    label="City"
-                    variant="outlined"
-                    fullWidth
-                    value={paymentAddressCity}
-                    onChange={(e) => setPaymentAddressCity(e.target.value)}
-                    size="small"
-                  />
-                  <TextField
-                    label="Street"
-                    variant="outlined"
-                    fullWidth
-                    value={paymentAddressStreet}
-                    onChange={(e) => setPaymentAddressStreet(e.target.value)}
-                    size="small"
-                  />
-                  <TextField
-                    label="Building Number"
-                    variant="outlined"
-                    fullWidth
-                    value={paymentAddressStreetNumber}
-                    onChange={(e) =>
-                      setPaymentAddressStreetNumber(e.target.value)
-                    }
-                    size="small"
-                  />
+                    <TextField
+                      label="Voivodeship"
+                      variant="outlined"
+                      fullWidth
+                      value={paymentAddressVoivodeship}
+                      onChange={(e) =>
+                        setPaymentAddressVoivodeship(e.target.value)
+                      }
+                      size="small"
+                    />
+                    <TextField
+                      label="City"
+                      variant="outlined"
+                      fullWidth
+                      value={paymentAddressCity}
+                      onChange={(e) => setPaymentAddressCity(e.target.value)}
+                      size="small"
+                    />
+                    <TextField
+                      label="Street"
+                      variant="outlined"
+                      fullWidth
+                      value={paymentAddressStreet}
+                      onChange={(e) => setPaymentAddressStreet(e.target.value)}
+                      size="small"
+                    />
+                    <TextField
+                      label="Building Number"
+                      variant="outlined"
+                      fullWidth
+                      value={paymentAddressStreetNumber}
+                      onChange={(e) =>
+                        setPaymentAddressStreetNumber(e.target.value)
+                      }
+                      size="small"
+                    />
 
-                  <TextField
-                    label="Postal Code"
-                    variant="outlined"
-                    fullWidth
-                    value={paymentAddressPostalCode}
-                    onChange={(e) =>
-                      setPaymentAddressPostalCode(e.target.value)
-                    }
-                    size="small"
-                  />
-                    </Stack>
+                    <TextField
+                      label="Postal Code"
+                      variant="outlined"
+                      fullWidth
+                      value={paymentAddressPostalCode}
+                      onChange={(e) =>
+                        setPaymentAddressPostalCode(e.target.value)
+                      }
+                      size="small"
+                    />
+                  </Stack>
                 </AccordionDetails>
               </Accordion>
 
@@ -234,55 +234,54 @@ const RegisterForm = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                   <Stack spacing={2}>
+                    <TextField
+                      label="Voivodeship"
+                      variant="outlined"
+                      fullWidth
+                      value={deliveryAddressVoivodeship}
+                      onChange={(e) =>
+                        setDeliveryAddressVoivodeship(e.target.value)
+                      }
+                      size="small"
+                    />
+                    <TextField
+                      label="City"
+                      variant="outlined"
+                      fullWidth
+                      value={deliveryAddressCity}
+                      onChange={(e) => setDeliveryAddressCity(e.target.value)}
+                      size="small"
+                    />
+                    <TextField
+                      label="Street"
+                      variant="outlined"
+                      fullWidth
+                      value={deliveryAddressStreet}
+                      onChange={(e) => setDeliveryAddressStreet(e.target.value)}
+                      size="small"
+                    />
+                    <TextField
+                      label="Building Number"
+                      variant="outlined"
+                      fullWidth
+                      value={deliveryAddressStreetNumber}
+                      onChange={(e) =>
+                        setDeliveryAddressStreetNumber(e.target.value)
+                      }
+                      size="small"
+                    />
 
-                  <TextField
-                    label="Voivodeship"
-                    variant="outlined"
-                    fullWidth
-                    value={deliveryAddressVoivodeship}
-                    onChange={(e) =>
-                      setDeliveryAddressVoivodeship(e.target.value)
-                    }
-                    size="small"
-                  />
-                  <TextField
-                    label="City"
-                    variant="outlined"
-                    fullWidth
-                    value={deliveryAddressCity}
-                    onChange={(e) => setDeliveryAddressCity(e.target.value)}
-                    size="small"
-                  />
-                  <TextField
-                    label="Street"
-                    variant="outlined"
-                    fullWidth
-                    value={deliveryAddressStreet}
-                    onChange={(e) => setDeliveryAddressStreet(e.target.value)}
-                    size="small"
-                  />
-                  <TextField
-                    label="Building Number"
-                    variant="outlined"
-                    fullWidth
-                    value={deliveryAddressStreetNumber}
-                    onChange={(e) =>
-                      setDeliveryAddressStreetNumber(e.target.value)
-                    }
-                    size="small"
-                  />
-
-                  <TextField
-                    label="Postal Code"
-                    variant="outlined"
-                    fullWidth
-                    value={deliveryAddressPostalCode}
-                    onChange={(e) =>
-                      setDeliveryAddressPostalCode(e.target.value)
-                    }
-                    size="small"
-                  />
-                    </Stack>
+                    <TextField
+                      label="Postal Code"
+                      variant="outlined"
+                      fullWidth
+                      value={deliveryAddressPostalCode}
+                      onChange={(e) =>
+                        setDeliveryAddressPostalCode(e.target.value)
+                      }
+                      size="small"
+                    />
+                  </Stack>
                 </AccordionDetails>
               </Accordion>
 
