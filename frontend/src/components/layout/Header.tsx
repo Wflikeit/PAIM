@@ -3,6 +3,7 @@ import UserActionsWrapper from "./UserActionsWrapper.tsx";
 import Logo from "./Logo.tsx";
 import HeaderLink from "./HeaderLink.tsx";
 import { getUserFromToken } from "../../auth/authService.ts";
+import { UserRole } from "../../auth/UserRole.ts";
 
 const Header: React.FC = () => {
   const user = useMemo(() => getUserFromToken(), []);
@@ -25,6 +26,9 @@ const Header: React.FC = () => {
         <HeaderLink to="/contact" text="Contact" />
         <HeaderLink to="/about" text="About" />
         <HeaderLink to="/" text="Products" />
+        {getUserFromToken()?.role === UserRole.ADMIN && (
+          <HeaderLink to="/stats" text="Reports" />
+        )}
       </div>
       <UserActionsWrapper user={user} />
     </header>

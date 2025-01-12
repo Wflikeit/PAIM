@@ -12,6 +12,7 @@ const Main = () => {
         height: "100%",
         overflowY: "scroll",
         maxHeight: "100%",
+        backgroundColor: "#e8f5e9",
       }}
     >
       <Outlet />
