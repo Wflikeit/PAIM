@@ -4,7 +4,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearCart } from "../model/cardItem.ts";
-import { clearCheckoutFormData } from "../model/checkoutFormData.ts"; // Adjust the import path to your cartSlice
+import { clearCheckoutFormData } from "../model/checkoutFormData.ts";
 
 const SuccessPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -59,10 +59,10 @@ const SuccessPage: React.FC = () => {
           <Link
             to="/"
             color="primary"
-            sx={{
+            style={{
               borderRadius: 2,
               textTransform: "none",
-              paddingX: 3,
+              padding: 3,
             }}
           >
             Return to Home

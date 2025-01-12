@@ -20,7 +20,7 @@ export interface OrderDetails {
 
 export interface OrderProductDetails {
   product_id: Date;
-  quantiy: number;
+  quantity: number;
   price: number;
 }
 
@@ -45,8 +45,6 @@ export const placeOrder = async (orderDetails: OrderDetails) => {
       },
     );
 
-    // Check for the `Location` header in the response
-    console.log("Response:", response.data);
     const redirectUrl = response.data["url"];
     if (redirectUrl) {
       // Redirect the user to the Stripe payment session URL

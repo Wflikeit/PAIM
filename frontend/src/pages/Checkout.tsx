@@ -37,7 +37,7 @@ const CheckoutPage: React.FC = () => {
   });
 
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(
-    checkoutData?.deliveryDate || null,
+    checkoutData?.delivery_date || null,
   );
 
   const [errors, setErrors] = useState({
@@ -127,7 +127,7 @@ const CheckoutPage: React.FC = () => {
 
     const orderDetails: OrderDetails = {
       delivery_date: deliveryDate!,
-      amount: totalPrice.toFixed(2),
+      amount: parseFloat(totalPrice.toFixed(2)), // Convert the string to a number
       products: mappedCartItems,
       delivery_address: mappedShippingAddress,
       order_status: "pending",
