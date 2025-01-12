@@ -98,10 +98,10 @@ class OrderRepositoryMongo(AbstractOrderRepository):
                 "$project": {
                     "_id": 0,
                     "region": "$_id",
-                    "amount": "$totalAmount",
+                    "amount": {"$round": ["$totalAmount", 2]},
                     "order_count": "$orderCount",
                 }
-            },
+            }
         ]
 
         result = list(self.order_collection.aggregate(pipeline))
