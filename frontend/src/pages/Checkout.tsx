@@ -23,14 +23,15 @@ const CheckoutPage: React.FC = () => {
   // Get cart items and persisted checkout data from Redux
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const checkoutData = useSelector(
-    (state: RootState) => state.checkoutFormData?.formData ?? {
-          voivodeship: '',
-          city: '',
-          street: '',
-          house_number: '',
-          postal_code: '',
-          delivery_date: null,
-        }
+    (state: RootState) =>
+      state.checkoutFormData?.formData ?? {
+        voivodeship: "",
+        city: "",
+        street: "",
+        house_number: "",
+        postal_code: "",
+        delivery_date: null,
+      },
   );
   const currency: string = "zł";
 
@@ -88,6 +89,7 @@ const CheckoutPage: React.FC = () => {
         ? ""
         : "House number is required",
       deliveryDate: deliveryDate ? "" : "Delivery date is required",
+      amount: totalPrice >= 50 ? "" : "Total price must be at least 50 zł",
     };
     setErrors(newErrors);
     return Object.values(newErrors).every((error) => !error);
@@ -282,7 +284,11 @@ const CheckoutPage: React.FC = () => {
           <Typography variant="h6" sx={{ marginTop: "2rem", fontWeight: 600 }}>
             Total Price: {totalPrice.toFixed(2)} {currency}
           </Typography>
-
+          {errors.amount && (
+            <Typography color="red" sx={{ marginTop: "0.5rem" }}>
+              {errors.amount}
+            </Typography>
+          )}
           <Box
             sx={{
               display: "flex",
