@@ -51,6 +51,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         display: "flex",
         flexDirection: "column",
         height: "100%",
+        borderRadius: "8px",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
       }}
     >
       <CardMedia

@@ -142,15 +142,6 @@ const CheckoutPage: React.FC = () => {
       delivery_address: mappedShippingAddress,
       email: user?.email || "No Email",
     };
-    console.log(
-      "Order details to be sent:",
-      mappedShippingAddress.voivodeship,
-      mappedShippingAddress.city,
-      mappedShippingAddress.street,
-      mappedShippingAddress.house_number,
-      mappedShippingAddress.postal_code,
-      orderDetails.delivery_date,
-    );
 
     // Save to Redux Persist before placing the order
     dispatch(
@@ -174,11 +165,13 @@ const CheckoutPage: React.FC = () => {
   return (
     <Box
       sx={{
-        padding: "16px",
+        padding: "50px",
         color: "black",
         margin: "10dvh auto",
         maxWidth: "50rem",
         minWidth: "30rem",
+        backgroundColor: "#ffffff",
+        borderRadius: "8px",
       }}
     >
       <Typography variant="h4" sx={{ fontWeight: 600, marginBottom: "1.5rem" }}>
