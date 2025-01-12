@@ -4,6 +4,8 @@ from typing import List, Optional
 from pydantic import BaseModel, EmailStr
 from pydantic.v1 import Field
 
+from domain.product_order import ProductOrder
+
 
 class ProductResponse(BaseModel):
     id: str
@@ -50,13 +52,12 @@ class OrderResponse(BaseModel):
     id: str
     delivery_date: datetime
     amount: float
-    products: List[dict]
+    products: List[ProductOrder]
     delivery_address: str
     order_status: str
     email: EmailStr
     trucks: List[str]
     warehouses: List[str]
-    route_length: float
 
 
 class WarehouseResponse(BaseModel):

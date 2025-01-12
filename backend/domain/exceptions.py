@@ -31,8 +31,8 @@ class InvalidDateType(RepositoryError):
 
 
 class FailedToUpdateError(RepositoryError):
-    def __init__(self, field: str, entity: str):
-        super().__init__(f"Failed to update {field} in {entity}")
+    def __init__(self, entity: str):
+        super().__init__(f"Failed to update field in {entity}")
 
 
 class EmailNotUniqueError(RepositoryError):
@@ -52,3 +52,8 @@ class BusinessLogicError(Exception):
 class UnableToRealizeOrderError(BusinessLogicError):
     def __init__(self):
         super().__init__("Unable to realize order")
+
+
+class WrongAmountOfMoneyError(BusinessLogicError):
+    def __init__(self):
+        super().__init__("Worng amount of money")

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import UploadFile
 from pydantic import BaseModel, EmailStr
@@ -25,3 +25,10 @@ class ClientRequest(BaseModel):
     password: str
     company_name: str
 
+
+class OrderRequest(BaseModel):
+    delivery_date: datetime
+    amount: float
+    products: List[dict]
+    delivery_address: Address
+    email: EmailStr

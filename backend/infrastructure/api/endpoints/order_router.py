@@ -2,8 +2,8 @@ from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 
 from application.order.order_service import OrderService
+from application.requests import OrderRequest
 from application.responses import OrderResponse
-from domain.order import Order
 from infrastructure.containers import Container
 
 order_router = APIRouter()
@@ -12,7 +12,7 @@ order_router = APIRouter()
 @order_router.post("/purchase", response_model=OrderResponse)
 @inject
 async def add_order_endpoint(
-    order: Order,
+    order: OrderRequest,
     order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> OrderResponse:
     return order_service.add_order(order)

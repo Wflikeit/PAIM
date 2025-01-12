@@ -17,6 +17,8 @@ class OrderRepositoryMongo(AbstractOrderRepository):
 
     def add_order(self, order: Order) -> OrderResponse:
         order_data = order.model_dump()
+        order_data["order_status"] = "pending"
+
         order_data["id"] = str(self.order_collection.insert_one(order_data).inserted_id)
         return OrderResponse(**order_data)
 
