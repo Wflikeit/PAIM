@@ -89,6 +89,7 @@ def jwt_token_admin():
     user_data = {"sub": "test@mail.com", "role": "admin"}
     return AuthService.create_access_token(data=user_data)
 
+
 @pytest.fixture(scope="module")
 def jwt_token_client():
     """Fixture to generate a test JWT token."""
@@ -114,14 +115,21 @@ async def assert_product_response(mocked_product_data, response_json):
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
 async def test_get_product_successful(
-    mocked_product_data, binary_file_data, mocked_product_repository, test_client, jwt_token_client
+    mocked_product_data,
+    binary_file_data,
+    mocked_product_repository,
+    test_client,
+    jwt_token_client,
 ):
     """Test the integration of the /products/{product_id} endpoint."""
     product_id = mocked_product_data["id"]
     mocked_product_response = ProductResponse(**mocked_product_data)
     mocked_product_repository.get_product_by_id.return_value = mocked_product_response
 
-    response = test_client.get(f"/api/products/{product_id}", headers={"Authorization": f"Bearer {jwt_token_client}"})
+    response = test_client.get(
+        f"/api/products/{product_id}",
+        headers={"Authorization": f"Bearer {jwt_token_client}"},
+    )
 
     assert response.status_code == 200
     product = response.json()["product"]
@@ -170,7 +178,9 @@ async def test_upload_product_success(
 # │   Client  │ → │   API    │ → │   Service  │
 # └───────────┘   └──────────┘   └────────────┘
 @pytest.mark.asyncio
-async def test_get_product_not_found(mocked_product_repository, test_client, jwt_token_client):
+async def test_get_product_not_found(
+    mocked_product_repository, test_client, jwt_token_client
+):
     """Test retrieving a product that does not exist."""
     non_existent_product_id = str(ObjectId())
 
@@ -178,7 +188,10 @@ async def test_get_product_not_found(mocked_product_repository, test_client, jwt
         Entity.product.value, non_existent_product_id
     )
 
-    response = test_client.get(f"/api/products/{non_existent_product_id}", headers={"Authorization": f"Bearer {jwt_token_client}"})
+    response = test_client.get(
+        f"/api/products/{non_existent_product_id}",
+        headers={"Authorization": f"Bearer {jwt_token_client}"},
+    )
 
     assert response.status_code == 404
     assert (
@@ -199,7 +212,10 @@ async def test_get_product_invalid_date_type(
     mocked_product_repository.get_product_by_id.side_effect = InvalidDateType(
         date, Entity.product.value
     )
-    response = test_client.get(f"/api/products/{product_id}", headers={"Authorization": f"Bearer {jwt_token_client}"})
+    response = test_client.get(
+        f"/api/products/{product_id}",
+        headers={"Authorization": f"Bearer {jwt_token_client}"},
+    )
 
     assert response.status_code == 404
     assert (
@@ -219,7 +235,7 @@ async def test_get_product_success_end_to_end(
     test_client,
     product_data,
     test_container,
-    jwt_token_client
+    jwt_token_client,
 ):
     """End-to-end test of the /products/{product_id} endpoint."""
     product_id = "6775934ed79a82364c118356"
@@ -227,7 +243,10 @@ async def test_get_product_success_end_to_end(
         ProductService(product_repo=ProductRepositoryMongo())
     )
 
-    response = test_client.get(f"/api/products/{product_id}", headers={"Authorization": f"Bearer {jwt_token_client}"})
+    response = test_client.get(
+        f"/api/products/{product_id}",
+        headers={"Authorization": f"Bearer {jwt_token_client}"},
+    )
 
     assert response.status_code == 200
     product = response.json()["product"]
@@ -242,7 +261,7 @@ async def test_get_all_products_success_end_to_end(
     test_client,
     product_data,
     test_container,
-    jwt_token_client
+    jwt_token_client,
 ):
     """End-to-end test of the /products endpoint."""
     mocked_product_data["id"] = "6775934ed79a82364c118356"
@@ -250,7 +269,9 @@ async def test_get_all_products_success_end_to_end(
         ProductService(product_repo=ProductRepositoryMongo())
     )
 
-    response = test_client.get("/api/products", headers={"Authorization": f"Bearer {jwt_token_client}"})
+    response = test_client.get(
+        "/api/products", headers={"Authorization": f"Bearer {jwt_token_client}"}
+    )
 
     assert response.status_code == 200
     response_json = response.json()
@@ -302,7 +323,7 @@ async def test_get_product_invalid_id(test_client, test_container, jwt_token_cli
 
     response = test_client.get(
         f"/api/products/{invalid_product_id}",
-        headers = {"Authorization": f"Bearer {jwt_token_client}"}
+        headers={"Authorization": f"Bearer {jwt_token_client}"},
     )
 
     assert response.status_code == 404

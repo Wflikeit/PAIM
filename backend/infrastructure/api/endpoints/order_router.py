@@ -23,21 +23,19 @@ SUCCESS_URL = f"{FRONTEND_URL}/success"
 @order_router.post("/purchase", dependencies=[Depends(AuthService.verify_jwt_token)])
 @inject
 async def add_order_endpoint(
-        order: OrderRequest,
-        order_service: OrderService = Depends(Provide[Container.order_service]),
+    order: OrderRequest,
+    order_service: OrderService = Depends(Provide[Container.order_service]),
 ):
     """
-        Create a new Stripe Checkout Session and redirect the user to the session URL.
-        """
+    Create a new Stripe Checkout Session and redirect the user to the session URL.
+    """
     try:
         # Map products from the order into Stripe line items
         line_items = [
             {
                 "price_data": {
                     "currency": "pln",  # Adjust this to your desired currency
-                    "product_data": {
-                        "name": product["name"]
-                    },
+                    "product_data": {"name": product["name"]},
                     "unit_amount": int(product["price"] * 100),  # Amount in cents
                 },
                 "quantity": product["quantity"],
@@ -63,7 +61,7 @@ async def add_order_endpoint(
     else:
         order_response = {}
     # Redirect to the checkout session URL
-    return {"url":checkout_session.url, "order": order_response}
+    return {"url": checkout_session.url, "order": order_response}
 
 
 @order_router.get(
@@ -73,42 +71,56 @@ async def add_order_endpoint(
 )
 @inject
 async def admin_stats(
-        start_date: datetime,
-        end_date: datetime,
-        order_service: OrderService = Depends(Provide[Container.order_service]),
+    start_date: datetime,
+    end_date: datetime,
+    order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> List[OrderSummaryForRegionResponse]:
     return order_service.get_orders_report_for_period(start_date, end_date)
 
 
-@order_router.get("/orders/{order_id}", response_model=dict, dependencies=[Depends(AuthService.is_admin)])
+@order_router.get(
+    "/orders/{order_id}",
+    response_model=dict,
+    dependencies=[Depends(AuthService.is_admin)],
+)
 @inject
 async def get_order(
-        order_id: str,
-        order_service: OrderService = Depends(Provide[Container.order_service]),
+    order_id: str,
+    order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> dict:
     return {"order": order_service.get_order_by_id(order_id)}
 
 
-@order_router.get("/orders", response_model=dict, dependencies=[Depends(AuthService.is_admin)])
+@order_router.get(
+    "/orders", response_model=dict, dependencies=[Depends(AuthService.is_admin)]
+)
 @inject
 async def get_all_orders(
-        order_service: OrderService = Depends(Provide[Container.order_service]),
+    order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> dict:
     return {"orders": order_service.get_orders()}
 
 
-@order_router.get("/orders/{order_id}/complete", response_model=dict, dependencies=[Depends(AuthService.is_admin)])
+@order_router.get(
+    "/orders/{order_id}/complete",
+    response_model=dict,
+    dependencies=[Depends(AuthService.is_admin)],
+)
 @inject
 async def set_order_status_complete(
-        order_id: str,
-        order_service: OrderService = Depends(Provide[Container.order_service]),
+    order_id: str,
+    order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> dict:
     return {"order": order_service.mark_order_as_complete(order_id)}
 
 
-@order_router.get("/checkout", response_model=dict, dependencies=[Depends(AuthService.verify_jwt_token)])
+@order_router.get(
+    "/checkout",
+    response_model=dict,
+    dependencies=[Depends(AuthService.verify_jwt_token)],
+)
 @inject
 async def get_unavailable_dates(
-        order_service: OrderService = Depends(Provide[Container.order_service]),
+    order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> dict:
     return {"dates": order_service.get_list_of_unavailable_dates()}

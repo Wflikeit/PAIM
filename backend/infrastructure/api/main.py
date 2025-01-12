@@ -9,7 +9,8 @@ from infrastructure.api.endpoints.order_router import order_router
 from infrastructure.api.endpoints.product_router import product_router
 from infrastructure.api.exception_handler import (
     repository_exception_handler,
-    business_logic_exception_handler, exception_credentials_handler,
+    business_logic_exception_handler,
+    exception_credentials_handler,
 )
 from infrastructure.containers import Container
 

@@ -30,7 +30,11 @@ async def upload_product_endpoint(
     return await product_service.upload_product(product)
 
 
-@product_router.get("/products/{product_id}", response_model=dict, dependencies=[Depends(AuthService.verify_jwt_token)])
+@product_router.get(
+    "/products/{product_id}",
+    response_model=dict,
+    dependencies=[Depends(AuthService.verify_jwt_token)],
+)
 @inject
 async def get_product(
     product_id: str,

@@ -101,7 +101,7 @@ class OrderRepositoryMongo(AbstractOrderRepository):
                     "amount": {"$round": ["$totalAmount", 2]},
                     "order_count": "$orderCount",
                 }
-            }
+            },
         ]
 
         result = list(self.order_collection.aggregate(pipeline))

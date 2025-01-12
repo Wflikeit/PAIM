@@ -63,6 +63,7 @@ class WrongAmountOfMoneyError(BusinessLogicError):
     def __init__(self, amount: float, amount2: float):
         super().__init__(f"Wrong amount of money is {amount} should be {amount2}")
 
+
 class AuthError(Exception):
     def __init__(self, message: str):
         super().__init__(message)

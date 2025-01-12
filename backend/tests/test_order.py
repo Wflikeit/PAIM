@@ -4,7 +4,6 @@ import os
 from unittest.mock import AsyncMock, patch, MagicMock
 
 import pytest
-import stripe
 from bson import ObjectId
 from dotenv import load_dotenv
 from starlette.testclient import TestClient
@@ -29,11 +28,13 @@ from infrastructure.mongo.warehouse_repository import WarehouseRepositoryMongo
 
 os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
+
 @pytest.fixture(scope="module")
 def jwt_token_admin():
     """Fixture to generate a test JWT token."""
     user_data = {"sub": "test@mail.com", "role": "admin"}
     return AuthService.create_access_token(data=user_data)
+
 
 @pytest.fixture(scope="module")
 def jwt_token_client():
@@ -41,13 +42,14 @@ def jwt_token_client():
     user_data = {"sub": "test@mail.com", "role": "client"}
     return AuthService.create_access_token(data=user_data)
 
+
 @pytest.fixture(scope="module")
 def test_container(
-        mocked_client_repository,
-        mocked_warehouse_repository,
-        mocked_order_repository,
-        mocked_truck_repository,
-        mocked_address_repository,
+    mocked_client_repository,
+    mocked_warehouse_repository,
+    mocked_order_repository,
+    mocked_truck_repository,
+    mocked_address_repository,
 ):
     """Set up a test container with a test database."""
     container = Container()
@@ -306,6 +308,7 @@ def mocked_stripe_session_response():
     mock_checkout_session.url = SUCCESS_URL
     return mock_checkout_session
 
+
 async def assert_order_response(mock_order_data, response_json):
     assert response_json["delivery_date"] == mock_order_data["delivery_date"]
     assert response_json["amount"] == mock_order_data["amount"]
@@ -319,13 +322,13 @@ async def assert_order_response(mock_order_data, response_json):
 
 @pytest.mark.asyncio
 async def test_set_order_as_complete(
-        test_client,
-        test_container,
-        order_data,
-        mocked_order_response_data,
-        mocked_order_repository,
-        mocked_truck_repository,
-        jwt_token_admin
+    test_client,
+    test_container,
+    order_data,
+    mocked_order_response_data,
+    mocked_order_repository,
+    mocked_truck_repository,
+    jwt_token_admin,
 ):
     """Integration test the of the /purchase endpoint."""
     order_id = mocked_order_response_data
@@ -336,7 +339,10 @@ async def test_set_order_as_complete(
         **mocked_order_response_data_copy
     )
     mocked_truck_repository.delete_order_from_truck_db.return_value = 1
-    response = test_client.get(f"/api/orders/{order_id}/complete", headers={"Authorization": f"Bearer {jwt_token_admin}"})
+    response = test_client.get(
+        f"/api/orders/{order_id}/complete",
+        headers={"Authorization": f"Bearer {jwt_token_admin}"},
+    )
 
     assert response.status_code == 200
     response_json = response.json()["order"]
@@ -345,21 +351,21 @@ async def test_set_order_as_complete(
 
 @pytest.mark.asyncio
 async def test_add_order_success(
-        test_client,
-        order_data,
-        mocked_order_response_data,
-        mocked_order_repository,
-        mocked_truck_repository,
-        mocked_active_orders_for_trucks,
-        mocked_truck_list_response,
-        mocked_warehouse_response,
-        mocked_warehouse_repository,
-        mocked_client_repository,
-        mocked_address_repository,
-        mocked_address_data,
-        mocked_another_order_response_data,
-        mocked_stripe_session_response,
-        jwt_token_client
+    test_client,
+    order_data,
+    mocked_order_response_data,
+    mocked_order_repository,
+    mocked_truck_repository,
+    mocked_active_orders_for_trucks,
+    mocked_truck_list_response,
+    mocked_warehouse_response,
+    mocked_warehouse_repository,
+    mocked_client_repository,
+    mocked_address_repository,
+    mocked_address_data,
+    mocked_another_order_response_data,
+    mocked_stripe_session_response,
+    jwt_token_client,
 ):
     """Integration test for making orders."""
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
@@ -376,8 +382,14 @@ async def test_add_order_success(
     mocked_address_repository.add_address.return_value = AddressResponse(
         **mocked_address_data
     )
-    with patch("stripe.checkout.Session.create", return_value=mocked_stripe_session_response):
-        response = test_client.post("/api/purchase", json=order_data, headers={"Authorization": f"Bearer {jwt_token_client}"})
+    with patch(
+        "stripe.checkout.Session.create", return_value=mocked_stripe_session_response
+    ):
+        response = test_client.post(
+            "/api/purchase",
+            json=order_data,
+            headers={"Authorization": f"Bearer {jwt_token_client}"},
+        )
 
         assert response.status_code == 200
         response_json = response.json()["order"]
@@ -402,7 +414,7 @@ async def test_add_order_not_enough_products_in_warehouse_fail(
     mocked_address_data,
     mocked_address_repository,
     jwt_token_client,
-    mocked_stripe_session_response
+    mocked_stripe_session_response,
 ):
     """Integration test for making orders."""
 
@@ -420,8 +432,14 @@ async def test_add_order_not_enough_products_in_warehouse_fail(
     mocked_order_repository.add_order.return_value = OrderResponse(
         **mocked_order_response_data
     )
-    with patch("stripe.checkout.Session.create", return_value=mocked_stripe_session_response):
-        response = test_client.post("/api/purchase", json=order_data_high_product_quantity, headers={"Authorization": f"Bearer {jwt_token_client}"})
+    with patch(
+        "stripe.checkout.Session.create", return_value=mocked_stripe_session_response
+    ):
+        response = test_client.post(
+            "/api/purchase",
+            json=order_data_high_product_quantity,
+            headers={"Authorization": f"Bearer {jwt_token_client}"},
+        )
 
         assert response.status_code == 409
         assert response.json()["error"] == "Unable to realize order"
@@ -444,7 +462,7 @@ async def test_update_order_in_client_failed(
     mocked_address_repository,
     mocked_address_data,
     jwt_token_client,
-    mocked_stripe_session_response
+    mocked_stripe_session_response,
 ):
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
     # this is used in loop for each warehouse
@@ -463,12 +481,19 @@ async def test_update_order_in_client_failed(
     mocked_client_repository.add_order_to_client_db.side_effect = FailedToUpdateError(
         Entity.client.value
     )
-    with patch("stripe.checkout.Session.create", return_value=mocked_stripe_session_response):
-        response = test_client.post("/api/purchase", json=order_data, headers={"Authorization": f"Bearer {jwt_token_client}"})
+    with patch(
+        "stripe.checkout.Session.create", return_value=mocked_stripe_session_response
+    ):
+        response = test_client.post(
+            "/api/purchase",
+            json=order_data,
+            headers={"Authorization": f"Bearer {jwt_token_client}"},
+        )
 
         assert response.status_code == 404
         assert (
-                response.json()["error"] == f"Failed to update field in {Entity.client.value}"
+            response.json()["error"]
+            == f"Failed to update field in {Entity.client.value}"
         )
 
     mocked_client_repository.add_order_to_client_db.side_effect = None
@@ -489,7 +514,7 @@ async def test_order_link_to_truck_failed(
     mocked_address_repository,
     mocked_address_data,
     jwt_token_client,
-    mocked_stripe_session_response
+    mocked_stripe_session_response,
 ):
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
 
@@ -509,10 +534,19 @@ async def test_order_link_to_truck_failed(
         Entity.truck.value
     )
 
-    with patch("stripe.checkout.Session.create", return_value=mocked_stripe_session_response):
-        response = test_client.post("/api/purchase", json=order_data, headers={"Authorization": f"Bearer {jwt_token_client}"})
+    with patch(
+        "stripe.checkout.Session.create", return_value=mocked_stripe_session_response
+    ):
+        response = test_client.post(
+            "/api/purchase",
+            json=order_data,
+            headers={"Authorization": f"Bearer {jwt_token_client}"},
+        )
         assert response.status_code == 404
-        assert response.json()["error"] == f"Failed to update field in {Entity.truck.value}"
+        assert (
+            response.json()["error"]
+            == f"Failed to update field in {Entity.truck.value}"
+        )
 
     mocked_truck_repository.add_order_to_trucks_db.side_effect = None
     mocked_truck_repository.get_trucks_by_warehouse.side_effect = None
@@ -520,10 +554,7 @@ async def test_order_link_to_truck_failed(
 
 @pytest.mark.asyncio
 async def test_get_product_invalid_date_type(
-    test_client,
-    test_container,
-    mocked_order_repository,
-    jwt_token_admin
+    test_client, test_container, mocked_order_repository, jwt_token_admin
 ):
     """Test retrieving an order with invalid date type."""
     order_id = "677fe80f0a34748487855a54"
@@ -531,13 +562,16 @@ async def test_get_product_invalid_date_type(
     mocked_order_repository.get_order_by_id.side_effect = InvalidDateType(
         date, Entity.order.value
     )
-    response = test_client.get(f"/api/orders/{order_id}", headers={"Authorization": f"Bearer {jwt_token_admin}"})
+    response = test_client.get(
+        f"/api/orders/{order_id}",
+        headers={"Authorization": f"Bearer {jwt_token_admin}"},
+    )
 
     assert response.status_code == 404
     assert (
-            response.json()["error"]
-            == f"Date: {date} in {Entity.order.value} is in invalid"
-               f"type: should be datetime, is {type(date).__name__}"
+        response.json()["error"]
+        == f"Date: {date} in {Entity.order.value} is in invalid"
+        f"type: should be datetime, is {type(date).__name__}"
     )
 
     mocked_order_repository.get_order_by_id.side_effect = None
@@ -545,13 +579,13 @@ async def test_get_product_invalid_date_type(
 
 @pytest.mark.asyncio
 async def test_get_list_of_unavailable_dates(
-        test_client,
-        test_container,
-        mocked_truck_data,
-        mocked_truck_repository,
-        mocked_order_response_data,
-        mocked_order_repository,
-        jwt_token_client
+    test_client,
+    test_container,
+    mocked_truck_data,
+    mocked_truck_repository,
+    mocked_order_response_data,
+    mocked_order_repository,
+    jwt_token_client,
 ):
     truck_data = copy.deepcopy(mocked_truck_data)
     mocked_truck_list = []
@@ -563,7 +597,9 @@ async def test_get_list_of_unavailable_dates(
         **mocked_order_response_data
     )
 
-    response = test_client.get("/api/checkout", headers={"Authorization": f"Bearer {jwt_token_client}"})
+    response = test_client.get(
+        "/api/checkout", headers={"Authorization": f"Bearer {jwt_token_client}"}
+    )
 
     assert response.status_code == 200
     unavailable_dates = response.json()["dates"]
@@ -572,10 +608,7 @@ async def test_get_list_of_unavailable_dates(
 
 @pytest.mark.asyncio
 async def test_get_orders_success_end_to_end(
-    test_client,
-    test_container,
-    order_data,
-    jwt_token_admin
+    test_client, test_container, order_data, jwt_token_admin
 ):
     """End-to-end test the of the /orders endpoint."""
     test_container.order_service.override(
@@ -589,12 +622,17 @@ async def test_get_orders_success_end_to_end(
     )
     order_id = "678309a0490b1b3e797ded8b"
 
-    response = test_client.get("/api/orders", headers={"Authorization": f"Bearer {jwt_token_admin}"})
+    response = test_client.get(
+        "/api/orders", headers={"Authorization": f"Bearer {jwt_token_admin}"}
+    )
 
     assert response.status_code == 200
     response_json = response.json()["orders"]
 
-    response_one_order = test_client.get(f"/api/orders/{order_id}", headers={"Authorization": f"Bearer {jwt_token_admin}"})
+    response_one_order = test_client.get(
+        f"/api/orders/{order_id}",
+        headers={"Authorization": f"Bearer {jwt_token_admin}"},
+    )
     assert response.status_code == 200
     order = response_one_order.json()["order"]
 
@@ -608,7 +646,7 @@ async def test_add_order_success_end_to_end(
     test_container,
     jwt_token_admin,
     jwt_token_client,
-    mocked_stripe_session_response
+    mocked_stripe_session_response,
 ):
     """Integration test for making orders."""
     test_container.order_service.override(
@@ -621,8 +659,14 @@ async def test_add_order_success_end_to_end(
         )
     )
 
-    with patch("stripe.checkout.Session.create", return_value=mocked_stripe_session_response):
-        response = test_client.post("/api/purchase", json=order_data, headers={"Authorization": f"Bearer {jwt_token_client}"})
+    with patch(
+        "stripe.checkout.Session.create", return_value=mocked_stripe_session_response
+    ):
+        response = test_client.post(
+            "/api/purchase",
+            json=order_data,
+            headers={"Authorization": f"Bearer {jwt_token_client}"},
+        )
 
         assert response.status_code == 200
         response_json = response.json()
@@ -630,19 +674,23 @@ async def test_add_order_success_end_to_end(
         assert response_json["url"] == mocked_stripe_session_response.url
         add_order_response = response_json["order"]
         order_id = add_order_response["id"]
-        response_get = test_client.get(f"/api/orders/{order_id}", headers={"Authorization": f"Bearer {jwt_token_admin}"})
+        response_get = test_client.get(
+            f"/api/orders/{order_id}",
+            headers={"Authorization": f"Bearer {jwt_token_admin}"},
+        )
         order = response_get.json()["order"]
 
         await assert_order_response(order, add_order_response)
 
-    test_client.get(f"/api/orders/{order_id}/complete", headers={"Authorization": f"Bearer {jwt_token_admin}"})
+    test_client.get(
+        f"/api/orders/{order_id}/complete",
+        headers={"Authorization": f"Bearer {jwt_token_admin}"},
+    )
 
 
 @pytest.mark.asyncio
 async def test_get_list_of_unavailable_dates_end_to_end(
-        test_client,
-        test_container,
-        jwt_token_client
+    test_client, test_container, jwt_token_client
 ):
     test_container.order_service.override(
         OrderService(
@@ -654,7 +702,9 @@ async def test_get_list_of_unavailable_dates_end_to_end(
         )
     )
 
-    response = test_client.get("/api/checkout", headers={"Authorization": f"Bearer {jwt_token_client}"})
+    response = test_client.get(
+        "/api/checkout", headers={"Authorization": f"Bearer {jwt_token_client}"}
+    )
 
     assert response.status_code == 200
     unavailable_dates = response.json()["dates"]
