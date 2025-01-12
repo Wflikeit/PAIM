@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from application.auth.auth_service import AuthService
-from infrastructure.api.exception_handler import create_credentials_exception
+from infrastructure.api.exception_handler import exception_credentials_handler
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 auth_router = APIRouter()
@@ -16,7 +16,7 @@ async def login_for_access_token(email: str, password: str):
         email, password, client_collection, admin_collection
     )
     if not user:
-        raise create_credentials_exception
+        raise exception_credentials_handler
     # Generate token
     access_token = AuthService.generate_token_for_user(user)
     return {"access_token": access_token, "token_type": "bearer"}
@@ -28,7 +28,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         form_data.username, form_data.password, admin_collection, client_collection
     )
     if not user:
-        raise create_credentials_exception
+        raise exception_credentials_handler
 
     access_token = AuthService.create_access_token(
         data={
