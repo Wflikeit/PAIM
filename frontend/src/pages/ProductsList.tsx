@@ -3,7 +3,7 @@ import ProductCard from "../components/product/ProductCard.tsx";
 import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { useProducts, Product } from "../hooks/useProducts.ts";
+import { Product, useProducts } from "../hooks/useProducts.ts";
 import { addToCart } from "../model/cardItem";
 
 const ProductsList: React.FC = () => {

@@ -9,7 +9,7 @@ import {
   setCountryOfOriginFilter,
   setFruitOrVegetableFilter,
 } from "../../model/product";
-import {useProducts} from "../../hooks/useProducts.ts";
+import { useProducts } from "../../hooks/useProducts.ts";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -23,7 +23,7 @@ const Sidebar: React.FC = () => {
   }
 
   const countryOptions = Array.from(
-    new Set(products.map((product: any) => product.country_of_origin))
+    new Set(products.map((product: any) => product.country_of_origin)),
   );
 
   // Define filter categories with explicit typing for filterKey
@@ -51,24 +51,24 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-      <nav className="sidebar">
-        <List sx={{ position: "sticky", top: "0", marginBottom: "200px" }}>
-          <Box sx={{ mt: 1, color: "#4caf50" }}>
-            {categories.map((category, index) => (
-                <CheckBoxGroup
-                    key={index}
-                    title={category.title}
-                    options={category.options}
-                    filterValues={category.filterValues}
-                    selectedValues={filters[category.filterKey] || []} // Pass selected filter values
-                    onChange={(filterValue: string) => {
-                      dispatch(category.filterAction(filterValue));
-                    }}
-                />
-            ))}
-          </Box>
-        </List>
-      </nav>
+    <nav className="sidebar">
+      <List sx={{ position: "sticky", top: "0", marginBottom: "200px" }}>
+        <Box sx={{ mt: 1, color: "#4caf50" }}>
+          {categories.map((category, index) => (
+            <CheckBoxGroup
+              key={index}
+              title={category.title}
+              options={category.options}
+              filterValues={category.filterValues}
+              selectedValues={filters[category.filterKey] || []} // Pass selected filter values
+              onChange={(filterValue: string) => {
+                dispatch(category.filterAction(filterValue));
+              }}
+            />
+          ))}
+        </Box>
+      </List>
+    </nav>
   );
 };
 

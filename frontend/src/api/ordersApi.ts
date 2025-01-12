@@ -8,26 +8,52 @@ export interface OrderReportItem {
   order_count: number;
 }
 
-export const placeOrder = async (orderDetails: any) => {
-    try {
-        const response = await axios.post(BACKEND_URL + "/api/purchase", orderDetails, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+export interface OrderDetails {
+  delivery_date: Date | null;
+  amount: number;
+  delivery_address: AddressDetails;
+  email: string;
+  products: OrderProductDetails[];
+}
 
-        // Check for the `Location` header in the response
-        const redirectUrl = response.data["url"];
-        if (redirectUrl) {
-            // Redirect the user to the Stripe payment session URL
-            window.location.href = redirectUrl;
-        } else {
-            throw new Error("Redirect URL not found in the response.");
-        }
-    } catch (error) {
-        console.error("Error placing order:", error);
-        throw error; // Rethrow the error for handling in the calling code
+export interface OrderProductDetails {
+  product_id: string;
+  quantity: number;
+  price: number;
+}
+
+export interface AddressDetails {
+  voivodeship: string;
+  street: string;
+  city: string;
+  postal_code: string;
+  house_number: string;
+}
+
+export const placeOrder = async (orderDetails: OrderDetails) => {
+  try {
+    console.log("Order details:", orderDetails);
+    const response = await axios.post(
+      BACKEND_URL + "/api/purchase",
+      orderDetails,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const redirectUrl = response.data["url"];
+    if (redirectUrl) {
+      // Redirect the user to the Stripe payment session URL
+      window.location.href = redirectUrl;
+    } else {
+      throw new Error("Redirect URL not found in the response.");
     }
+  } catch (error) {
+    console.error("Error placing order:", error);
+    throw error; // Rethrow the error for handling in the calling code
+  }
 };
 
 export const getReportOfOrders = async (startDate: Date, endDate: Date) => {

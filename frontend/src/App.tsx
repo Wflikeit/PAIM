@@ -12,6 +12,7 @@ import { ProtectedRouteWrapper } from "./auth/ProtectedRouterWrapper.tsx";
 import { UserRole } from "./auth/UserRole.ts";
 import React from "react";
 import CheckoutPage from "./pages/Checkout.tsx";
+import SuccessPage from "./pages/SuccessPage.tsx";
 
 const App: React.FC = () => {
   return (
@@ -37,6 +38,7 @@ const App: React.FC = () => {
         ></Route>
         <Route path="/" element={<Home />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/success" element={<SuccessPage />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
       </Route>

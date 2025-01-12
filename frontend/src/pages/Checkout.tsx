@@ -1,28 +1,52 @@
 import React, { useState } from "react";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store.ts";
 import WestIcon from "@mui/icons-material/West";
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useMutation, useQuery } from "react-query";
-import { fetchUnavailableDates, placeOrder } from "../api/ordersApi.ts";
+import {
+  AddressDetails,
+  fetchUnavailableDates,
+  OrderDetails,
+  OrderProductDetails,
+  placeOrder,
+} from "../api/ordersApi.ts";
 import { getUserFromToken } from "../auth/authService.ts";
+import { updateCheckoutFormData } from "../model/checkoutFormData.ts";
 
 const CheckoutPage: React.FC = () => {
+  const dispatch = useDispatch();
+
+  // Get cart items and persisted checkout data from Redux
   const cartItems = useSelector((state: RootState) => state.cart.items);
+  const checkoutData = useSelector(
+    (state: RootState) => state.checkoutFormData?.formData ?? {
+          voivodeship: '',
+          city: '',
+          street: '',
+          house_number: '',
+          postal_code: '',
+          delivery_date: null,
+        }
+  );
   const currency: string = "zł";
 
+  // Initialize form state with data from Redux Persist (if available)
   const [shippingAddress, setShippingAddress] = useState({
-    voivodeship: "",
-    city: "",
-    street: "",
-    houseNumber: "",
-    postalCode: "",
+    voivodeship: checkoutData?.voivodeship || "",
+    city: checkoutData?.city || "",
+    street: checkoutData?.street || "",
+    houseNumber: checkoutData?.house_number || "",
+    postalCode: checkoutData?.postal_code || "",
   });
 
-  const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
+  const [deliveryDate, setDeliveryDate] = useState<Date | null>(
+    checkoutData?.delivery_date || null,
+  );
+
   const [errors, setErrors] = useState({
     voivodeship: "",
     city: "",
@@ -73,13 +97,9 @@ const CheckoutPage: React.FC = () => {
     const { name, value } = e.target;
     setShippingAddress({ ...shippingAddress, [name]: value });
   };
+
   const [orderError, setOrderError] = useState<string | null>(null);
-  const {
-    mutate: placeOrderMutation,
-    isLoading,
-    isError,
-    isSuccess,
-  } = useMutation(placeOrder, {
+  const { mutate: placeOrderMutation, isLoading } = useMutation(placeOrder, {
     onSuccess: (data) => {
       console.log("Order placed successfully:", data);
       setOrderError(null);
@@ -96,34 +116,53 @@ const CheckoutPage: React.FC = () => {
       return;
     }
 
-    const mappedCartItems = cartItems.map((item) => ({
+    const mappedCartItems: OrderProductDetails[] = cartItems.map((item) => ({
       product_id: item.id,
       price: item.price,
       quantity: item.quantity,
     }));
 
-    const mappedShippingAddress = {
+    const mappedShippingAddress: AddressDetails = {
       voivodeship: shippingAddress.voivodeship,
       street: shippingAddress.street,
       city: shippingAddress.city,
-      postal_code: shippingAddress.postalCode,
-      house_number: shippingAddress.houseNumber,
+      house_number: shippingAddress.houseNumber, // Match house_number naming
+      postal_code: shippingAddress.postalCode, // Match postal_code naming
     };
 
     const user = getUserFromToken();
 
-    const orderDetails = {
-      delivery_date: deliveryDate,
-      amount: totalPrice.toFixed(2),
+    const orderDetails: OrderDetails = {
+      delivery_date: deliveryDate!,
+      amount: parseFloat(totalPrice.toFixed(2)), // Convert the string to a number
       products: mappedCartItems,
       delivery_address: mappedShippingAddress,
-      order_status: "pending",
       email: user?.email || "No Email",
-      route_length: "1000",
     };
+    console.log(
+      "Order details to be sent:",
+      mappedShippingAddress.voivodeship,
+      mappedShippingAddress.city,
+      mappedShippingAddress.street,
+      mappedShippingAddress.house_number,
+      mappedShippingAddress.postal_code,
+      orderDetails.delivery_date,
+    );
 
+    // Save to Redux Persist before placing the order
+    dispatch(
+      updateCheckoutFormData({
+        voivodeship: mappedShippingAddress.voivodeship,
+        city: mappedShippingAddress.city,
+        street: mappedShippingAddress.street,
+        house_number: mappedShippingAddress.house_number, // Match house_number naming
+        postal_code: mappedShippingAddress.postal_code, // Match postal_code naming
+        delivery_date: orderDetails.delivery_date, // Ensure it's non-null
+      }),
+    );
     placeOrderMutation(orderDetails);
   };
+
   const totalPrice = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
@@ -263,6 +302,11 @@ const CheckoutPage: React.FC = () => {
             >
               <WestIcon fontSize="small" /> Continue Shopping
             </Link>
+            {orderError && (
+              <Typography color="error" sx={{ marginTop: "1rem" }}>
+                {orderError}
+              </Typography>
+            )}
             <Button
               variant="contained"
               color="primary"
@@ -271,11 +315,6 @@ const CheckoutPage: React.FC = () => {
             >
               {isLoading ? "Placing Order..." : "Place Order"}
             </Button>
-            {orderError && (
-              <Typography color="error" sx={{ marginTop: "1rem" }}>
-                {orderError}
-              </Typography>
-            )}
           </Box>
         </Box>
       )}
