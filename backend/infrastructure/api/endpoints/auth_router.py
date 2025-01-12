@@ -3,7 +3,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from application.auth.auth_service import AuthService
 from domain.exceptions import InvalidCredentialsError
-from infrastructure.api.exception_handler import exception_credentials_handler
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 auth_router = APIRouter()
