@@ -40,6 +40,11 @@ class EmailNotUniqueError(RepositoryError):
         super().__init__(f"E-mail: {email} is already in use")
 
 
+class PipelineNoResultsError(RepositoryError):
+    def __init__(self):
+        super().__init__("No results found for pipline")
+
+
 class BusinessLogicError(Exception):
     def __init__(self, message: str):
         super().__init__(message)

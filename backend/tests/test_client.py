@@ -223,8 +223,8 @@ async def test_get_client_invalid_id(
     assert response.status_code == 404
     assert (
         response.json()["error"]
-        == f"ID of {Entity.client.value} is invalid: '{invalid_client_id}' "
-        "is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+        == f"ID of {Entity.client.value} is invalid: '{invalid_client_id}' is "
+        "not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     )
 
 
@@ -257,5 +257,5 @@ async def test_register_client_success_end_to_end(
         f"/api/clients/{client_id}", headers={"Authorization": f"Bearer {jwt_token}"}
     )
     assert response_get.status_code == 200
-    client= response.json()
+    client = response.json()
     await assert_client_response(client, response_json)

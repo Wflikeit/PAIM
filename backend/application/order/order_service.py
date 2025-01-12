@@ -5,7 +5,11 @@ from application.address.address_repository import AbstractAddressRepository
 from application.client.client_repository import AbstractClientRepository
 from application.order.order_repository import AbstractOrderRepository
 from application.requests import OrderRequest
-from application.responses import OrderResponse, WarehouseResponse, OrderSummaryForRegionResponse
+from application.responses import (
+    OrderResponse,
+    WarehouseResponse,
+    OrderSummaryForRegionResponse,
+)
 from application.truck.truck_repository import AbstractTruckRepository
 from application.warehouse.warehouse_repository import AbstractWarehouseRepository
 from domain.address import Address
@@ -18,7 +22,7 @@ def calculate_total_weight(products: List[dict]) -> float:
 
 
 def calculate_total_charge(products: List[dict]) -> float:
-    return sum(product["price"] for product in products)
+    return sum(product["price"] * product["quantity"] for product in products)
 
 
 def get_warehouses_with_available_products(
@@ -42,10 +46,12 @@ def get_warehouses_with_available_products(
                 )
 
         if available_products:
-            warehouse_availability.append({
-                "warehouse_id": warehouse_id,
-                "available_products": available_products,
-            })
+            warehouse_availability.append(
+                {
+                    "warehouse_id": warehouse_id,
+                    "available_products": available_products,
+                }
+            )
 
     warehouse_availability.sort(
         key=lambda x: sum(x["available_products"].values()), reverse=True
@@ -60,7 +66,7 @@ def get_warehouses_with_available_products(
 
 
 def subtract_products_from_order(
-        order_products: List[dict], warehouse_products: dict
+    order_products: List[dict], warehouse_products: dict
 ) -> List[dict]:
     """Subtract products fulfilled by a warehouse from the remaining order."""
     remaining_products = []
@@ -85,12 +91,12 @@ def subtract_products_from_order(
 
 class OrderService:
     def __init__(
-            self,
-            order_repo: AbstractOrderRepository,
-            client_repo: AbstractClientRepository,
-            warehouse_repo: AbstractWarehouseRepository,
-            truck_repo: AbstractTruckRepository,
-            address_repo: AbstractAddressRepository,
+        self,
+        order_repo: AbstractOrderRepository,
+        client_repo: AbstractClientRepository,
+        warehouse_repo: AbstractWarehouseRepository,
+        truck_repo: AbstractTruckRepository,
+        address_repo: AbstractAddressRepository,
     ):
         self._warehouse_repo = warehouse_repo
         self._order_repo = order_repo
@@ -116,7 +122,9 @@ class OrderService:
         order_data["trucks"] = trucks
 
         delivery_address = Address(**order_data["delivery_address"])
-        order_data["delivery_address"] = self._address_repo.add_address(delivery_address).id
+        order_data["delivery_address"] = self._address_repo.add_address(
+            delivery_address
+        ).id
 
         order_data["order_status"] = "pending"
         order_from_db = self._order_repo.add_order(Order(**order_data))
@@ -130,7 +138,7 @@ class OrderService:
         return OrderResponse(**order_data)
 
     def assign_warehouses_and_trucks(
-            self, order_products: List[dict], total_weight: float, delivery_date: datetime
+        self, order_products: List[dict], total_weight: float, delivery_date: datetime
     ) -> tuple[List[str], List[str]]:
         warehouses = self._warehouse_repo.get_warehouses()
         available_warehouses = get_warehouses_with_available_products(
@@ -167,10 +175,10 @@ class OrderService:
         return assigned_warehouses, assigned_trucks
 
     def assign_trucks_for_warehouse(
-            self,
-            warehouse_id: str,
-            order_products: List[dict],
-            delivery_date: datetime,
+        self,
+        warehouse_id: str,
+        order_products: List[dict],
+        delivery_date: datetime,
     ) -> List[str]:
         trucks = self._truck_repo.get_trucks_by_warehouse(warehouse_id)
         assigned_trucks = []
@@ -181,7 +189,7 @@ class OrderService:
             truck_capacity = truck_data["lift_capacity"]
 
             if not self.is_available_on_date(
-                    truck_data["active_orders"], delivery_date
+                truck_data["active_orders"], delivery_date
             ):
                 continue
 
@@ -202,7 +210,9 @@ class OrderService:
 
         for order_id in orders:
             order = self.get_order_by_id(order_id)
-            order_delivery_date = order.model_dump()["delivery_date"].strftime("%Y-%m-%d")
+            order_delivery_date = order.model_dump()["delivery_date"].strftime(
+                "%Y-%m-%d"
+            )
 
             if order_delivery_date == delivery_date_str:
                 return False

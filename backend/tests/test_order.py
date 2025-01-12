@@ -1,4 +1,5 @@
 import copy
+import json
 import os
 from unittest.mock import AsyncMock
 
@@ -6,8 +7,14 @@ import pytest
 from bson import ObjectId
 from starlette.testclient import TestClient
 
+from application.auth.auth_service import AuthService
 from application.order.order_service import OrderService
-from application.responses import WarehouseResponse, OrderResponse, TruckResponse, AddressResponse
+from application.responses import (
+    WarehouseResponse,
+    OrderResponse,
+    TruckResponse,
+    AddressResponse,
+)
 from domain.entities import Entity
 from domain.exceptions import InvalidDateType, FailedToUpdateError
 from infrastructure.api.main import app
@@ -23,11 +30,11 @@ os.environ["MONGO_DATABASE"] = "shop_db_dev"
 
 @pytest.fixture(scope="module")
 def test_container(
-        mocked_client_repository,
-        mocked_warehouse_repository,
-        mocked_order_repository,
-        mocked_truck_repository,
-        mocked_address_repository
+    mocked_client_repository,
+    mocked_warehouse_repository,
+    mocked_order_repository,
+    mocked_truck_repository,
+    mocked_address_repository,
 ):
     """Set up a test container with a test database."""
     container = Container()
@@ -37,7 +44,7 @@ def test_container(
             client_repo=mocked_client_repository,
             warehouse_repo=mocked_warehouse_repository,
             truck_repo=mocked_truck_repository,
-            address_repo=mocked_address_repository
+            address_repo=mocked_address_repository,
         )
     )
     return container
@@ -85,7 +92,7 @@ def order_data(mocked_address_data):
     """Fixture returning data for a test order."""
     return {
         "delivery_date": "2025-01-07T14:23:45.123000Z",
-        "amount": 30,
+        "amount": 190,
         "products": [
             {"product_id": "1", "price": 4, "quantity": 4.0},
             {"product_id": "2", "price": 5, "quantity": 5.0},
@@ -103,6 +110,7 @@ def order_data(mocked_address_data):
 @pytest.fixture(scope="module")
 def order_data_high_product_quantity(order_data):
     order_data_copy = copy.deepcopy(order_data)
+    order_data_copy["amount"] = 3000
     order_data_copy["products"] = [
         {"product_id": "1", "price": 4, "quantity": 100.0},
         {"product_id": "2", "price": 5, "quantity": 100.0},
@@ -183,7 +191,7 @@ def mocked_order_response_data():
     return {
         "id": str(ObjectId),
         "delivery_date": "2025-01-07T14:23:45.123000Z",
-        "amount": 30,
+        "amount": 190,
         "products": [
             {"product_id": "1", "quantity": 4.0},
             {"product_id": "2", "quantity": 5.0},
@@ -242,8 +250,17 @@ def mocked_truck_data():
             "warehouse": "3",
             "lift_capacity": 1500,
             "active_orders": [],
-        }
+        },
     ]
+
+
+@pytest.fixture(scope="module")
+def mocked_summary_response():
+    summary_response = [
+        {"amount": 30.0, "region": "Mock Voivodeship2", "order_count": 1},
+        {"amount": 220.0, "region": "Mock Voivodeship", "order_count": 2},
+    ]
+    return sorted(summary_response, key=lambda x: json.dumps(x, sort_keys=True))
 
 
 @pytest.fixture(scope="module")
@@ -267,6 +284,13 @@ def mocked_active_orders_for_trucks(mocked_another_order_response_data):
     return OrderResponse(**mocked_another_order_response_data)
 
 
+@pytest.fixture(scope="module")
+def jwt_token():
+    """Fixture to generate a test JWT token."""
+    user_data = {"sub": "test@mail.com", "role": "admin"}
+    return AuthService.create_access_token(data=user_data)
+
+
 async def assert_order_response(mock_order_data, response_json):
     assert response_json["delivery_date"] == mock_order_data["delivery_date"]
     assert response_json["amount"] == mock_order_data["amount"]
@@ -280,12 +304,12 @@ async def assert_order_response(mock_order_data, response_json):
 
 @pytest.mark.asyncio
 async def test_set_order_as_complete(
-        test_client,
-        test_container,
-        order_data,
-        mocked_order_response_data,
-        mocked_order_repository,
-        mocked_truck_repository,
+    test_client,
+    test_container,
+    order_data,
+    mocked_order_response_data,
+    mocked_order_repository,
+    mocked_truck_repository,
 ):
     """Integration test the of the /purchase endpoint."""
     order_id = mocked_order_response_data
@@ -305,19 +329,19 @@ async def test_set_order_as_complete(
 
 @pytest.mark.asyncio
 async def test_add_order_success(
-        test_client,
-        order_data,
-        mocked_order_response_data,
-        mocked_order_repository,
-        mocked_truck_repository,
-        mocked_active_orders_for_trucks,
-        mocked_truck_list_response,
-        mocked_warehouse_response,
-        mocked_warehouse_repository,
-        mocked_client_repository,
-        mocked_address_repository,
-        mocked_address_data,
-        mocked_another_order_response_data,
+    test_client,
+    order_data,
+    mocked_order_response_data,
+    mocked_order_repository,
+    mocked_truck_repository,
+    mocked_active_orders_for_trucks,
+    mocked_truck_list_response,
+    mocked_warehouse_response,
+    mocked_warehouse_repository,
+    mocked_client_repository,
+    mocked_address_repository,
+    mocked_address_data,
+    mocked_another_order_response_data,
 ):
     """Integration test for making orders."""
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
@@ -331,7 +355,9 @@ async def test_add_order_success(
     mocked_order_repository.add_order.return_value = OrderResponse(
         **mocked_order_response_data
     )
-    mocked_address_repository.add_address.return_value = AddressResponse(**mocked_address_data)
+    mocked_address_repository.add_address.return_value = AddressResponse(
+        **mocked_address_data
+    )
     response = test_client.post("/api/purchase", json=order_data)
 
     assert response.status_code == 200
@@ -343,18 +369,20 @@ async def test_add_order_success(
 
 @pytest.mark.asyncio
 async def test_add_order_not_enough_products_in_warehouse_fail(
-        test_client,
-        order_data_high_product_quantity,
-        mocked_order_response_data,
-        mocked_order_repository,
-        mocked_truck_repository,
-        mocked_active_orders_for_trucks,
-        mocked_truck_list_response,
-        mocked_warehouse_response,
-        mocked_warehouse_repository,
-        mocked_client_repository,
-        mocked_another_order_response_data,
-        mocked_address_data, mocked_address_repository):
+    test_client,
+    order_data_high_product_quantity,
+    mocked_order_response_data,
+    mocked_order_repository,
+    mocked_truck_repository,
+    mocked_active_orders_for_trucks,
+    mocked_truck_list_response,
+    mocked_warehouse_response,
+    mocked_warehouse_repository,
+    mocked_client_repository,
+    mocked_another_order_response_data,
+    mocked_address_data,
+    mocked_address_repository,
+):
     """Integration test for making orders."""
 
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
@@ -365,7 +393,9 @@ async def test_add_order_not_enough_products_in_warehouse_fail(
     mocked_order_repository.get_order_by_id.return_value = (
         mocked_active_orders_for_trucks
     )
-    mocked_address_repository.add_address.return_value = AddressResponse(**mocked_address_data)
+    mocked_address_repository.add_address.return_value = AddressResponse(
+        **mocked_address_data
+    )
     mocked_order_repository.add_order.return_value = OrderResponse(
         **mocked_order_response_data
     )
@@ -380,17 +410,19 @@ async def test_add_order_not_enough_products_in_warehouse_fail(
 
 @pytest.mark.asyncio
 async def test_update_order_in_client_failed(
-        test_client,
-        order_data,
-        mocked_warehouse_repository,
-        mocked_warehouse_response,
-        mocked_truck_repository,
-        mocked_truck_list_response,
-        mocked_order_repository,
-        mocked_active_orders_for_trucks,
-        mocked_order_response_data,
-        mocked_client_repository,
-        mocked_address_repository, mocked_address_data):
+    test_client,
+    order_data,
+    mocked_warehouse_repository,
+    mocked_warehouse_response,
+    mocked_truck_repository,
+    mocked_truck_list_response,
+    mocked_order_repository,
+    mocked_active_orders_for_trucks,
+    mocked_order_response_data,
+    mocked_client_repository,
+    mocked_address_repository,
+    mocked_address_data,
+):
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
     # this is used in loop for each warehouse
     mocked_truck_repository.get_trucks_by_warehouse.side_effect = (
@@ -399,18 +431,21 @@ async def test_update_order_in_client_failed(
     mocked_order_repository.get_order_by_id.return_value = (
         mocked_active_orders_for_trucks
     )
-    mocked_address_repository.add_address.return_value = AddressResponse(**mocked_address_data)
+    mocked_address_repository.add_address.return_value = AddressResponse(
+        **mocked_address_data
+    )
     mocked_order_repository.add_order.return_value = OrderResponse(
         **mocked_order_response_data
     )
-    mocked_client_repository.add_order_to_client_db.side_effect = FailedToUpdateError(Entity.client.value)
+    mocked_client_repository.add_order_to_client_db.side_effect = FailedToUpdateError(
+        Entity.client.value
+    )
 
     response = test_client.post("/api/purchase", json=order_data)
 
     assert response.status_code == 404
     assert (
-            response.json()["error"]
-            == f"Failed to update field in {Entity.client.value}"
+        response.json()["error"] == f"Failed to update field in {Entity.client.value}"
     )
 
     mocked_client_repository.add_order_to_client_db.side_effect = None
@@ -419,16 +454,18 @@ async def test_update_order_in_client_failed(
 
 @pytest.mark.asyncio
 async def test_order_link_to_truck_failed(
-        test_client,
-        order_data,
-        mocked_warehouse_repository,
-        mocked_warehouse_response,
-        mocked_truck_repository,
-        mocked_truck_list_response,
-        mocked_order_repository,
-        mocked_active_orders_for_trucks,
-        mocked_order_response_data,
-mocked_address_repository, mocked_address_data):
+    test_client,
+    order_data,
+    mocked_warehouse_repository,
+    mocked_warehouse_response,
+    mocked_truck_repository,
+    mocked_truck_list_response,
+    mocked_order_repository,
+    mocked_active_orders_for_trucks,
+    mocked_order_response_data,
+    mocked_address_repository,
+    mocked_address_data,
+):
     mocked_warehouse_repository.get_warehouses.return_value = mocked_warehouse_response
 
     mocked_truck_repository.get_trucks_by_warehouse.side_effect = (
@@ -437,17 +474,18 @@ mocked_address_repository, mocked_address_data):
     mocked_order_repository.get_order_by_id.return_value = (
         mocked_active_orders_for_trucks
     )
-    mocked_address_repository.add_address.return_value = AddressResponse(**mocked_address_data)
+    mocked_address_repository.add_address.return_value = AddressResponse(
+        **mocked_address_data
+    )
     mocked_order_repository.add_order.return_value = OrderResponse(
         **mocked_order_response_data
     )
-    mocked_truck_repository.add_order_to_trucks_db.side_effect = FailedToUpdateError(Entity.truck.value)
+    mocked_truck_repository.add_order_to_trucks_db.side_effect = FailedToUpdateError(
+        Entity.truck.value
+    )
     response = test_client.post("/api/purchase", json=order_data)
     assert response.status_code == 404
-    assert (
-            response.json()["error"]
-            == f"Failed to update field in {Entity.truck.value}"
-    )
+    assert response.json()["error"] == f"Failed to update field in {Entity.truck.value}"
 
     mocked_truck_repository.add_order_to_trucks_db.side_effect = None
     mocked_truck_repository.get_trucks_by_warehouse.side_effect = None
@@ -455,7 +493,7 @@ mocked_address_repository, mocked_address_data):
 
 @pytest.mark.asyncio
 async def test_get_product_invalid_date_type(
-        test_client, test_container, mocked_order_repository
+    test_client, test_container, mocked_order_repository
 ):
     """Test retrieving an order with invalid date type."""
     order_id = "677fe80f0a34748487855a54"
@@ -467,9 +505,9 @@ async def test_get_product_invalid_date_type(
 
     assert response.status_code == 404
     assert (
-            response.json()["error"]
-            == f"Date: {date} in {Entity.order.value} is in invalid"
-               f"type: should be datetime, is {type(date).__name__}"
+        response.json()["error"]
+        == f"Date: {date} in {Entity.order.value} is in invalid"
+        f"type: should be datetime, is {type(date).__name__}"
     )
 
     mocked_order_repository.get_order_by_id.side_effect = None
@@ -477,12 +515,12 @@ async def test_get_product_invalid_date_type(
 
 @pytest.mark.asyncio
 async def test_get_list_of_unavailable_dates(
-        test_client,
-        test_container,
-        mocked_truck_data,
-        mocked_truck_repository,
-        mocked_order_response_data,
-        mocked_order_repository,
+    test_client,
+    test_container,
+    mocked_truck_data,
+    mocked_truck_repository,
+    mocked_order_response_data,
+    mocked_order_repository,
 ):
     truck_data = copy.deepcopy(mocked_truck_data)
     mocked_truck_list = []
@@ -503,9 +541,9 @@ async def test_get_list_of_unavailable_dates(
 
 @pytest.mark.asyncio
 async def test_get_orders_success_end_to_end(
-        test_client,
-        test_container,
-        order_data,
+    test_client,
+    test_container,
+    order_data,
 ):
     """End-to-end test the of the /orders endpoint."""
     test_container.order_service.override(
@@ -514,7 +552,7 @@ async def test_get_orders_success_end_to_end(
             client_repo=ClientRepositoryMongo(),
             warehouse_repo=WarehouseRepositoryMongo(),
             truck_repo=TruckRepositoryMongo(),
-            address_repo=AddressRepositoryMongo()
+            address_repo=AddressRepositoryMongo(),
         )
     )
     order_id = "678309a0490b1b3e797ded8b"
@@ -533,9 +571,9 @@ async def test_get_orders_success_end_to_end(
 
 @pytest.mark.asyncio
 async def test_add_order_success_end_to_end(
-        test_client,
-        order_data,
-        test_container,
+    test_client,
+    order_data,
+    test_container,
 ):
     """Integration test for making orders."""
     test_container.order_service.override(
@@ -552,7 +590,7 @@ async def test_add_order_success_end_to_end(
 
     assert response.status_code == 200
     response_json = response.json()
-    client_id = response_json['id']
+    client_id = response_json["id"]
     response = test_client.get(f"/api/orders/{client_id}")
     order = response.json()["order"]
 
@@ -569,7 +607,7 @@ async def test_get_list_of_unavailable_dates_end_to_end(test_client, test_contai
             client_repo=ClientRepositoryMongo(),
             warehouse_repo=WarehouseRepositoryMongo(),
             truck_repo=TruckRepositoryMongo(),
-            address_repo=AddressRepositoryMongo()
+            address_repo=AddressRepositoryMongo(),
         )
     )
 
@@ -578,3 +616,32 @@ async def test_get_list_of_unavailable_dates_end_to_end(test_client, test_contai
     assert response.status_code == 200
     unavailable_dates = response.json()["dates"]
     assert unavailable_dates == ["2025-01-06", "2025-01-08"]
+
+
+@pytest.mark.asyncio
+async def test_stats_end_to_end(
+    test_client, test_container, jwt_token, mocked_summary_response
+):
+    test_container.order_service.override(
+        OrderService(
+            order_repo=OrderRepositoryMongo(),
+            client_repo=ClientRepositoryMongo(),
+            warehouse_repo=WarehouseRepositoryMongo(),
+            truck_repo=TruckRepositoryMongo(),
+            address_repo=AddressRepositoryMongo(),
+        )
+    )
+    start_date = "2025-01-01T23:00:00.000Z"
+    end_date = "2025-01-06T23:00:00.000Z"
+
+    response = test_client.get(
+        f"api/orders/stats?start_date={start_date}" f"&end_date={end_date}",
+        headers={"Authorization": f"Bearer {jwt_token}"},
+    )
+
+    assert response.status_code == 200
+    response_json = response.json()
+    sorted_response_json = sorted(
+        response_json, key=lambda x: json.dumps(x, sort_keys=True)
+    )
+    assert sorted_response_json == mocked_summary_response

@@ -22,7 +22,8 @@ class ProductRepositoryMongo(AbstractProductRepository):
         result = self.product_collection.insert_one(product_data)
         product_data["id"] = str(result.inserted_id)
         product_data["file"] = (
-            f"data:image/jpeg;base64,{base64.b64encode(product_data["file"]).decode('utf-8')}"
+            f"data:image/jpeg;base64,"
+            f"{base64.b64encode(product_data["file"]).decode('utf-8')}"
         )
         return ProductResponse(**product_data)
 

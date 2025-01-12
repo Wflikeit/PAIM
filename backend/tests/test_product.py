@@ -299,6 +299,6 @@ async def test_get_product_invalid_id(test_client, test_container):
     assert response.status_code == 404
     assert (
         response.json()["error"]
-        == f"ID of {Entity.product.value} is invalid: '{invalid_product_id}' "
-        "is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+        == f"ID of {Entity.product.value} is invalid: '{invalid_product_id}' is "
+        "not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     )

@@ -7,7 +7,6 @@ from application.auth.auth_service import AuthService
 from application.product.product_service import ProductService
 from application.requests import ProductRequest
 from application.responses import ProductResponse
-from domain.product import Product
 from infrastructure.containers import Container
 
 product_router = APIRouter()

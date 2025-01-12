@@ -6,7 +6,12 @@ from bson import ObjectId
 from application.order.order_repository import AbstractOrderRepository
 from application.responses import OrderResponse, OrderSummaryForRegionResponse
 from domain.entities import Entity
-from domain.exceptions import InvalidIdError, EntityNotFoundError, InvalidDateType
+from domain.exceptions import (
+    InvalidIdError,
+    EntityNotFoundError,
+    InvalidDateType,
+    PipelineNoResultsError,
+)
 from domain.order import Order
 from infrastructure.mongo.mongo_client import MongoDBClient
 
@@ -58,28 +63,50 @@ class OrderRepositoryMongo(AbstractOrderRepository):
         return response_list
 
     def get_orders_summary_by_region(
-            self, start_date: datetime, end_date: datetime
-    ) -> List[OrderSummaryForRegionResponse]:
+        self, start_date: datetime, end_date: datetime
+    ) -> List:
         pipeline = [
             {"$match": {"delivery_date": {"$gte": start_date, "$lte": end_date}}},
             {
+                "$addFields": {
+                    "addressId": {
+                        "$cond": {
+                            "if": {"$eq": [{"$type": "$delivery_address"}, "string"]},
+                            "then": {"$toObjectId": "$delivery_address"},
+                            "else": "$delivery_address",
+                        }
+                    }
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "addresses",
+                    "localField": "addressId",
+                    "foreignField": "_id",
+                    "as": "addr_info",
+                }
+            },
+            {"$unwind": "$addr_info"},
+            {
                 "$group": {
-                    "_id": "$delivery_address",  # Grupujemy po delivery_address
-                    "total_amount": {"$sum": "$amount"},
-                    "order_count": {"$sum": 1},
+                    "_id": "$addr_info.voivodeship",
+                    "totalAmount": {"$sum": "$amount"},
+                    "orderCount": {"$sum": 1},
                 }
             },
             {
                 "$project": {
                     "_id": 0,
                     "region": "$_id",
-                    "amount": "$total_amount",
-                    "order_count": 1,
+                    "amount": "$totalAmount",
+                    "order_count": "$orderCount",
                 }
             },
         ]
 
         result = list(self.order_collection.aggregate(pipeline))
+        if not result:
+            raise PipelineNoResultsError()
         return [OrderSummaryForRegionResponse(**doc) for doc in result]
 
     def update_order_status_db(self, order_id: str, status: str) -> bool:

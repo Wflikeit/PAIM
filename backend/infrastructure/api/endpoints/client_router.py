@@ -18,8 +18,8 @@ pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 @client_router.post("/register", response_model=SuccessfulRegisterClientResponse)
 @inject
 async def upload_client(
-        client: ClientRequest,
-        client_service: ClientService = Depends(Provide[Container.client_service]),
+    client: ClientRequest,
+    client_service: ClientService = Depends(Provide[Container.client_service]),
 ) -> SuccessfulRegisterClientResponse:
     client.password = pwd_context.hash(client.password)
 
@@ -38,11 +38,11 @@ async def upload_client(
 @client_router.get("/clients/{client_id}", response_model=ClientResponse)
 @inject
 async def get_client(
-        client_id: str,
-        client_service: ClientService = Depends(Provide[Container.client_service]),
-        credentials: HTTPAuthorizationCredentials = Security(
-            AuthService.security
-        ),  # Add JWT authentication
+    client_id: str,
+    client_service: ClientService = Depends(Provide[Container.client_service]),
+    credentials: HTTPAuthorizationCredentials = Security(
+        AuthService.security
+    ),  # Add JWT authentication
 ) -> ClientResponse:
     # Validate that the user is an admin
     AuthService.is_admin(credentials=credentials)

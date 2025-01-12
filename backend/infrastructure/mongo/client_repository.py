@@ -6,7 +6,12 @@ from application.client.client_repository import AbstractClientRepository
 from application.responses import ClientResponse
 from domain.client import Client
 from domain.entities import Entity
-from domain.exceptions import EntityNotFoundError, InvalidIdError, EmailNotUniqueError, FailedToUpdateError
+from domain.exceptions import (
+    EntityNotFoundError,
+    InvalidIdError,
+    EmailNotUniqueError,
+    FailedToUpdateError,
+)
 from infrastructure.mongo.mongo_client import MongoDBClient
 
 
@@ -61,8 +66,9 @@ class ClientRepositoryMongo(AbstractClientRepository):
 
         return orders.acknowledged
 
-
-    def update_addresses(self, client_id: str, delivery_address: str, payment_address: str) -> bool:
+    def update_addresses(
+        self, client_id: str, delivery_address: str, payment_address: str
+    ) -> bool:
         try:
             object_id = ObjectId(client_id)
         except Exception as err:
@@ -70,9 +76,11 @@ class ClientRepositoryMongo(AbstractClientRepository):
 
         addresses = self.client_collection.update_one(
             {"_id": object_id},
-            {"$set": {
-                "delivery_address": delivery_address,
-                "payment_address": payment_address}
-            }
+            {
+                "$set": {
+                    "delivery_address": delivery_address,
+                    "payment_address": payment_address,
+                }
+            },
         )
         return addresses.acknowledged

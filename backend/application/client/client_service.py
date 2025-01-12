@@ -26,13 +26,19 @@ class ClientService:
         client_data_db = self._client_repo.register_client_db(client).model_dump()
 
         payment_address = Address(**payment_address)
-        client_data_db["payment_address"] = self._address_repo.add_address(payment_address).id
+        client_data_db["payment_address"] = self._address_repo.add_address(
+            payment_address
+        ).id
         delivery_address = Address(**delivery_address)
-        client_data_db["delivery_address"] = self._address_repo.add_address(delivery_address).id
+        client_data_db["delivery_address"] = self._address_repo.add_address(
+            delivery_address
+        ).id
 
-        self._client_repo.update_addresses(client_data_db["id"],
-                                           client_data_db["delivery_address"],
-                                           client_data_db["payment_address"])
+        self._client_repo.update_addresses(
+            client_data_db["id"],
+            client_data_db["delivery_address"],
+            client_data_db["payment_address"],
+        )
 
         return ClientResponse(**client_data_db)
 
