@@ -11,7 +11,6 @@ const Login = () => {
         margin: "20dvh auto",
         maxWidth: "30rem",
         minWidth: "20rem",
-        backgroundColor: "#e8f5e9",
       }}
     >
       <Box>
