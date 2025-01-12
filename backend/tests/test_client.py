@@ -1,4 +1,5 @@
 import os
+import uuid
 from unittest.mock import AsyncMock
 
 import pytest
@@ -53,17 +54,17 @@ def mocked_address_repository():
 def client_data():
     """Fixture returning data for a test client."""
     return {
-        "email": "test2@mail.com",
+        "email": f"{uuid.uuid4()}@mail.com",
         "payment_address": {
             "street": "mock_street",
-            "house_number": 1,
+            "house_number": "1",
             "postal_code": "12-345",
             "city": "mock_city",
             "voivodeship": "Mock Voivodeship",
         },
         "delivery_address": {
             "street": "mock_street",
-            "house_number": 1,
+            "house_number": "1",
             "postal_code": "12-345",
             "city": "mock_city",
             "voivodeship": "Mock Voivodeship",
@@ -75,11 +76,12 @@ def client_data():
 
 
 @pytest.fixture(scope="module")
-def mock_client_data():
+def mock_client_data(client_data):
     """Fixture returning mock client data from the database."""
+    email = client_data["email"]
     return {
         "id": str(ObjectId()),
-        "email": "test2@mail.com",
+        "email": email,
         "payment_address": "677c93c830eee19537733a61",
         "delivery_address": "677c93c830eee19537733a61",
         "nip": "0123456789",
@@ -221,8 +223,8 @@ async def test_get_client_invalid_id(
     assert response.status_code == 404
     assert (
         response.json()["error"]
-        == f"ID of {Entity.client.value} is invalid: '{invalid_client_id}' "
-        "is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+        == f"ID of {Entity.client.value} is invalid: '{invalid_client_id}' is "
+        "not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     )
 
 
@@ -249,27 +251,11 @@ async def test_register_client_success_end_to_end(
     )
     assert response.status_code == 200
     response_json = response.json()
+    client_id = response_json["id"]
 
-    await assert_client_response(mock_client_data, response_json)
-
-
-@pytest.mark.asyncio
-async def test_get_client_success_end_to_end(
-    mock_client_data, test_container, test_client, mock_client_response, jwt_token
-):
-    """End-to-end test for getting client from /client/{client_id} endpoint."""
-    client_id = "6781710ec05abea3effa75b3"
-    test_container.client_service.override(
-        ClientService(
-            client_repo=ClientRepositoryMongo(), address_repo=AddressRepositoryMongo()
-        ),
-    )
-
-    response = test_client.get(
+    response_get = test_client.get(
         f"/api/clients/{client_id}", headers={"Authorization": f"Bearer {jwt_token}"}
     )
-
-    assert response.status_code == 200
-    response_json = response.json()
-    assert response_json["id"] == client_id
-    await assert_client_response(mock_client_data, response_json)
+    assert response_get.status_code == 200
+    client = response.json()
+    await assert_client_response(client, response_json)

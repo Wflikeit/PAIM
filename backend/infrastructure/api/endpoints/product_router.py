@@ -5,8 +5,8 @@ from starlette.requests import Request
 
 from application.auth.auth_service import AuthService
 from application.product.product_service import ProductService
+from application.requests import ProductRequest
 from application.responses import ProductResponse
-from domain.product import Product
 from infrastructure.containers import Container
 
 product_router = APIRouter()
@@ -26,11 +26,11 @@ async def upload_product_endpoint(
     if file.content_type != "image/jpeg":
         raise HTTPException(status_code=400, detail="Only JPEG files are allowed")
 
-    product = Product(**data)
+    product = ProductRequest(**data)
     return await product_service.upload_product(product)
 
 
-@product_router.get("/products/{product_id}", response_model=dict)
+@product_router.get("/products/{product_id}", response_model=dict, dependencies=[Depends(AuthService.verify_jwt_token)])
 @inject
 async def get_product(
     product_id: str,

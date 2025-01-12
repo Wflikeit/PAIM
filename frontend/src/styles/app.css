@@ -75,18 +75,18 @@ button:focus-visible {
 
 
 .photo__wrapper {
-  background-color: #f44336; /* Replace with red[500] equivalent */
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px; /* Adjust as needed */
-  height: 50px; /* Adjust as needed */
-  border-radius: 50%; /* Makes it circular */
-  font-size: 18px; /* Adjust font size as needed */
-  color: white; /* Text color */
-  border: none; /* Removes border */
-  cursor: pointer; /* Adds a pointer on hover */
+    background-color: #f44336; /* Replace with red[500] equivalent */
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    border-radius: 50%; /* Makes it circular */
+    font-size: 18px; /* Adjust font size as needed */
+    color: white; /* Text color */
+    border: none; /* Removes border */
+    cursor: pointer; /* Adds a pointer on hover */
 }
 
 button.delete {

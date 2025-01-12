@@ -5,7 +5,7 @@ from bson import ObjectId
 from application.responses import TruckResponse
 from application.truck.truck_repository import AbstractTruckRepository
 from domain.entities import Entity
-from domain.exceptions import InvalidIdError, EntityNotFoundError, EntityLinkError
+from domain.exceptions import InvalidIdError, EntityNotFoundError, FailedToUpdateError
 from domain.truck import Truck
 from infrastructure.mongo.mongo_client import MongoDBClient
 
@@ -51,7 +51,7 @@ class TruckRepositoryMongo(AbstractTruckRepository):
             {"_id": {"$in": object_ids}}, {"$addToSet": {"active_orders": order_id}}
         )
         if result.modified_count != len(truck_ids):
-            EntityLinkError(Entity.order.value, Entity.truck.value)
+            FailedToUpdateError(Entity.truck.value)
         return result.modified_count
 
     def get_trucks(self) -> List[TruckResponse]:

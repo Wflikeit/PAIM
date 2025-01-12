@@ -48,4 +48,5 @@ class Container(containers.DeclarativeContainer):
         client_repo=client_repository,
         warehouse_repo=warehouse_repository,
         truck_repo=truck_repository,
+        address_repo=address_repository,
     )

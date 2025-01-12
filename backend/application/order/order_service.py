@@ -1,16 +1,28 @@
+from datetime import datetime
 from typing import List
 
+from application.address.address_repository import AbstractAddressRepository
 from application.client.client_repository import AbstractClientRepository
 from application.order.order_repository import AbstractOrderRepository
-from application.responses import OrderResponse, WarehouseResponse
+from application.requests import OrderRequest
+from application.responses import (
+    OrderResponse,
+    WarehouseResponse,
+    OrderSummaryForRegionResponse,
+)
 from application.truck.truck_repository import AbstractTruckRepository
 from application.warehouse.warehouse_repository import AbstractWarehouseRepository
-from domain.exceptions import UnableToRealizeOrderError
+from domain.address import Address
+from domain.exceptions import UnableToRealizeOrderError, WrongAmountOfMoneyError
 from domain.order import Order
 
 
 def calculate_total_weight(products: List[dict]) -> float:
     return sum(product["quantity"] for product in products)
+
+
+def calculate_total_charge(products: List[dict]) -> float:
+    return sum(product["price"] * product["quantity"] for product in products)
 
 
 def get_warehouses_with_available_products(
@@ -34,8 +46,23 @@ def get_warehouses_with_available_products(
                 )
 
         if available_products:
-            warehouse_availability.append({warehouse_id: available_products})
-    return warehouse_availability
+            warehouse_availability.append(
+                {
+                    "warehouse_id": warehouse_id,
+                    "available_products": available_products,
+                }
+            )
+
+    warehouse_availability.sort(
+        key=lambda x: sum(x["available_products"].values()), reverse=True
+    )
+
+    sorted_result = [
+        {entry["warehouse_id"]: entry["available_products"]}
+        for entry in warehouse_availability
+    ]
+
+    return sorted_result
 
 
 def subtract_products_from_order(
@@ -69,17 +96,23 @@ class OrderService:
         client_repo: AbstractClientRepository,
         warehouse_repo: AbstractWarehouseRepository,
         truck_repo: AbstractTruckRepository,
+        address_repo: AbstractAddressRepository,
     ):
         self._warehouse_repo = warehouse_repo
         self._order_repo = order_repo
         self._client_repo = client_repo
         self._truck_repo = truck_repo
+        self._address_repo = address_repo
 
-    def add_order(self, order: Order) -> OrderResponse:
+    def add_order(self, order: OrderRequest) -> OrderResponse:
         order_data = order.model_dump()
         delivery_date = order_data["delivery_date"]
         products = order_data["products"]
+
         total_weight = calculate_total_weight(products)
+        total_charge = calculate_total_charge(products)
+        if round(total_charge, 2) != round(order_data["amount"], 2):
+            raise WrongAmountOfMoneyError(total_charge, order_data["amount"])
 
         warehouses, trucks = self.assign_warehouses_and_trucks(
             products, total_weight, delivery_date
@@ -88,17 +121,24 @@ class OrderService:
         order_data["warehouses"] = warehouses
         order_data["trucks"] = trucks
 
-        order_from_db = self._order_repo.add_order(Order(**order_data))
-        order_id = order_from_db.model_dump()["id"]
-        order_data["id"] = order_id
+        delivery_address = Address(**order_data["delivery_address"])
+        order_data["delivery_address"] = self._address_repo.add_address(
+            delivery_address
+        ).id
 
-        self._client_repo.add_order_to_client_db(order_id, order_data["email"])
-        self._truck_repo.add_order_to_trucks_db(order_id, trucks)
+        order_data["order_status"] = "pending"
+        order_from_db = self._order_repo.add_order(Order(**order_data))
+        order_from_db_data = order_from_db.model_dump()
+
+        order_data["id"] = order_from_db_data["id"]
+        order_data["products"] = order_from_db_data["products"]
+        self._client_repo.add_order_to_client_db(order_data["id"], order_data["email"])
+        self._truck_repo.add_order_to_trucks_db(order_data["id"], trucks)
 
         return OrderResponse(**order_data)
 
     def assign_warehouses_and_trucks(
-        self, order_products: List[dict], total_weight: float, delivery_date: str
+        self, order_products: List[dict], total_weight: float, delivery_date: datetime
     ) -> tuple[List[str], List[str]]:
         warehouses = self._warehouse_repo.get_warehouses()
         available_warehouses = get_warehouses_with_available_products(
@@ -138,7 +178,7 @@ class OrderService:
         self,
         warehouse_id: str,
         order_products: List[dict],
-        delivery_date: str,
+        delivery_date: datetime,
     ) -> List[str]:
         trucks = self._truck_repo.get_trucks_by_warehouse(warehouse_id)
         assigned_trucks = []
@@ -165,11 +205,19 @@ class OrderService:
 
         return assigned_trucks
 
-    def is_available_on_date(self, orders: List[str], delivery_date: str) -> bool:
-        return all(
-            self.get_order_by_id(order).model_dump()["delivery_date"] != delivery_date
-            for order in orders
-        )
+    def is_available_on_date(self, orders: List[str], delivery_date: datetime) -> bool:
+        delivery_date_str = delivery_date.strftime("%Y-%m-%d")
+
+        for order_id in orders:
+            order = self.get_order_by_id(order_id)
+            order_delivery_date = order.model_dump()["delivery_date"].strftime(
+                "%Y-%m-%d"
+            )
+
+            if order_delivery_date == delivery_date_str:
+                return False
+
+        return True
 
     def get_order_by_id(self, order_id: str) -> OrderResponse:
         return self._order_repo.get_order_by_id(order_id)
@@ -212,3 +260,8 @@ class OrderService:
         if modified_trucks != len(truck_ids):
             raise Exception("Failed to mark order as complete")
         return OrderResponse(**order_data)
+
+    def get_orders_report_for_period(
+        self, start_date: datetime, end_date: datetime
+    ) -> List[OrderSummaryForRegionResponse]:
+        return self._order_repo.get_orders_summary_by_region(start_date, end_date)

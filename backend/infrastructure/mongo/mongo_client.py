@@ -15,12 +15,12 @@ class MongoDBClient:
             with cls._lock:
                 if not cls._instance:
                     load_dotenv()  # Load environment variables from .env file
-
-                    # Get MongoDB URI from environment
-                    mongo_uri = os.getenv("MONGO_URL")
-                    if not mongo_uri:
-                        raise ValueError("MONGO_URL is not set in the .env file")
-
+                    mongo_user = os.getenv("MONGO_USER")
+                    mongo_password = os.getenv("MONGO_PASSWORD")
+                    mongo_uri = (
+                        f"mongodb+srv://{mongo_user}:"
+                        f"{mongo_password}@paim.yxyyk.mongodb.net/"
+                    )
                     try:
                         # Create a MongoDB client
                         cls._instance = MongoClient(

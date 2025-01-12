@@ -14,10 +14,7 @@ const ShoppingCartMiniature = () => {
 
   return (
     <div style={{ margin: "auto" }}>
-      <Link
-        to="/cart"
-        className="cart"
-      >
+      <Link to="/cart" className="cart">
         <Badge
           badgeContent={totalQuantity} // Dynamic quantity from Redux store
           color="secondary"

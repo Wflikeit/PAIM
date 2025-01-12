@@ -18,14 +18,12 @@ class ProductRepositoryMongo(AbstractProductRepository):
         self.product_collection = MongoDBClient.get_collection("products")
 
     async def upload_product_to_db(self, product: Product) -> ProductResponse:
-        image_data = await product.file.read()
-
         product_data = product.model_dump()
-        product_data["file"] = image_data
         result = self.product_collection.insert_one(product_data)
         product_data["id"] = str(result.inserted_id)
         product_data["file"] = (
-            f"data:image/jpeg;base64,{base64.b64encode(product_data["file"]).decode('utf-8')}"
+            f"data:image/jpeg;base64,"
+            f"{base64.b64encode(product_data["file"]).decode('utf-8')}"
         )
         return ProductResponse(**product_data)
 
@@ -48,7 +46,7 @@ class ProductRepositoryMongo(AbstractProductRepository):
 
         response_list = []
         for product in products:
-            prepare_product(product)
+            product = prepare_product(product)
             response_list.append(ProductResponse(**product))
 
         return response_list
@@ -65,3 +63,4 @@ def prepare_product(product):
     product["file"] = (
         f"data:image/jpeg;base64,{base64.b64encode(product["file"]).decode('utf-8')}"
     )
+    return product
