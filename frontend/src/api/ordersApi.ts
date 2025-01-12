@@ -8,8 +8,26 @@ export interface OrderReportItem {
   order_count: number;
 }
 
-export const placeOrder = (orderDetails: any) => {
-  return axios.post(BACKEND_URL + "/api/order", orderDetails);
+export const placeOrder = async (orderDetails: any) => {
+    try {
+        const response = await axios.post(BACKEND_URL + "/api/purchase", orderDetails, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        // Check for the `Location` header in the response
+        const redirectUrl = response.data["url"];
+        if (redirectUrl) {
+            // Redirect the user to the Stripe payment session URL
+            window.location.href = redirectUrl;
+        } else {
+            throw new Error("Redirect URL not found in the response.");
+        }
+    } catch (error) {
+        console.error("Error placing order:", error);
+        throw error; // Rethrow the error for handling in the calling code
+    }
 };
 
 export const getReportOfOrders = async (startDate: Date, endDate: Date) => {
@@ -42,4 +60,9 @@ export const useGetOrders = (startDate: Date | null, endDate: Date | null) => {
       refetchOnWindowFocus: false,
     },
   );
+};
+
+export const fetchUnavailableDates = async (): Promise<{ dates: string[] }> => {
+  const response = await axios.get(BACKEND_URL + "/api/checkout");
+  return response.data;
 };

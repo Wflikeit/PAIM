@@ -6,36 +6,38 @@ import { RootState } from "../redux/store.ts";
 import WestIcon from "@mui/icons-material/West";
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { useMutation } from "react-query";
-import { placeOrder } from "../api/ordersApi.ts";
+import { useMutation, useQuery } from "react-query";
+import { fetchUnavailableDates, placeOrder } from "../api/ordersApi.ts";
+import { getUserFromToken } from "../auth/authService.ts";
 
 const CheckoutPage: React.FC = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const currency: string = "zł";
 
   const [shippingAddress, setShippingAddress] = useState({
-    fullName: "",
-    address: "",
+    voivodeship: "",
     city: "",
+    street: "",
+    houseNumber: "",
     postalCode: "",
-    country: "",
   });
 
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
   const [errors, setErrors] = useState({
-    fullName: "",
-    address: "",
+    voivodeship: "",
     city: "",
+    street: "",
+    houseNumber: "",
     postalCode: "",
-    country: "",
     deliveryDate: "",
   });
 
-  const busyDays = [
-    new Date(2025, 0, 10),
-    new Date(2025, 0, 15),
-    new Date(2025, 0, 20),
-  ];
+  const { data: busyDaysData } = useQuery("busyDays", fetchUnavailableDates, {
+    staleTime: 60000,
+  });
+
+  const busyDays =
+    busyDaysData?.dates?.map((dateStr: string) => new Date(dateStr)) || [];
 
   const isDayDisabled = (date: Date) => {
     return busyDays.some(
@@ -49,17 +51,18 @@ const CheckoutPage: React.FC = () => {
   const validateFields = () => {
     const postalCodeRegex = /^[0-9]{2}-[0-9]{3}$/;
 
-
     const newErrors = {
-      fullName: shippingAddress.fullName ? "" : "Full name is required",
-      address: shippingAddress.address ? "" : "Address is required",
+      voivodeship: shippingAddress.voivodeship ? "" : "Voivodeship is required",
+      street: shippingAddress.street ? "" : "Street is required",
       city: shippingAddress.city ? "" : "City is required",
       postalCode: shippingAddress.postalCode
         ? postalCodeRegex.test(shippingAddress.postalCode)
+          ? ""
+          : "Invalid postal code format (e.g., 12-345)"
+        : "Postal code is required",
+      houseNumber: shippingAddress.houseNumber
         ? ""
-        : "Invalid postal code format (e.g., 12-345)"
-      : "Postal code is required",
-      country: shippingAddress.country ? "" : "Country is required",
+        : "House number is required",
       deliveryDate: deliveryDate ? "" : "Delivery date is required",
     };
     setErrors(newErrors);
@@ -70,7 +73,7 @@ const CheckoutPage: React.FC = () => {
     const { name, value } = e.target;
     setShippingAddress({ ...shippingAddress, [name]: value });
   };
-
+  const [orderError, setOrderError] = useState<string | null>(null);
   const {
     mutate: placeOrderMutation,
     isLoading,
@@ -79,9 +82,11 @@ const CheckoutPage: React.FC = () => {
   } = useMutation(placeOrder, {
     onSuccess: (data) => {
       console.log("Order placed successfully:", data);
+      setOrderError(null);
     },
     onError: (error) => {
       console.error("Error placing order:", error);
+      setOrderError("Failed to place order. Please try again.");
     },
   });
 
@@ -91,10 +96,30 @@ const CheckoutPage: React.FC = () => {
       return;
     }
 
+    const mappedCartItems = cartItems.map((item) => ({
+      product_id: item.id,
+      price: item.price,
+      quantity: item.quantity,
+    }));
+
+    const mappedShippingAddress = {
+      voivodeship: shippingAddress.voivodeship,
+      street: shippingAddress.street,
+      city: shippingAddress.city,
+      postal_code: shippingAddress.postalCode,
+      house_number: shippingAddress.houseNumber,
+    };
+
+    const user = getUserFromToken();
+
     const orderDetails = {
-      cartItems,
-      shippingAddress,
-      deliveryDate,
+      delivery_date: deliveryDate,
+      amount: totalPrice.toFixed(2),
+      products: mappedCartItems,
+      delivery_address: mappedShippingAddress,
+      order_status: "pending",
+      email: user?.email || "No Email",
+      route_length: "1000",
     };
 
     placeOrderMutation(orderDetails);
@@ -149,31 +174,40 @@ const CheckoutPage: React.FC = () => {
           <Stack spacing={2}>
             <TextField
               fullWidth
-              label="Full Name"
-              name="fullName"
-              value={shippingAddress.fullName}
+              label="Voivodeship"
+              name="voivodeship"
+              value={shippingAddress.voivodeship}
               onChange={handleInputChange}
-              error={!!errors.fullName}
-              helperText={errors.fullName}
+              error={!!errors.voivodeship}
+              helperText={errors.voivodeship}
             />
             <TextField
               fullWidth
-              label="Address"
-              name="address"
-              value={shippingAddress.address}
+              label="City"
+              name="city"
+              value={shippingAddress.city}
               onChange={handleInputChange}
-              error={!!errors.address}
-              helperText={errors.address}
+              error={!!errors.city}
+              helperText={errors.city}
             />
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={3}>
               <TextField
                 fullWidth
-                label="City"
-                name="city"
-                value={shippingAddress.city}
+                label="Street"
+                name="street"
+                value={shippingAddress.street}
                 onChange={handleInputChange}
-                error={!!errors.city}
-                helperText={errors.city}
+                error={!!errors.street}
+                helperText={errors.street}
+              />
+              <TextField
+                fullWidth
+                label="House Number"
+                name="houseNumber"
+                value={shippingAddress.houseNumber}
+                onChange={handleInputChange}
+                error={!!errors.houseNumber}
+                helperText={errors.houseNumber}
               />
               <TextField
                 fullWidth
@@ -185,15 +219,6 @@ const CheckoutPage: React.FC = () => {
                 helperText={errors.postalCode}
               />
             </Stack>
-            <TextField
-              fullWidth
-              label="Country"
-              name="country"
-              value={shippingAddress.country}
-              onChange={handleInputChange}
-              error={!!errors.country}
-              helperText={errors.country}
-            />
           </Stack>
 
           <Typography
@@ -246,6 +271,11 @@ const CheckoutPage: React.FC = () => {
             >
               {isLoading ? "Placing Order..." : "Place Order"}
             </Button>
+            {orderError && (
+              <Typography color="error" sx={{ marginTop: "1rem" }}>
+                {orderError}
+              </Typography>
+            )}
           </Box>
         </Box>
       )}
