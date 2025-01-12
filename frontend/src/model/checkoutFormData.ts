@@ -5,7 +5,7 @@ export interface CheckoutFormModel {
   voivodeship: string; // Changed to string, as voivodeship names are not numbers
   city: string;
   street: string; // Changed to string, as street names are not numbers
-  house_number: number; // Changed to string to accommodate formats like "12A"
+  house_number:  string; // Changed to string to accommodate formats like "12A"
   postal_code: string;
   delivery_date: Date | null;
 }

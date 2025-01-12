@@ -9,8 +9,6 @@ export interface OrderReportItem {
 }
 
 export interface OrderDetails {
-  order_status: string;
-  route_length: string;
   delivery_date: Date | null;
   amount: number;
   delivery_address: AddressDetails;
@@ -19,7 +17,7 @@ export interface OrderDetails {
 }
 
 export interface OrderProductDetails {
-  product_id: Date;
+  product_id: string;
   quantity: number;
   price: number;
 }
@@ -29,7 +27,7 @@ export interface AddressDetails {
   street: string;
   city: string;
   postal_code: string;
-  house_number: number;
+  house_number: string;
 }
 
 export const placeOrder = async (orderDetails: OrderDetails) => {

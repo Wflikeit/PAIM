@@ -23,7 +23,14 @@ const CheckoutPage: React.FC = () => {
   // Get cart items and persisted checkout data from Redux
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const checkoutData = useSelector(
-    (state: RootState) => state.checkoutFormData.formData,
+    (state: RootState) => state.checkoutFormData?.formData ?? {
+          voivodeship: '',
+          city: '',
+          street: '',
+          house_number: '',
+          postal_code: '',
+          delivery_date: null,
+        }
   );
   const currency: string = "zł";
 
@@ -130,9 +137,7 @@ const CheckoutPage: React.FC = () => {
       amount: parseFloat(totalPrice.toFixed(2)), // Convert the string to a number
       products: mappedCartItems,
       delivery_address: mappedShippingAddress,
-      order_status: "pending",
       email: user?.email || "No Email",
-      route_length: "1000",
     };
     console.log(
       "Order details to be sent:",
