@@ -62,3 +62,16 @@ class UnableToRealizeOrderError(BusinessLogicError):
 class WrongAmountOfMoneyError(BusinessLogicError):
     def __init__(self, amount: float, amount2: float):
         super().__init__(f"Wrong amount of money is {amount} should be {amount2}")
+
+class AuthError(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
+        self.message = message
+
+    def to_dict(self):
+        return {"error": self.message}
+
+
+class InvalidCredentialsError(AuthError):
+    def __init__(self):
+        super().__init__("Invalid credentials")

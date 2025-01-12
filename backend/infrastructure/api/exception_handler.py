@@ -1,6 +1,7 @@
-from fastapi import HTTPException, status
+from fastapi import status
 from starlette.responses import JSONResponse
-from domain.exceptions import RepositoryError, BusinessLogicError
+
+from domain.exceptions import RepositoryError, BusinessLogicError, AuthError
 
 
 async def repository_exception_handler(request, exc: RepositoryError):
@@ -10,9 +11,10 @@ async def repository_exception_handler(request, exc: RepositoryError):
     )
 
 
-def create_credentials_exception() -> HTTPException:
-    return HTTPException(
+def exception_credentials_handler(request, exc: AuthError):
+    return JSONResponse(
         status_code=status.HTTP_401_UNAUTHORIZED,
+        content=exc.to_dict(),
         headers={"WWW-Authenticate": "Bearer"},
     )
 

@@ -8,7 +8,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from starlette import status
 
-from infrastructure.api.exception_handler import create_credentials_exception
+from domain.exceptions import InvalidCredentialsError
+from infrastructure.api.exception_handler import exception_credentials_handler
 
 
 class AuthService:
@@ -29,7 +30,7 @@ class AuthService:
                 algorithms=[AuthService.algorithm],
             )
             if payload.get("role") not in {"admin", "client"}:
-                raise create_credentials_exception
+                raise exception_credentials_handler
 
             # Expiry validation
             exp = payload.get("exp")
@@ -44,7 +45,7 @@ class AuthService:
 
             return payload
         except JWTError:
-            raise create_credentials_exception
+            raise exception_credentials_handler
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -115,5 +116,5 @@ class AuthService:
         """
         payload = AuthService.verify_jwt_token(credentials=credentials)
         if payload.get("role") != "admin":
-            raise create_credentials_exception
+            raise InvalidCredentialsError()
         return payload
