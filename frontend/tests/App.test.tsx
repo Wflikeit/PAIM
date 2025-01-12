@@ -32,7 +32,7 @@ describe("App", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText(/About/i)).toBeInTheDocument(); // Replace with a unique element in `About`
+    expect(screen.getByText(/About us/i)).toBeInTheDocument(); // Replace with a unique element in `About`
   });
 
   it("renders the Contact page on /contact route", () => {

@@ -6,11 +6,11 @@ describe("About", () => {
         render(<About />);
 
         // Check for the heading
-        expect(screen.getByText(/O nas/i)).toBeInTheDocument();
+        expect(screen.getByText(/About us/i)).toBeInTheDocument();
 
         // Check for the paragraph text
         expect(
-            screen.getByText(/Welcome to our website! We are a company that strives for perfection in every aspect./i)
+            screen.getByText(/Welcome to our marketplace!/i)
         ).toBeInTheDocument();
     });
 });
