@@ -12,7 +12,8 @@ import {
 import registerClients from "../hooks/registerClients";
 import { Client } from "../model/client.ts";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import WestIcon from "@mui/icons-material/West";
 
 const RegisterForm = () => {
   const { addClient } = registerClients();
@@ -310,6 +311,19 @@ const RegisterForm = () => {
               >
                 Register
               </Button>
+              <Link
+                to="/"
+                style={{
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  color: "green",
+                  marginTop: "1rem",
+                }}
+              >
+                <WestIcon fontSize="small" /> Back to products
+              </Link>
             </Stack>
           </form>
         </Box>
