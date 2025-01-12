@@ -123,6 +123,7 @@ const CheckoutPage: React.FC = () => {
       product_id: item.id,
       price: item.price,
       quantity: item.quantity,
+      name: item.name
     }));
 
     const mappedShippingAddress: AddressDetails = {
