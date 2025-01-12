@@ -41,6 +41,7 @@ class MongoDBClient:
             The database instance.
         """
         # Load the database name from environment variables
+        load_dotenv()
         mongo_database = os.getenv("MONGO_DATABASE")
         if not mongo_database:
             raise ValueError("MONGO_DATABASE is not set in the .env file")
