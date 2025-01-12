@@ -27,7 +27,7 @@ const Header: React.FC = () => {
         <HeaderLink to="/about" text="About" />
         <HeaderLink to="/" text="Products" />
         {getUserFromToken()?.role === UserRole.ADMIN && (
-          <HeaderLink to="/stats" text="Reports" />
+          <HeaderLink to="/admin" text="Reports" />
         )}
       </div>
       <UserActionsWrapper user={user} />
