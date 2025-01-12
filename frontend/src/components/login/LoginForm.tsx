@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useCustomNavigation } from "../../hooks/useCustomNavigation.ts";
 import { getUserFromToken, TOKEN_KEY } from "../../auth/authService.ts";
+import WestIcon from "@mui/icons-material/West";
 
 const LoginForm = () => {
   const { navigateToHome } = useCustomNavigation();
@@ -109,6 +110,19 @@ const LoginForm = () => {
         >
           Register
         </Button>
+        <Link
+          to="/"
+          style={{
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            color: "green",
+            marginTop: "1rem",
+          }}
+        >
+          <WestIcon fontSize="small" /> Back to products
+        </Link>
       </Box>
     </form>
   );
