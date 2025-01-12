@@ -6,12 +6,11 @@ import stripe
 from dependency_injector.wiring import inject, Provide
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException
-from starlette.responses import RedirectResponse
 
 from application.auth.auth_service import AuthService
 from application.order.order_service import OrderService
 from application.requests import OrderRequest
-from application.responses import OrderResponse, OrderSummaryForRegionResponse
+from application.responses import OrderSummaryForRegionResponse
 from infrastructure.containers import Container
 
 order_router = APIRouter()
@@ -58,10 +57,11 @@ async def add_order_endpoint(
 
     # Save the order in your system
     if checkout_session.url == SUCCESS_URL:
-        order_service.add_order(order)
-
+        order_response = order_service.add_order(order)
+    else:
+        order_response = {}
     # Redirect to the checkout session URL
-    return {"url":checkout_session.url}
+    return {"url":checkout_session.url, "order": order_response}
 
 
 
