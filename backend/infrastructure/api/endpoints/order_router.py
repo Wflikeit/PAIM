@@ -98,10 +98,10 @@ async def get_all_orders(
     return {"orders": order_service.get_orders()}
 
 
-@order_router.get(
+@order_router.put(
     "/orders/{order_id}/complete",
     response_model=dict,
-    dependencies=[Depends(AuthService.is_admin)],
+    dependencies=[Depends(AuthService.verify_jwt_token)],
 )
 @inject
 async def set_order_status_complete(

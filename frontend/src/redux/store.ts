@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage"; // Use localStorage as default
 import productsReducer from "../model/product";
 import cartReducer from "../model/cardItem";
 import checkoutFormDataReducer from "../model/checkoutFormData";
+import orderReducer from "../model/order";
 
 const persistConfig = {
   key: "root",
@@ -15,12 +16,14 @@ const persistedCheckoutFormDataReducer = persistReducer(
   persistConfig,
   checkoutFormDataReducer,
 );
+const persistedOrderReducer = persistReducer(persistConfig, orderReducer);
 
 const store = configureStore({
   reducer: {
     cart: persistedCartReducer,
     products: productsReducer,
     checkoutFormData: persistedCheckoutFormDataReducer,
+    order: persistedOrderReducer,
   },
 });
 

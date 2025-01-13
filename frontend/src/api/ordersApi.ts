@@ -1,6 +1,8 @@
 import axios from "axios";
 import { BACKEND_URL } from "../hooks/useProducts.ts";
 import { useQuery } from "react-query";
+import {useDispatch} from "react-redux";
+import {setOrderId} from "../model/order.ts";
 
 export interface OrderReportItem {
   region: string;
@@ -35,27 +37,24 @@ export const placeOrder = async (orderDetails: OrderDetails) => {
   try {
     console.log("Order details:", orderDetails);
     const response = await axios.post(
-      BACKEND_URL + "/api/purchase",
-      orderDetails,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
+        BACKEND_URL + "/api/purchase",
+        orderDetails,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
     );
+    console.log("Order response:", response.data);
 
-    const redirectUrl = response.data["url"];
-    if (redirectUrl) {
-      // Redirect the user to the Stripe payment session URL
-      window.location.href = redirectUrl;
-    } else {
-      throw new Error("Redirect URL not found in the response.");
-    }
+    // Zwracamy dane zamówienia do komponentu
+    return response.data; // Zakładamy, że response.data zawiera { order_id, url }
   } catch (error) {
     console.error("Error placing order:", error);
-    throw error; // Rethrow the error for handling in the calling code
+    throw error; // Przekazujemy błąd dalej do komponentu
   }
 };
+
 
 export const getReportOfOrders = async (startDate: Date, endDate: Date) => {
   const response = await axios.get<OrderReportItem[]>( // <-- let axios know it's an array of OrderReportItem

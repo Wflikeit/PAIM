@@ -27,6 +27,14 @@ const App: React.FC = () => {
           }
         />
         <Route
+          path="/success"
+          element={
+            <ProtectedRouteWrapper allowedRoles={[UserRole.CLIENT]}>
+              <SuccessPage />
+            </ProtectedRouteWrapper>
+          }
+        />
+        <Route
           path="/admin/*"
           element={
             <ProtectedRouteWrapper allowedRoles={[UserRole.ADMIN]}>
@@ -38,7 +46,6 @@ const App: React.FC = () => {
         ></Route>
         <Route path="/" element={<Home />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/success" element={<SuccessPage />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
       </Route>

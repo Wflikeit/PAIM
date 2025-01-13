@@ -14,8 +14,9 @@ import {
   OrderProductDetails,
   placeOrder,
 } from "../api/ordersApi.ts";
-import { getUserFromToken } from "../auth/authService.ts";
+import {getUserFromToken, setAuthorizationHeader} from "../auth/authService.ts";
 import { updateCheckoutFormData } from "../model/checkoutFormData.ts";
+import {setOrderId} from "../model/order.ts";
 
 const CheckoutPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -76,13 +77,12 @@ const CheckoutPage: React.FC = () => {
 
     // Disable busy days
     return busyDays.some(
-        (busyDay) =>
-            busyDay.getDate() === date.getDate() &&
-            busyDay.getMonth() === date.getMonth() &&
-            busyDay.getFullYear() === date.getFullYear()
+      (busyDay) =>
+        busyDay.getDate() === date.getDate() &&
+        busyDay.getMonth() === date.getMonth() &&
+        busyDay.getFullYear() === date.getFullYear(),
     );
   };
-
 
   const validateFields = () => {
     const postalCodeRegex = /^[0-9]{2}-[0-9]{3}$/;
@@ -115,6 +115,16 @@ const CheckoutPage: React.FC = () => {
   const { mutate: placeOrderMutation, isLoading } = useMutation(placeOrder, {
     onSuccess: (data) => {
       console.log("Order placed successfully:", data);
+      // Save the order ID to Redux for persistence
+      dispatch(setOrderId(data.order.id));
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("Redirect URL not found in the response.");
+        setOrderError("Redirect URL not found. Please contact support.");
+      }
+
       setOrderError(null);
     },
     onError: (error) => {
@@ -124,31 +134,36 @@ const CheckoutPage: React.FC = () => {
   });
 
   const handleOrderPlacement = () => {
+    // Validate fields before proceeding
     if (!validateFields()) {
-      console.error("Validation failed: Fields are missing");
+      console.error("Validation failed: Fields are missing or incorrect");
       return;
     }
 
+    // Map cart items to match the backend API structure
     const mappedCartItems: OrderProductDetails[] = cartItems.map((item) => ({
       product_id: item.id,
       price: item.price,
       quantity: item.quantity,
-      name: item.name
+      name: item.name,
     }));
 
+    // Prepare the shipping address
     const mappedShippingAddress: AddressDetails = {
       voivodeship: shippingAddress.voivodeship,
       street: shippingAddress.street,
       city: shippingAddress.city,
-      house_number: shippingAddress.houseNumber, // Match house_number naming
-      postal_code: shippingAddress.postalCode, // Match postal_code naming
+      house_number: shippingAddress.houseNumber,
+      postal_code: shippingAddress.postalCode,
     };
 
+    // Get the user information (e.g., email)
     const user = getUserFromToken();
 
+    // Construct the order details payload
     const orderDetails: OrderDetails = {
       delivery_date: deliveryDate!,
-      amount: parseFloat(totalPrice.toFixed(2)), // Convert the string to a number
+      amount: parseFloat(totalPrice.toFixed(2)), // Convert to number with 2 decimals
       products: mappedCartItems,
       delivery_address: mappedShippingAddress,
       email: user?.email || "No Email",
@@ -160,11 +175,13 @@ const CheckoutPage: React.FC = () => {
         voivodeship: mappedShippingAddress.voivodeship,
         city: mappedShippingAddress.city,
         street: mappedShippingAddress.street,
-        house_number: mappedShippingAddress.house_number, // Match house_number naming
-        postal_code: mappedShippingAddress.postal_code, // Match postal_code naming
-        delivery_date: orderDetails.delivery_date, // Ensure it's non-null
+        house_number: mappedShippingAddress.house_number,
+        postal_code: mappedShippingAddress.postal_code,
+        delivery_date: orderDetails.delivery_date,
       }),
     );
+
+    // Trigger the mutation to place the order
     placeOrderMutation(orderDetails);
   };
 
