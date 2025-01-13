@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, CardActions, CardContent, Typography } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../model/cardItem.ts";
@@ -8,7 +9,7 @@ import { clearCheckoutFormData } from "../model/checkoutFormData.ts";
 import { clearOrderId } from "../model/order.ts";
 import axios from "axios";
 import { RootState } from "../redux/store.ts";
-import {BACKEND_URL} from "../hooks/useProducts.ts";
+import { BACKEND_URL } from "../hooks/useProducts.ts";
 
 const SuccessPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ const SuccessPage: React.FC = () => {
 
     dispatch(clearCart());
     dispatch(clearCheckoutFormData());
-  }, [dispatch]);
+  }, [dispatch, orderId]);
 
   return (
     <Box
@@ -46,7 +47,7 @@ const SuccessPage: React.FC = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "#177c1b",
+        background: error ? "#8b0000" : "#177c1b", // Red for error, green for success
       }}
     >
       <Card
@@ -59,15 +60,36 @@ const SuccessPage: React.FC = () => {
         }}
       >
         <CardContent>
-          <CheckCircleIcon
-            sx={{
-              fontSize: 60,
-              color: "#4caf50",
-              marginBottom: 2,
-            }}
-          />
-          {orderCompleted ? (
+          {error ? (
             <>
+              <ErrorOutlineIcon
+                sx={{
+                  fontSize: 60,
+                  color: "#f44336", // Red icon for errors
+                  marginBottom: 2,
+                }}
+              />
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                color="#f44336"
+                gutterBottom
+              >
+                Order Failed
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {error}
+              </Typography>
+            </>
+          ) : orderCompleted ? (
+            <>
+              <CheckCircleIcon
+                sx={{
+                  fontSize: 60,
+                  color: "#4caf50", // Green icon for success
+                  marginBottom: 2,
+                }}
+              />
               <Typography variant="h5" fontWeight="bold" gutterBottom>
                 Order Successful!
               </Typography>
@@ -76,10 +98,12 @@ const SuccessPage: React.FC = () => {
                 successfully.
               </Typography>
             </>
-          ) : error ? (
-            <h2>Error: {error}</h2>
           ) : (
-            <h2>Completing your order...</h2>
+            <>
+              <Typography variant="h5" fontWeight="bold" gutterBottom>
+                Completing your order...
+              </Typography>
+            </>
           )}
         </CardContent>
         <CardActions
@@ -90,11 +114,13 @@ const SuccessPage: React.FC = () => {
         >
           <Link
             to="/"
-            color="primary"
             style={{
-              borderRadius: 2,
+              textDecoration: "none",
+              backgroundColor: error ? "#f44336" : "#4caf50", // Red for error, green for success
+              color: "#fff",
+              borderRadius: 8,
               textTransform: "none",
-              padding: 3,
+              padding: "10px 20px",
             }}
           >
             Return to Home

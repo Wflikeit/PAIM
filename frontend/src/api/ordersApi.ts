@@ -1,8 +1,6 @@
 import axios from "axios";
 import { BACKEND_URL } from "../hooks/useProducts.ts";
 import { useQuery } from "react-query";
-import {useDispatch} from "react-redux";
-import {setOrderId} from "../model/order.ts";
 
 export interface OrderReportItem {
   region: string;
@@ -37,13 +35,13 @@ export const placeOrder = async (orderDetails: OrderDetails) => {
   try {
     console.log("Order details:", orderDetails);
     const response = await axios.post(
-        BACKEND_URL + "/api/purchase",
-        orderDetails,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      BACKEND_URL + "/api/purchase",
+      orderDetails,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
     );
     console.log("Order response:", response.data);
 
@@ -54,7 +52,6 @@ export const placeOrder = async (orderDetails: OrderDetails) => {
     throw error; // Przekazujemy błąd dalej do komponentu
   }
 };
-
 
 export const getReportOfOrders = async (startDate: Date, endDate: Date) => {
   const response = await axios.get<OrderReportItem[]>( // <-- let axios know it's an array of OrderReportItem
