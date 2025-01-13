@@ -114,7 +114,6 @@ const CheckoutPage: React.FC = () => {
   const [orderError, setOrderError] = useState<string | null>(null);
   const { mutate: placeOrderMutation, isLoading } = useMutation(placeOrder, {
     onSuccess: (data) => {
-      console.log("Order placed successfully:", data);
       // Save the order ID to Redux for persistence
       dispatch(setOrderId(data.order.id));
 

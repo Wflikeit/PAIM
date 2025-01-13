@@ -25,7 +25,6 @@ export const ProtectedRouteWrapper: React.FC<ProtectedRouteWrapperProps> = ({
 
   useEffect(() => {
     // Start token validity checking loop.
-    console.log("checkTokenValidity(navigateToLoginPage)");
     checkTokenValidity(navigateToLoginPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -43,13 +43,11 @@ export const placeOrder = async (orderDetails: OrderDetails) => {
         },
       },
     );
-    console.log("Order response:", response.data);
 
-    // Zwracamy dane zamówienia do komponentu
-    return response.data; // Zakładamy, że response.data zawiera { order_id, url }
+    return response.data;
   } catch (error) {
     console.error("Error placing order:", error);
-    throw error; // Przekazujemy błąd dalej do komponentu
+    throw error;
   }
 };
 

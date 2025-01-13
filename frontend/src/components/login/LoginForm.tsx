@@ -45,8 +45,6 @@ const LoginForm = () => {
         },
       );
 
-      console.log("Response data:", response.data);
-
       const { access_token } = response.data;
       const tokenPayload = JSON.parse(
         atob(access_token.split(".")[1]), // Decode JWT payload
@@ -60,7 +58,6 @@ const LoginForm = () => {
       localStorage.setItem("fullname", response.data.fullname);
       navigateToHome();
     } catch (error) {
-      console.error("Login failed:", error);
       setError("Invalid email or password");
     }
   };
