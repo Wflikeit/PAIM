@@ -339,7 +339,7 @@ async def test_set_order_as_complete(
         **mocked_order_response_data_copy
     )
     mocked_truck_repository.delete_order_from_truck_db.return_value = 1
-    response = test_client.get(
+    response = test_client.put(
         f"/api/orders/{order_id}/complete",
         headers={"Authorization": f"Bearer {jwt_token_admin}"},
     )
@@ -682,7 +682,7 @@ async def test_add_order_success_end_to_end(
 
         await assert_order_response(order, add_order_response)
 
-    test_client.get(
+    test_client.put(
         f"/api/orders/{order_id}/complete",
         headers={"Authorization": f"Bearer {jwt_token_admin}"},
     )
