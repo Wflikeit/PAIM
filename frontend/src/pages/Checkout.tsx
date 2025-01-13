@@ -14,9 +14,9 @@ import {
   OrderProductDetails,
   placeOrder,
 } from "../api/ordersApi.ts";
-import {getUserFromToken, setAuthorizationHeader} from "../auth/authService.ts";
+import { getUserFromToken } from "../auth/authService.ts";
 import { updateCheckoutFormData } from "../model/checkoutFormData.ts";
-import {setOrderId} from "../model/order.ts";
+import { setOrderId } from "../model/order.ts";
 
 const CheckoutPage: React.FC = () => {
   const dispatch = useDispatch();
