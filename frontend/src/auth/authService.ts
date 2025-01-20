@@ -50,14 +50,23 @@ export const getUserFromToken = () => {
 
 const getDecodedToken = () => {
   const token = localStorage.getItem(TOKEN_KEY);
-
+  console.log(token);
   if (!token) {
     return;
   }
 
   return jwtDecode(token) as DecodedToken;
 };
-export const setAuthorizationHeader = (token: string) => {
+export const getToken = () => {
+  const token = localStorage.getItem(TOKEN_KEY);
+
+  if (!token) {
+    return;
+  }
+
+  return token;
+};
+export const setAuthorizationHeader = (token?: string) => {
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 };
 

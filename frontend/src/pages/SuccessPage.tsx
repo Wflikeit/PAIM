@@ -10,6 +10,7 @@ import { clearOrderId } from "../model/order.ts";
 import axios from "axios";
 import { RootState } from "../redux/store.ts";
 import { BACKEND_URL } from "../hooks/useProducts.ts";
+import { getToken, setAuthorizationHeader } from "../auth/authService.ts";
 
 const SuccessPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,8 @@ const SuccessPage: React.FC = () => {
       }
 
       try {
+        const user = getToken();
+        setAuthorizationHeader(user);
         await axios.put(`${BACKEND_URL}/api/orders/${orderId}/complete`);
         setOrderCompleted(true);
         dispatch(clearOrderId());
