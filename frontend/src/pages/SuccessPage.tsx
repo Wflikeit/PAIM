@@ -19,31 +19,42 @@ const SuccessPage: React.FC = () => {
   const [orderCompleted, setOrderCompleted] = useState(false);
 
   // Clear the cart on mount
-  useEffect(() => {
-    const completeOrder = async () => {
-      if (!orderId) {
-        setError("Order ID not found");
-        return;
-      }
+    useEffect(() => {
+        const completeOrder = async () => {
+            if (!orderId) {
+                setError("Order ID not found");
+                return;
+            }
 
-      try {
-        const user = getToken();
-        setAuthorizationHeader(user);
-        await axios.put(`${BACKEND_URL}/api/orders/${orderId}/complete`);
-        setOrderCompleted(true);
-        dispatch(clearOrderId());
-      } catch (error) {
-        setError("Failed to complete the order.");
-        console.error(error);
-      }
-    };
-    completeOrder();
+            try {
+                const user = getToken();
+                setAuthorizationHeader(user);
 
-    dispatch(clearCart());
-    dispatch(clearCheckoutFormData());
-  }, [dispatch, orderId]);
+                // Wysyłamy pojedyncze zapytanie do backendu, które zajmuje się całą logiką zamówienia
+                const response = await axios.put(`${BACKEND_URL}/api/orders/${orderId}/complete`);
 
-  return (
+                if (response.status === 200) {
+                    // Backend potwierdza sukces – wykonujemy działania lokalne
+                    setOrderCompleted(true);
+                    dispatch(clearOrderId());
+                    dispatch(clearCart());
+                    dispatch(clearCheckoutFormData());
+                } else {
+                    setError("Failed to complete the order.");
+                }
+            } catch (error) {
+                setError("Failed to complete the order.");
+                console.error(error);
+            }
+        };
+
+        if (orderId && !orderCompleted) {
+            completeOrder();
+        }
+    }, []);
+
+
+    return (
     <Box
       sx={{
         height: "100%",
