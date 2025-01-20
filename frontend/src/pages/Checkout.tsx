@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store.ts";
+import { persistor, RootState } from "../redux/store.ts";
 import WestIcon from "@mui/icons-material/West";
 import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -118,7 +118,10 @@ const CheckoutPage: React.FC = () => {
       dispatch(setOrderId(data.order.id));
 
       if (data.url) {
-        window.location.href = data.url;
+        persistor.flush().then(() => {
+          // Teraz przekieruj do Stripe
+          window.location.href = data.url;
+        });
       } else {
         console.error("Redirect URL not found in the response.");
         setOrderError("Redirect URL not found. Please contact support.");

@@ -6,17 +6,28 @@ import cartReducer from "../model/cardItem";
 import checkoutFormDataReducer from "../model/checkoutFormData";
 import orderReducer from "../model/order";
 
-const persistConfig = {
-  key: "root",
+const cartPersistConfig = {
+  key: "cart",
   storage,
 };
 
-const persistedCartReducer = persistReducer(persistConfig, cartReducer);
+const checkoutPersistConfig = {
+  key: "checkoutForm",
+  storage,
+};
+
+const orderPersistConfig = {
+  key: "order",
+  storage,
+};
+
+
+const persistedCartReducer = persistReducer(cartPersistConfig, cartReducer);
 const persistedCheckoutFormDataReducer = persistReducer(
-  persistConfig,
+  checkoutPersistConfig,
   checkoutFormDataReducer,
 );
-const persistedOrderReducer = persistReducer(persistConfig, orderReducer);
+const persistedOrderReducer = persistReducer(orderPersistConfig, orderReducer);
 
 const store = configureStore({
   reducer: {
